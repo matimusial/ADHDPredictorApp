@@ -1,0 +1,8 @@
+__pycache__/
+.idea/
+
+MRI/GAN/MODELS/*
+!MRI/GAN/MODELS/link
+
+EEG/TRAIN/TRAIN_DATA/*
+!EEG/TRAIN/TRAIN_DATA/link
