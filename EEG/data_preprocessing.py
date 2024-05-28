@@ -98,7 +98,6 @@ def clip_eeg_data(ADHD_DATA, CONTROL_DATA=None):
 
     def clip_data(data):
         data_clipped = copy.deepcopy(data)
-        thresholds = []
 
         for i in range(len(data)):
             for j in range(CNN_INPUT_SHAPE[0]):
@@ -106,7 +105,6 @@ def clip_eeg_data(ADHD_DATA, CONTROL_DATA=None):
                 threshold = np.abs(np.percentile(channel_data, percentile))
                 clipped_data = np.clip(channel_data, a_min=-threshold, a_max=threshold)
                 data_clipped[i][j] = clipped_data
-                thresholds.append(threshold)
 
         return data_clipped
 
