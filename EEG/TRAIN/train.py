@@ -59,6 +59,7 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path):
             CONTROL_DATA = read_pickle(os.path.join(pickle_path, "CONTROL_EEG_DATA.pkl"))
         except Exception as e:
             print(f"Błąd przy ładowaniu plików EEG: {e}")
+            print("Czy pobrałeś pliki z linku w folderze EEG/TRAIN/TRAIN_DATA ?")
             return
 
         try:
