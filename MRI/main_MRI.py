@@ -91,4 +91,4 @@ def MRI():
         else:
             print("Niepoprawny wybór. Wprowadź 1 lub 2.")
 
-MRI()
+#MRI()

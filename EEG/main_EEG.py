@@ -36,4 +36,4 @@ def EEG():
         else:
             print("Niepoprawny wybór. Wprowadź 1 lub 2.")
 
-EEG()
+#EEG()
