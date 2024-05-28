@@ -4,7 +4,7 @@ import mne
 from scipy.io import loadmat, savemat
 
 
-def readEEGRaw(path_or_folder):
+def read_eeg_raw(path_or_folder):
     """
     Wczytuje surowe dane EEG / do poprawy i analizy
 
