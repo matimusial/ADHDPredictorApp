@@ -4,10 +4,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from EEG.TRAIN.train import train_cnn_eeg
 from EEG.PREDICT.predict import predict
+from EEG.config import MODEL_CNN_NAME
 
 current_dir = os.path.dirname(__file__)
 
-MODEL_NAME = "0.9307"
+
 MODEL_PATH = os.path.join(current_dir, "MODELS")
 
 TRAIN_PATH = os.path.join(current_dir, "TRAIN", "TRAIN_DATA")
@@ -29,7 +30,7 @@ def EEG():
             break
 
         elif main_choice == '2':
-            predict(MODEL_NAME, MODEL_PATH, PREDICT_PATH)
+            predict(MODEL_CNN_NAME, MODEL_PATH, PREDICT_PATH)
             break
 
         else:

@@ -21,6 +21,7 @@ CNN_MODEL_PATH = os.path.join(current_dir, 'CNN', 'MODELS')
 
 GAN_MODEL_PATH = os.path.join(current_dir, 'GAN', 'MODELS')
 
+
 def MRI():
     print("MRI")
     while True:
@@ -89,3 +90,5 @@ def MRI():
 
         else:
             print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+
+MRI()
