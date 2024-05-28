@@ -12,6 +12,12 @@ CNN_BATCH_SIZE = 32
 CNN_LEARNING_RATE = 0.001
 MODEL_CNN_NAME = "0.9307"
 
+
+def set_cnn_model_name(new_value):
+    global MODEL_CNN_NAME
+    MODEL_CNN_NAME = new_value
+
+
 def set_cnn_epochs(new_value):
     global CNN_EPOCHS
     CNN_EPOCHS = new_value
