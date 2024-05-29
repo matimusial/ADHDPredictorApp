@@ -54,7 +54,7 @@ class DBConnector:
             print("Błąd: 'fs' musi być liczbą zmiennoprzecinkową lub całkowitą.")
             return None
 
-        if plane not in ['A', 'S', 'C']:
+        if plane not in ['A', 'S', 'C', '']:
             print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C'.")
             return None
 
@@ -64,7 +64,7 @@ class DBConnector:
 
         return file_data, channels, str(input_shape), type_value, float(fs), plane, description
 
-    def insert_data_for_models(self, name="none", file_data="none", channels=0, input_shape=(0, 0, 0),
+    def insert_data_into_models(self, name="none", file_data="none", channels=0, input_shape=(0, 0, 0),
                                type_value="none",
                                fs=0.0, plane="none", description="none"):
         """
@@ -72,7 +72,7 @@ class DBConnector:
 
         Args:
             name (str): Lowercase name of the model.
-            file_data (.keras): The file data.
+            file_data (.keras): Path to model.
             channels (int): The channels.
             input_shape (tuple): The input shape of the model.
             type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg', 'gan']
@@ -142,7 +142,7 @@ class DBConnector:
         """
         if self.connection and self.connection.is_connected():
             try:
-                query = f"SELECT * FROM models WHERE {condition}"
+                query = f"SELECT name FROM models WHERE {condition}"
                 self.cursor.execute(query)
                 results = self.cursor.fetchall()
                 return results

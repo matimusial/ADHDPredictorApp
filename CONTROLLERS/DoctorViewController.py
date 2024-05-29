@@ -12,12 +12,15 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from scipy.io import loadmat
 from pandas import read_csv
 from keras.models import load_model
+
+from CONTROLLERS.DBConnector import DBConnector
 from EEG.config import FS
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 from EEG.file_io import split_into_frames
 from EEG.PREDICT.predict import check_result
 from MRI.image_preprocessing import trim_one, normalize
 from MRI.config import CNN_INPUT_SHAPE_MRI
+from EEG.config import CNN_INPUT_SHAPE
 
 current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
@@ -26,10 +29,12 @@ FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
 
 class DoctorViewController:
     def __init__(self, mainWindow):
+
         self.mainWindow = mainWindow
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
 
+        self.db_conn = DBConnector()
         self.filePaths = None
         self.modelEEG = None
         self.modelMRI = None
@@ -42,6 +47,7 @@ class DoctorViewController:
 
 
     def addEvents(self):
+
         self.ui.loadDataBtn.clicked.connect(self.getFilePaths)
 
         self.ui.btnNextPlot.clicked.connect(self.showNextPlotEEG)
@@ -78,22 +84,22 @@ class DoctorViewController:
             self.chosenModelMRI = item.text()
             self.ui.chosenModelMRI.setText(self.chosenModelMRI)
 
-        modelsList = [f"model{i}" for i in range(12)]
+        modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
         modelEEG = QStandardItemModel()
 
         for modelName in modelsList:
-            item = QStandardItem(modelName)
+            item = QStandardItem(modelName[0])
             item.setEditable(False)
             modelEEG.appendRow(item)
 
         self.ui.modelListViewEEG.setModel(modelEEG)
         self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
 
-        modelsList = [f"model{i}" for i in range(12)]
+        modelsList = self.db_conn.select_model_name("type='cnn_mri'")
         modelMRI = QStandardItemModel()
 
         for modelName in modelsList:
-            item = QStandardItem(modelName)
+            item = QStandardItem(modelName[0])
             item.setEditable(False)
             modelMRI.appendRow(item)
 
