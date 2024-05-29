@@ -189,10 +189,10 @@ class DBConnector:
                     model_id = model_id_result[0][0]
                     file_query = "SELECT file FROM files WHERE model_id=%s"
                     self.cursor.execute(file_query, (model_id,))
-                    file_result = self.cursor.fetchone()
+                    file_result = self.cursor.fetchall()
 
                     if file_result:
-                        model_file_data = file_result[0]
+                        model_file_data = file_result[0][0]
 
                         import os
                         with open("tmp.keras", 'wb') as file:
@@ -203,6 +203,7 @@ class DBConnector:
                             print("Model został prawidłowo załadowany przez Keras.")
                         except Exception as e:
                             print(f"Błąd podczas ładowania modelu przez Keras: {e}")
+                            return None
 
                         if os.path.exists("tmp.keras"):
                             os.remove("tmp.keras")
