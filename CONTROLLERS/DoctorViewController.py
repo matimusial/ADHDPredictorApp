@@ -64,7 +64,8 @@ class DoctorViewController:
     def getFilePaths(self):
         options = QFileDialog.Options()
         fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
-        self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", "./EEG/TRAIN/TRAIN_DATA", "", options=options)
+        defaultPath = os.path.join('CONTROLLERS','INPUT_DATA')
+        self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
         self.getModelNames()
 
     def getModelNames(self):
