@@ -166,17 +166,41 @@ class DBConnector:
             model_name (str): The name of the model.
 
         Returns:
-            list: A list of tuples containing the file data from the model, or None if an error occurs.
+            keras_file
         """
+        from tensorflow.keras.models import load_model
         if self.connection and self.connection.is_connected():
             try:
                 query = "SELECT file FROM models WHERE name=%s"
                 self.cursor.execute(query, (model_name,))
-                results = self.cursor.fetchall()
-                return results
+                result = self.cursor.fetchall()[0][0]
+
+                import os
+                with open("tmp.keras", 'wb') as file:
+                    file.write(result)
+
+                with open("tmp.keras", 'rb') as file:
+                    model_data = file.read()
+
+                try:
+                    loaded_model = load_model("tmp.keras")
+                    print("Model został prawidłowo załadowany przez Keras.")
+                except Exception as e:
+                    print(f"Błąd podczas ładowania modelu przez Keras: {e}")
+
+                if os.path.exists("tmp.keras"):
+                    os.remove("tmp.keras")
+
+                return loaded_model
             except Error as e:
                 print(f"Błąd podczas pobierania danych: {e}")
                 return None
         else:
             print("Brak połączenia z bazą danych.")
             return None
+
+
+db = DBConnector()
+
+# Pobranie modelu z bazy danych
+xd = db.select_model("test")
