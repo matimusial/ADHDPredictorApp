@@ -36,7 +36,7 @@ class DoctorViewController:
 
         self.db_conn = DBConnector()
 
-        self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
+        # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
 
         self.filePaths = None
         self.modelEEG = None
@@ -165,20 +165,9 @@ class DoctorViewController:
             self.allData[dataType].append(data)
             self.predictions.append(result)
 
-    # def getModel(self, modelType, modelName):
-    #     # charakterystyka danych uczących
-    #     if modelType == "EEG":
-    #         model = load_model(os.path.join('EEG', 'MODELS', f'{modelName}.keras'))
-    #     if modelType == "MRI":
-    #         model = load_model(os.path.join('MRI', 'CNN', 'MODELS', f'{modelName}.keras'))
-    #
-    #     return model
-
     def loadModels(self):
         if self.chosenModelNameEEG is not None:
-            print("TU?")
             self.modelEEG = self.db_conn.select_model(self.chosenModelNameEEG)
-            print("NIE")
         if self.chosenModelNameMRI is not None:
             self.modelMRI = self.db_conn.select_model(self.chosenModelNameMRI)
 
