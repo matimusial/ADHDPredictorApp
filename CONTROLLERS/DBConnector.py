@@ -166,32 +166,49 @@ class DBConnector:
             model_name (str): The name of the model.
 
         Returns:
-            keras_file
+            loaded_model (keras file): The loaded model.
         """
         from tensorflow.keras.models import load_model
         if self.connection and self.connection.is_connected():
             try:
-                query = "SELECT file FROM models WHERE name=%s"
-                self.cursor.execute(query, (model_name,))
-                result = self.cursor.fetchall()[0][0]
+                model_id_query = "SELECT id FROM models WHERE name=%s"
+                self.cursor.execute(model_id_query, (model_name,))
+                model_id_result = self.cursor.fetchone()
 
-                import os
-                with open("tmp.keras", 'wb') as file:
-                    file.write(result)
+                if model_id_result:
+                    model_id = model_id_result[0]
 
-                try:
-                    loaded_model = load_model("tmp.keras")
-                    print("Model został prawidłowo załadowany przez Keras.")
-                except Exception as e:
-                    print(f"Błąd podczas ładowania modelu przez Keras: {e}")
+                    file_query = "SELECT file FROM files WHERE model_id=%s"
+                    self.cursor.execute(file_query, (model_id,))
+                    file_result = self.cursor.fetchone()
 
-                if os.path.exists("tmp.keras"):
-                    os.remove("tmp.keras")
+                    if file_result:
+                        model_file_data = file_result[0]
 
-                return loaded_model
+                        import os
+                        with open("tmp.keras", 'wb') as file:
+                            file.write(model_file_data)
+
+                        try:
+                            loaded_model = load_model("tmp.keras")
+                            print("Model został prawidłowo załadowany przez Keras.")
+                        except Exception as e:
+                            print(f"Błąd podczas ładowania modelu przez Keras: {e}")
+
+                        if os.path.exists("tmp.keras"):
+                            os.remove("tmp.keras")
+
+                        return loaded_model
+                    else:
+                        print("Nie znaleziono pliku dla podanego modelu.")
+                        return None
+                else:
+                    print("Nie znaleziono modelu o podanej nazwie.")
+                    return None
             except Error as e:
                 print(f"Błąd podczas pobierania danych: {e}")
                 return None
         else:
             print("Brak połączenia z bazą danych.")
             return None
+
