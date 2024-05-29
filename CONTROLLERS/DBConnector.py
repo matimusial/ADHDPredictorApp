@@ -176,18 +176,17 @@ class DBConnector:
             model_name (str): The name of the model.
 
         Returns:
-            loaded_model (keras file): The loaded model.
+            keras_file
         """
         from tensorflow.keras.models import load_model
         if self.connection and self.connection.is_connected():
             try:
                 model_id_query = "SELECT id FROM models WHERE name=%s"
                 self.cursor.execute(model_id_query, (model_name,))
-                model_id_result = self.cursor.fetchone()
+                model_id_result = self.cursor.fetchall()
 
                 if model_id_result:
-                    model_id = model_id_result[0]
-
+                    model_id = model_id_result[0][0]
                     file_query = "SELECT file FROM files WHERE model_id=%s"
                     self.cursor.execute(file_query, (model_id,))
                     file_result = self.cursor.fetchone()
