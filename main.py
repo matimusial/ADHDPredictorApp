@@ -13,7 +13,7 @@ from CONTROLLERS.admin_mri_gan_agent import AdminMriGan
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 current_dir = os.path.dirname(__file__)
-UI_PATH = rf'{current_dir}/UI'
+UI_PATH = os.path.join(current_dir, 'UI')
 
 class MainWindow(QMainWindow):
     def __init__(self):
