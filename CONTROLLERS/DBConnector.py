@@ -198,9 +198,3 @@ class DBConnector:
         else:
             print("Brak połączenia z bazą danych.")
             return None
-
-
-db = DBConnector()
-
-# Pobranie modelu z bazy danych
-xd = db.select_model("test")
