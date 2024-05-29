@@ -1,6 +1,8 @@
+import os
+import tempfile
 import mysql.connector
 from mysql.connector import Error
-
+from tensorflow.keras.models import load_model
 
 class DBConnector:
     def __init__(self):
@@ -146,6 +148,7 @@ class DBConnector:
                 self.cursor.execute(query)
                 results = self.cursor.fetchall()
                 return results
+
             except Error as e:
                 print(f"Błąd podczas pobierania danych: {e}")
                 return None
@@ -155,21 +158,40 @@ class DBConnector:
 
     def select_model(self, model_name=""):
         """
-        Selects and returns the file data for a specified model name.
+        Selects and returns the Keras model for a specified model name.
 
         Args:
             model_name (str): The name of the model.
 
         Returns:
-            list: A list of tuples containing the file data from the model, or None if an error occurs.
+            model: The Keras model object, or None if an error occurs.
         """
         if self.connection and self.connection.is_connected():
             try:
                 query = "SELECT file FROM models WHERE name=%s"
                 self.cursor.execute(query, (str(model_name),))
                 results = self.cursor.fetchall()
-                return results
-            except Error as e:
+
+                if results:
+                    file_data = results[0][0]  # Zakładamy, że pierwszy wynik to właściwy BLOB danych
+
+                    # Tworzenie tymczasowego katalogu
+                    with tempfile.TemporaryDirectory() as tmpdirname:
+                        file_path = os.path.join(tmpdirname, f"{model_name}.keras")
+
+                        # Zapis danych BLOB do pliku .keras
+                        with open(file_path, 'wb') as file:
+                            file.write(file_data)
+
+                        # Odczyt modelu Keras z zapisanego pliku
+                        model = load_model(file_path)
+
+                    print(f"Model {model_name} został pomyślnie załadowany.")
+                    return model
+                else:
+                    print("Nie znaleziono modelu o podanej nazwie.")
+                    return None
+            except Exception as e:
                 print(f"Błąd podczas pobierania danych: {e}")
                 return None
         else:
