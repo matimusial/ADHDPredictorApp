@@ -25,7 +25,6 @@ class DBConnector:
 
     def __del__(self):
         if self.connection and self.connection.is_connected():
-            self.cursor.close()
             self.connection.close()
             print("Połączenie do bazy danych zostało zamknięte.")
 
@@ -55,7 +54,7 @@ class DBConnector:
             return None
 
         if plane not in ['A', 'S', 'C', '']:
-            print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C'.")
+            print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C', "" .")
             return None
 
         if len(description) > 254:
@@ -64,32 +63,38 @@ class DBConnector:
 
         return file_data, channels, str(input_shape), type_value, float(fs), plane, description
 
-    def insert_data_into_models(self, name="none", file_data="none", channels=0, input_shape=(0, 0, 0),
-                               type_value="none",
-                               fs=0.0, plane="none", description="none"):
+    def insert_data_into_models(self, name="none", file_path="none", channels=0, input_shape=(0, 0, 0),
+                                type_value="none", fs=0.0, plane="none", description="none"):
         """
         Inserts data into the 'models' table.
 
         Args:
             name (str): Lowercase name of the model.
-            file_data (.keras): Path to model.
+            file_path (str): Path to the model file (.keras).
             channels (int): The channels.
             input_shape (tuple): The input shape of the model.
             type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg', 'gan']
             fs (float): The sampling frequency.
-            plane (str): The plane of the model - only ['A', 'S', 'C']
+            plane (str): The plane of the model - only ['A', 'S', 'C', ""]
             description (str)
 
         Returns:
             None
         """
-        validated_data = self.validate_and_convert_input_models(file_data, channels, input_shape, type_value, fs, plane,
+        validated_data = self.validate_and_convert_input_models(file_path, channels, input_shape, type_value, fs, plane,
                                                                 description)
         if not validated_data:
             print("Nieprawidłowe dane wejściowe.")
             return
 
-        file_data, channels, input_shape_str, type_value, fs, plane, description = validated_data
+        file_path, channels, input_shape_str, type_value, fs, plane, description = validated_data
+
+        try:
+            with open(file_path, 'rb') as file:
+                model_data = file.read()
+        except Exception as e:
+            print(f"Błąd podczas wczytywania modelu: {e}")
+            return
 
         if self.connection and self.connection.is_connected():
             try:
@@ -98,7 +103,7 @@ class DBConnector:
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 self.cursor.execute(query, (
-                name.lower(), file_data, channels, input_shape_str, type_value, fs, plane, description))
+                    name.lower(), model_data, channels, input_shape_str, type_value, fs, plane, description))
                 self.connection.commit()
                 print("Dane zostały pomyślnie wstawione do tabeli models.")
             except Error as e:
@@ -166,7 +171,7 @@ class DBConnector:
         if self.connection and self.connection.is_connected():
             try:
                 query = "SELECT file FROM models WHERE name=%s"
-                self.cursor.execute(query, (str(model_name),))
+                self.cursor.execute(query, (model_name,))
                 results = self.cursor.fetchall()
                 return results
             except Error as e:
