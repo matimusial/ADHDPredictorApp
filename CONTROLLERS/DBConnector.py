@@ -66,7 +66,7 @@ class DBConnector:
     def insert_data_into_models(self, name="none", file_path="none", channels=0, input_shape=(0, 0, 0),
                                 type_value="none", fs=0.0, plane="none", description="none"):
         """
-        Inserts data into the 'models' table.
+        Inserts data into the 'models' and 'files' tables.
 
         Args:
             name (str): Lowercase name of the model.
@@ -98,14 +98,24 @@ class DBConnector:
 
         if self.connection and self.connection.is_connected():
             try:
-                query = """
-                INSERT INTO models (name, file, channels, input_shape, type, fs, plane, description) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                query_models = """
+                INSERT INTO models (name, channels, input_shape, type, fs, plane, description) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
-                self.cursor.execute(query, (
-                    name.lower(), model_data, channels, input_shape_str, type_value, fs, plane, description))
+                self.cursor.execute(query_models, (
+                    name.lower(), channels, input_shape_str, type_value, fs, plane, description))
                 self.connection.commit()
-                print("Dane zostały pomyślnie wstawione do tabeli models.")
+
+                model_id = self.cursor.lastrowid
+
+                query_files = """
+                INSERT INTO files (model_id, file) 
+                VALUES (%s, %s)
+                """
+                self.cursor.execute(query_files, (model_id, model_data))
+                self.connection.commit()
+
+                print("Dane zostały pomyślnie wstawione do tabel models i files.")
             except Error as e:
                 print(f"Błąd podczas wstawiania danych: {e}")
         else:
@@ -211,4 +221,3 @@ class DBConnector:
         else:
             print("Brak połączenia z bazą danych.")
             return None
-
