@@ -179,9 +179,6 @@ class DBConnector:
                 with open("tmp.keras", 'wb') as file:
                     file.write(result)
 
-                with open("tmp.keras", 'rb') as file:
-                    model_data = file.read()
-
                 try:
                     loaded_model = load_model("tmp.keras")
                     print("Model został prawidłowo załadowany przez Keras.")
