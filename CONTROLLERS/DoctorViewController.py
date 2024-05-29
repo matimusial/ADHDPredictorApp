@@ -13,8 +13,9 @@ from scipy.io import loadmat
 from pandas import read_csv
 from keras.models import load_model
 from EEG.config import FS
-from EEG.PREDICT.eeg_filter import filterEEGData, clipEEGData, normalizeEEGData
-from EEG.PREDICT.eeg_read import frameDATA, checkResult
+from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
+from EEG.file_io import split_into_frames
+from EEG.PREDICT.predict import check_result
 from MRI.image_preprocessing import trim_one, normalize
 from MRI.config import CNN_INPUT_SHAPE_MRI
 
@@ -52,11 +53,11 @@ class DoctorViewController:
         self.ui.predictBtn.clicked.connect(self.predict)
 
     def predict(self):
-        if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
-            print("Brak załadowanych plików lub modelu")
-            return
+        # if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
+        #     print("Brak załadowanych plików lub modelu")
+        #     return
 
-        self.loadModels()
+        #self.loadModels()
         self.processFiles()
         self.showResult()
 
@@ -146,7 +147,7 @@ class DoctorViewController:
                 print("CSV")
                 data = read_csv(path)
 
-
+            model = self.getModel(dataType, "0.9307")
             result = self.processData(data, model, dataType=dataType)
             self.allData[dataType].append(data)
             self.predictions.append(result)
@@ -154,9 +155,9 @@ class DoctorViewController:
     def getModel(self, modelType, modelName):
         # charakterystyka danych uczących
         if modelType == "EEG":
-            model = load_model(os.path.join('EEG', 'MODELS', f'{modelName}.h5'))
+            model = load_model(os.path.join('EEG', 'MODELS', f'{modelName}.keras'))
         if modelType == "MRI":
-            model = load_model(os.path.join('MRI', 'CNN', 'MODELS', f'{modelName}.h5'))
+            model = load_model(os.path.join('MRI', 'CNN', 'MODELS', f'{modelName}.keras'))
 
         return model
 
@@ -168,13 +169,13 @@ class DoctorViewController:
         result = []
 
         if dataType == "EEG":
-            DATA_FILTERED = filterEEGData(DATA)
+            DATA_FILTERED = filter_eeg_data(DATA)
 
-            DATA_CLIPPED = clipEEGData(DATA_FILTERED)
+            DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
 
-            DATA_NORMALIZED = normalizeEEGData(DATA_CLIPPED)
+            DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
 
-            DATA_FRAMED = frameDATA(DATA_NORMALIZED)
+            DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
 
             result = model.predict(DATA_FRAMED)
 
@@ -195,7 +196,7 @@ class DoctorViewController:
         for prediction in self.predictions:
             predictions_means.append(np.mean(prediction))
 
-        result, prob = checkResult(predictions_means)
+        result, prob = check_result(predictions_means)
 
         self.ui.resultLabel.setText(f"{result} ({prob}%)")
 
