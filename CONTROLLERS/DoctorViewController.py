@@ -35,6 +35,9 @@ class DoctorViewController:
         self.addEvents()
 
         self.db_conn = DBConnector()
+
+        self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
+
         self.filePaths = None
         self.modelEEG = None
         self.modelMRI = None
@@ -59,12 +62,16 @@ class DoctorViewController:
         self.ui.predictBtn.clicked.connect(self.predict)
 
     def predict(self):
-        # if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
-        #     print("Brak załadowanych plików lub modelu")
-        #     return
+        print(self.filePaths is None, self.chosenModelNameEEG is None, self.chosenModelNameMRI is None)
+        if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
+            print("Brak załadowanych plików lub modelu")
+            return
 
-        #self.loadModels()
+        print("chuj1")
+        self.loadModels()
+        print("chuj2")
         self.processFiles()
+        print("chuj3")
         self.showResult()
 
     def getFilePaths(self):
@@ -77,12 +84,12 @@ class DoctorViewController:
     def getModelNames(self):
         def chooseModelEEG(index: QModelIndex):
             item = modelEEG.itemFromIndex(index)
-            self.chosenModelEEG = item.text()
-            self.ui.chosenModelEEG.setText(self.chosenModelEEG)
+            self.chosenModelNameEEG = item.text()
+            self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
         def chooseModelMRI(index: QModelIndex):
             item = modelMRI.itemFromIndex(index)
-            self.chosenModelMRI = item.text()
-            self.ui.chosenModelMRI.setText(self.chosenModelMRI)
+            self.chosenModelNameMRI = item.text()
+            self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
 
         modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
         modelEEG = QStandardItemModel()
@@ -154,23 +161,26 @@ class DoctorViewController:
                 print("CSV")
                 data = read_csv(path)
 
-            model = self.getModel(dataType, "0.9307")
             result = self.processData(data, model, dataType=dataType)
             self.allData[dataType].append(data)
             self.predictions.append(result)
 
-    def getModel(self, modelType, modelName):
-        # charakterystyka danych uczących
-        if modelType == "EEG":
-            model = load_model(os.path.join('EEG', 'MODELS', f'{modelName}.keras'))
-        if modelType == "MRI":
-            model = load_model(os.path.join('MRI', 'CNN', 'MODELS', f'{modelName}.keras'))
-
-        return model
+    # def getModel(self, modelType, modelName):
+    #     # charakterystyka danych uczących
+    #     if modelType == "EEG":
+    #         model = load_model(os.path.join('EEG', 'MODELS', f'{modelName}.keras'))
+    #     if modelType == "MRI":
+    #         model = load_model(os.path.join('MRI', 'CNN', 'MODELS', f'{modelName}.keras'))
+    #
+    #     return model
 
     def loadModels(self):
-        self.modelMRI = None
-        self.modelEEG = None
+        if self.chosenModelNameEEG is not None:
+            print("TU?")
+            self.modelEEG = self.db_conn.select_model(self.chosenModelNameEEG)
+            print("NIE")
+        if self.chosenModelNameMRI is not None:
+            self.modelMRI = self.db_conn.select_model(self.chosenModelNameMRI)
 
     def processData(self, DATA, model, dataType="EEG"):
         result = []
