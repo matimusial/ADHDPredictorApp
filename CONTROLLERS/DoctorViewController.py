@@ -3,12 +3,13 @@ import io
 import numpy as np
 import nibabel as nib
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex
+from PyQt5.QtCore import QStringListModel, QModelIndex, QTimer
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from pyedflib import EdfReader
 from scipy.io import loadmat
 from pandas import read_csv
 from keras.models import load_model
@@ -31,7 +32,7 @@ class DoctorViewController:
     def __init__(self, mainWindow):
 
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
+        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView1.ui'), mainWindow)
         self.addEvents()
 
         # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
@@ -79,7 +80,7 @@ class DoctorViewController:
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
         for path in self.filePaths:
-            if path.endswith('.mat'):
+            if path.endswith('.mat') or path.endswith('.edf') or path.endswith('.csv'):
                 self.loadedEEGfiles += 1
             if path.endswith('.nii') or path.endswith('.nii.gz'):
                 self.loadedMRIfiles += 1
@@ -133,10 +134,11 @@ class DoctorViewController:
 
             if path.endswith('.edf'):
                 print("EDF")
-                #file = EdfReader(path)
-                #signalsNum = file.signals_in_file
-                #print(type(file.readsignal(1)))
-                #signals = [file.readsignal(i) for i in range(signalsNum)]
+                file = EdfReader(path)
+                signalsNum = file.signals_in_file
+                print(type(file.readsignal(1)))
+                signals = [file.readsignal(i) for i in range(signalsNum)]
+                file.close()
 
             if path.endswith('.nii.gz') or path.endswith('.nii'):
                 print('NII')
@@ -157,6 +159,7 @@ class DoctorViewController:
                 print("MAT")
                 file = loadmat(path)
                 data_key = list(file.keys())[-1]
+                print(data_key)
                 data = file[data_key].T
                 dataType = "EEG"
                 model = self.modelEEG
@@ -268,8 +271,8 @@ class DoctorViewController:
             self.show_plot_mri(data, name)
 
     def show_plot_eeg(self, data, name, channel_number=5):
-        fig = Figure(figsize=(5,5))
-        fig.tight_layout()
+        fig = Figure()
+        # fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
 
@@ -290,8 +293,8 @@ class DoctorViewController:
 
     def show_plot_mri(self, img, name):
 
-        fig = Figure(figsize=(5,5))
-        fig.tight_layout()
+        fig = Figure()
+        # fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
 
