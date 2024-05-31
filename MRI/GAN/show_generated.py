@@ -10,8 +10,8 @@ def show_generated(im_amount=3, adhd_path="", control_path=""):
 
     Parameters:
     im_amount (int, optional): Number of images to display. Default is 3. Maximum is 20.
-    ADHD_PATH (str, optional): Path to the ADHD dataset file (without extension).
-    CONTROL_PATH (str, optional): Path to the CONTROL dataset file (without extension).
+    ADHD_PATH (str, optional): Path to the ADHD dataset link (without extension).
+    CONTROL_PATH (str, optional): Path to the CONTROL dataset link (without extension).
 
     """
     try:

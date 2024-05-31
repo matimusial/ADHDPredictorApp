@@ -52,8 +52,8 @@ def predict_cnn(model_name, cnn_model, cnn_predict):
     Predict using a pre-trained CNN model and evaluate the performance on a validation set.
 
     Args:
-        model_name (str): The name of the model file (without extension).
-        cnn_model (str): Directory path where the model file is located.
+        model_name (str): The name of the model link (without extension).
+        cnn_model (str): Directory path where the model link is located.
         cnn_predict (str): Directory path where the validation data files are located.
     """
     try:

@@ -5,24 +5,24 @@ from sklearn.model_selection import train_test_split
 from EEG.config import EEG_SIGNAL_FRAME_SIZE
 
 def read_pickle(filepath):
-    """Reads data from a pickle file.
+    """Reads data from a pickle link.
 
     Args:
-        filepath (str): Path to the pickle file.
+        filepath (str): Path to the pickle link.
 
     Returns:
-        object: Data read from the pickle file.
+        object: Data read from the pickle link.
     """
     with open(filepath, 'rb') as file:
         return pickle.load(file)
 
 
 def save_pickle(filepath, data):
-    """Saves data to a pickle file.
+    """Saves data to a pickle link.
 
     Args:
-        filepath (str): Path to the pickle file.
-        data (object): Data to be saved to the pickle file.
+        filepath (str): Path to the pickle link.
+        data (object): Data to be saved to the pickle link.
     """
     with open(filepath, 'wb') as file:
         pickle.dump(data, file)
