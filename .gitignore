@@ -1,6 +1,7 @@
 __pycache__/
 .idea/
-
+*.nii.gz
+*.nii
 MRI/GAN/MODELS/*
 !MRI/GAN/MODELS/link
 

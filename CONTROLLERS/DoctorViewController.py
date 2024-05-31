@@ -34,7 +34,6 @@ class DoctorViewController:
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
 
-
         # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
 
         self.db_conn = None
@@ -43,11 +42,12 @@ class DoctorViewController:
         self.modelMRI = None
         self.chosenModelNameEEG = None
         self.chosenModelNameMRI = None
+        self.loadedEEGfiles = 0
+        self.loadedMRIfiles = 0
         self.currIdxEEG = 0
         self.currIdxMRI = 0
         self.predictions = []
         self.allData = {"EEG": [], "MRI": []}
-
 
     def addEvents(self):
 
@@ -62,7 +62,6 @@ class DoctorViewController:
         self.ui.predictBtn.clicked.connect(self.predict)
 
     def predict(self):
-        print(self.filePaths is None, self.chosenModelNameEEG is None, self.chosenModelNameMRI is None)
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
             print("Brak załadowanych plików lub modelu")
             return
@@ -74,42 +73,56 @@ class DoctorViewController:
     def getFilePaths(self):
         options = QFileDialog.Options()
         fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
-        defaultPath = os.path.join('CONTROLLERS','INPUT_DATA')
+        defaultPath = os.path.join('CONTROLLERS', 'INPUT_DATA')
         self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
+
+        self.loadedEEGfiles = 0
+        self.loadedMRIfiles = 0
+        for path in self.filePaths:
+            if path.endswith('.mat'):
+                self.loadedEEGfiles += 1
+            if path.endswith('.nii') or path.endswith('.nii.gz'):
+                self.loadedMRIfiles += 1
+
+        self.ui.dataName.setText(f"{self.loadedEEGfiles} EEG and {self.loadedMRIfiles} MRI files chosen")
         self.getModelNames()
 
     def getModelNames(self):
-        def chooseModelEEG(index: QModelIndex):
-            item = modelEEG.itemFromIndex(index)
-            self.chosenModelNameEEG = item.text()
-            self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
-        def chooseModelMRI(index: QModelIndex):
-            item = modelMRI.itemFromIndex(index)
-            self.chosenModelNameMRI = item.text()
-            self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
-
         self.db_conn = DBConnector()
-        modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
-        modelEEG = QStandardItemModel()
 
-        for modelName in modelsList:
-            item = QStandardItem(modelName[0])
-            item.setEditable(False)
-            modelEEG.appendRow(item)
+        if self.loadedEEGfiles > 0:
+            def chooseModelEEG(index: QModelIndex):
+                item = modelEEG.itemFromIndex(index)
+                self.chosenModelNameEEG = item.text()
+                self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
 
-        self.ui.modelListViewEEG.setModel(modelEEG)
-        self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
+            modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
+            modelEEG = QStandardItemModel()
 
-        modelsList = self.db_conn.select_model_name("type='cnn_mri'")
-        modelMRI = QStandardItemModel()
+            for modelName in modelsList:
+                item = QStandardItem(modelName[0])
+                item.setEditable(False)
+                modelEEG.appendRow(item)
 
-        for modelName in modelsList:
-            item = QStandardItem(modelName[0])
-            item.setEditable(False)
-            modelMRI.appendRow(item)
+            self.ui.modelListViewEEG.setModel(modelEEG)
+            self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
 
-        self.ui.modelListViewMRI.setModel(modelMRI)
-        self.ui.modelListViewMRI.doubleClicked.connect(chooseModelMRI)
+        if self.loadedMRIfiles:
+            def chooseModelMRI(index: QModelIndex):
+                item = modelMRI.itemFromIndex(index)
+                self.chosenModelNameMRI = item.text()
+                self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
+
+            modelsList = self.db_conn.select_model_name("type='cnn_mri'")
+            modelMRI = QStandardItemModel()
+
+            for modelName in modelsList:
+                item = QStandardItem(modelName[0])
+                item.setEditable(False)
+                modelMRI.appendRow(item)
+
+            self.ui.modelListViewMRI.setModel(modelMRI)
+            self.ui.modelListViewMRI.doubleClicked.connect(chooseModelMRI)
 
     def processFiles(self):
         print("")
@@ -117,13 +130,6 @@ class DoctorViewController:
             data = np.array([])
             dataType = ""
             modelName = ""
-
-            # załaduj plik ( zależnie od typu inaczej, po to tyle if'ów)
-            # zdecyduj czy eeg czy mri  (na podstawie struktury/rozszerzenia)
-            # wybierz z niego potrzebne dane
-            # wybierz model na podstawie struktury danych (np dla EEG różna ilość kanałów, dla mri różna płaszczyzna mózgu)
-            # wrzuć dane w model
-            # zwróc wynik
 
             if path.endswith('.edf'):
                 print("EDF")
@@ -173,24 +179,34 @@ class DoctorViewController:
         result = []
 
         if dataType == "EEG":
-            DATA_FILTERED = filter_eeg_data(DATA)
+            try:
+                DATA_FILTERED = filter_eeg_data(DATA)
 
-            DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
+                DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
 
-            DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
+                DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
 
-            DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
+                DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
 
-            result = model.predict(DATA_FRAMED)
+                result = model.predict(DATA_FRAMED)
+
+            except Exception as e:
+                print(f"Error processing EEG data: {e}")
+                return
 
         if dataType == "MRI":
-            DATA_TRIMMED = np.reshape(trim_one(DATA), CNN_INPUT_SHAPE_MRI)
+            try:
+                DATA_TRIMMED = np.reshape(trim_one(DATA), CNN_INPUT_SHAPE_MRI)
 
-            DATA_NORMALIZED = normalize(DATA_TRIMMED)
+                DATA_NORMALIZED = normalize(DATA_TRIMMED)
 
-            img_for_predict = DATA_NORMALIZED.reshape(1, DATA_NORMALIZED.shape[0], DATA_NORMALIZED.shape[1], 1)
+                img_for_predict = DATA_NORMALIZED.reshape(1, DATA_NORMALIZED.shape[0], DATA_NORMALIZED.shape[1], 1)
 
-            result = model.predict(img_for_predict)
+                result = model.predict(img_for_predict)
+
+            except Exception as e:
+                print(f"Error processing MRI data: {e}")
+                return
 
         return result
 

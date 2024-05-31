@@ -39,4 +39,4 @@ def trim_one(data, nr_rows=4):
     """
     Trims the single image by removing a specified number of rows from each side.
     """
-    return data[nr_rows:-nr_rows, nr_rows:-nr_rows]
+    return data[nr_rows:-nr_rows]
