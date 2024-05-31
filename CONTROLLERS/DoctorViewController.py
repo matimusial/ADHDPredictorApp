@@ -2,6 +2,7 @@ import os
 import io
 import numpy as np
 import nibabel as nib
+import pyedflib
 from PyQt5 import uic
 from PyQt5.QtCore import QStringListModel, QModelIndex
 from PyQt5.QtWidgets import QFileDialog
@@ -133,10 +134,29 @@ class DoctorViewController:
 
             if path.endswith('.edf'):
                 print("EDF")
-                #file = EdfReader(path)
-                #signalsNum = file.signals_in_file
-                #print(type(file.readsignal(1)))
-                #signals = [file.readsignal(i) for i in range(signalsNum)]
+                f = pyedflib.EdfReader(path)
+                n_channels = f.signals_in_file
+                n_samples = f.getNSamples()[0]
+                data = np.zeros((n_channels, n_samples))
+                for i in range(n_channels):
+                    data[i, :] = f.readSignal(i)
+                f.close()
+                dataType = "EEG"
+                model = self.modelEEG
+
+            if path.endswith('.mat'):
+                print("MAT")
+                file = loadmat(path)
+                data_key = list(file.keys())[-1]
+                data = file[data_key].T
+                dataType = "EEG"
+                model = self.modelEEG
+
+            if path.endswith('.csv'):
+                print("CSV")
+                data = read_csv(path).T
+                dataType = "EEG"
+                model = self.modelEEG
 
             if path.endswith('.nii.gz') or path.endswith('.nii'):
                 print('NII')
@@ -152,18 +172,6 @@ class DoctorViewController:
                 dataType = "MRI"
                 model = self.modelMRI
                 print(data.shape)
-
-            if path.endswith('.mat'):
-                print("MAT")
-                file = loadmat(path)
-                data_key = list(file.keys())[-1]
-                data = file[data_key].T
-                dataType = "EEG"
-                model = self.modelEEG
-
-            if path.endswith('.csv'):
-                print("CSV")
-                data = read_csv(path)
 
             result = self.processData(data, model, dataType=dataType)
             self.allData[dataType].append(data)
