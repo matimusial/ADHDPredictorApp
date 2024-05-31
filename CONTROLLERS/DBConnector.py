@@ -34,48 +34,57 @@ class DBConnector:
         """
         if not file_data.endswith('.keras'):
             print("Błąd: 'file' musi mieć rozszerzenie '.keras'.")
-            return None
+            return
 
-        if not isinstance(channels, int):
-            print("Błąd: 'channels' musi być liczbą całkowitą.")
-            return None
+        if channels is not None and not isinstance(channels, int):
+            print("Błąd: 'channels' musi być liczbą całkowitą lub None.")
+            return
 
         if not (isinstance(input_shape, tuple) and all(isinstance(i, int) for i in input_shape)):
             print("Błąd: 'input_shape' musi być tuplą z liczbami całkowitymi.")
-            return None
+            return
 
         type_value = type_value.lower()
-        if type_value not in ['cnn_mri', 'cnn_eeg', 'gan']:
-            print("Błąd: 'type' musi być jedną z wartości 'cnn_mri', 'cnn_eeg', 'gan'.")
-            return None
+        if type_value not in ['cnn_mri', 'cnn_eeg']:
+            print("Błąd: 'type' musi być jedną z wartości 'cnn_mri', 'cnn_eeg'.")
+            return
 
-        if not isinstance(fs, (float, int)):
-            print("Błąd: 'fs' musi być liczbą zmiennoprzecinkową lub całkowitą.")
-            return None
+        if fs is not None:
+            if not isinstance(fs, (float, int)):
+                print("Błąd: 'fs' musi być liczbą zmiennoprzecinkową, całkowitą lub None.")
+                return
+            if fs == 0:
+                print("Błąd: 'fs' nie może być równe 0.")
+                return
 
-        if plane not in ['A', 'S', 'C', '']:
-            print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C', "" .")
-            return None
+        if plane is not None and plane not in ['A', 'S', 'C']:
+            print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C' lub None.")
+            return
 
         if len(description) > 254:
             print("Błąd: 'description' nie może być dłuższy niż 254 znaki.")
-            return None
+            return
 
-        return file_data, channels, str(input_shape), type_value, float(fs), plane, description
+        channels = channels if channels is not None else None
+        fs = fs if fs is not None else None
+        plane = plane if plane is not None else None
 
-    def insert_data_into_models(self, name="none", file_path="none", channels=0, input_shape=(0, 0, 0),
-                                type_value="none", fs=0.0, plane="none", description="none"):
+        return file_data, channels, str(input_shape), type_value, float(
+            fs) if fs is not None else None, plane, description
+
+    def insert_data_into_models(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
+                                type_value="none", fs=None, plane=None, description="none"):
         """
         Inserts data into the 'models' and 'files' tables.
 
         Args:
             name (str): Lowercase name of the model.
             file_path (str): Path to the model file (.keras).
-            channels (int): The channels.
+            channels (int): The channels or None
             input_shape (tuple): The input shape of the model.
-            type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg', 'gan']
-            fs (float): The sampling frequency.
-            plane (str): The plane of the model - only ['A', 'S', 'C', ""]
+            type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg']
+            fs (float): The sampling frequency or None
+            plane (str): The plane of the model - only ['A', 'S', 'C', None]
             description (str)
 
         Returns:
@@ -115,7 +124,7 @@ class DBConnector:
                 self.cursor.execute(query_files, (model_id, model_data))
                 self.connection.commit()
 
-                print("Dane zostały pomyślnie wstawione do tabel models i files.")
+                print(f"Model {type} {name} został pomyślnie wstawiony do tabel models i files.")
             except Error as e:
                 print(f"Błąd podczas wstawiania danych: {e}")
         else:
@@ -221,3 +230,8 @@ class DBConnector:
         else:
             print("Brak połączenia z bazą danych.")
             return None
+
+
+#db = DBConnector()
+
+#db.insert_data_into_models("0.7466", "../MRI/CNN/MODELS/0.7466.keras", None, (120, 120, 1), "cnn_mri",None, "A", "model testowy mri 6")
