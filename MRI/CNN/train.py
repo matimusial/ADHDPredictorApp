@@ -96,8 +96,8 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
 
         if save:
             model.save(os.path.join(model_path, f'{round(test_accuracy, 4)}.keras'))
-            save_pickle(os.path.join(predict_path, f"X_pred_{round(test_accuracy, 4)}.pkl"), X_pred)
-            save_pickle(os.path.join(predict_path, f"y_pred_{round(test_accuracy, 4)}.pkl"), y_pred)
+            #save_pickle(os.path.join(predict_path, f"X_pred_{round(test_accuracy, 4)}.pkl"), X_pred)
+            #save_pickle(os.path.join(predict_path, f"y_pred_{round(test_accuracy, 4)}.pkl"), y_pred)
 
     except Exception as e:
         print(f"Błąd podczas treningu CNN: {e}")
