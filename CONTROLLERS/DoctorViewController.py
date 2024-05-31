@@ -3,6 +3,7 @@ import io
 import numpy as np
 import nibabel as nib
 import pyedflib
+import concurrent.futures
 from PyQt5 import uic
 from PyQt5.QtCore import QStringListModel, QModelIndex
 from PyQt5.QtWidgets import QFileDialog
@@ -60,7 +61,16 @@ class DoctorViewController:
         self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
 
-        self.ui.predictBtn.clicked.connect(self.predict)
+        self.ui.predictBtn.clicked.connect(self.on_pred_click)
+
+    def on_pred_click(self):
+        print("Button clicked, starting task...")
+        self.runTask()
+
+    def runTask(self):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(self.predict)
+            future.add_done_callback(self.showResult)
 
     def predict(self):
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
@@ -69,7 +79,6 @@ class DoctorViewController:
 
         self.loadModels()
         self.processFiles()
-        self.showResult()
 
     def getFilePaths(self):
         options = QFileDialog.Options()
@@ -98,12 +107,17 @@ class DoctorViewController:
                 self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
 
             modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
-            modelEEG = QStandardItemModel()
+            modelEEG = self.ui.modelListViewEEG.model()
+            if modelEEG:
+                modelEEG.clear()
+            else:
+                modelEEG = QStandardItemModel()
 
             for modelName in modelsList:
                 item = QStandardItem(modelName[0])
                 item.setEditable(False)
                 modelEEG.appendRow(item)
+
 
             self.ui.modelListViewEEG.setModel(modelEEG)
             self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
@@ -115,7 +129,11 @@ class DoctorViewController:
                 self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
 
             modelsList = self.db_conn.select_model_name("type='cnn_mri'")
-            modelMRI = QStandardItemModel()
+            modelMRI = self.ui.modelListViewEEG.model()
+            if modelMRI:
+                modelMRI.clear()
+            else:
+                modelMRI = QStandardItemModel()
 
             for modelName in modelsList:
                 item = QStandardItem(modelName[0])
@@ -218,7 +236,9 @@ class DoctorViewController:
 
         return result
 
-    def showResult(self):
+    def showResult(self, future):
+        print("Async task finished...")
+
         predictions_means = []
 
         for prediction in self.predictions:
