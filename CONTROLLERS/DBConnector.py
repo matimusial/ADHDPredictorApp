@@ -33,7 +33,7 @@ class DBConnector:
         Validates input for models table
         """
         if not file_data.endswith('.keras'):
-            print("Błąd: 'link' musi mieć rozszerzenie '.keras'.")
+            print("Błąd: 'model path' musi mieć rozszerzenie '.keras'.")
             return
 
         if channels is not None and not isinstance(channels, int):
@@ -79,7 +79,7 @@ class DBConnector:
 
         Args:
             name (str): Lowercase name of the model.
-            file_path (str): Path to the model link (.keras).
+            file_path (str): Path to the model (.keras).
             channels (int): The channels or None
             input_shape (tuple): The input shape of the model.
             type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg']
@@ -118,7 +118,7 @@ class DBConnector:
                 model_id = self.cursor.lastrowid
 
                 query_files = """
-                INSERT INTO files (model_id, link) 
+                INSERT INTO files (model_id, files) 
                 VALUES (%s, %s)
                 """
                 self.cursor.execute(query_files, (model_id, model_data))
@@ -179,7 +179,7 @@ class DBConnector:
 
     def select_model(self, model_name=""):
         """
-        Selects and returns the link data for a specified model name.
+        Selects and returns the data for a specified model name.
 
         Args:
             model_name (str): The name of the model.
@@ -196,7 +196,7 @@ class DBConnector:
 
                 if model_id_result:
                     model_id = model_id_result[0][0]
-                    file_query = "SELECT link FROM files WHERE model_id=%s"
+                    file_query = "SELECT file FROM files WHERE model_id=%s"
                     self.cursor.execute(file_query, (model_id,))
                     file_result = self.cursor.fetchall()
 
