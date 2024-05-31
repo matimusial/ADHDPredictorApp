@@ -48,7 +48,7 @@ class DoctorViewController:
         self.loadedMRIfiles = 0
         self.currIdxEEG = 0
         self.currIdxMRI = 0
-        self.predictions = []
+        self.predictions = None
         self.allData = {"EEG": [], "MRI": []}
 
     def addEvents(self):
@@ -88,6 +88,7 @@ class DoctorViewController:
 
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
+
         for path in self.filePaths:
             if path.endswith('.mat') or path.endswith('.edf'):
                 self.loadedEEGfiles += 1
@@ -95,10 +96,22 @@ class DoctorViewController:
                 self.loadedMRIfiles += 1
 
         self.ui.dataName.setText(f"{self.loadedEEGfiles} EEG and {self.loadedMRIfiles} MRI files chosen")
+
         self.getModelNames()
 
     def getModelNames(self):
+        self.chosenModelNameEEG = None
+        self.chosenModelNameMRI = None
+        self.ui.chosenModelEEG.setText("----------")
+        self.ui.chosenModelMRI.setText("----------")
+
         self.db_conn = DBConnector()
+
+        modelEEG = self.ui.modelListViewEEG.model()
+        if modelEEG:
+            modelEEG.clear()
+        else:
+            modelEEG = QStandardItemModel()
 
         if self.loadedEEGfiles > 0:
             def chooseModelEEG(index: QModelIndex):
@@ -107,11 +120,6 @@ class DoctorViewController:
                 self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
 
             modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
-            modelEEG = self.ui.modelListViewEEG.model()
-            if modelEEG:
-                modelEEG.clear()
-            else:
-                modelEEG = QStandardItemModel()
 
             for modelName in modelsList:
                 item = QStandardItem(modelName[0])
@@ -122,6 +130,13 @@ class DoctorViewController:
             self.ui.modelListViewEEG.setModel(modelEEG)
             self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
 
+
+        modelMRI = self.ui.modelListViewMRI.model()
+        if modelMRI:
+            modelMRI.clear()
+        else:
+            modelMRI = QStandardItemModel()
+
         if self.loadedMRIfiles:
             def chooseModelMRI(index: QModelIndex):
                 item = modelMRI.itemFromIndex(index)
@@ -129,11 +144,6 @@ class DoctorViewController:
                 self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
 
             modelsList = self.db_conn.select_model_name("type='cnn_mri'")
-            modelMRI = self.ui.modelListViewEEG.model()
-            if modelMRI:
-                modelMRI.clear()
-            else:
-                modelMRI = QStandardItemModel()
 
             for modelName in modelsList:
                 item = QStandardItem(modelName[0])
@@ -144,7 +154,9 @@ class DoctorViewController:
             self.ui.modelListViewMRI.doubleClicked.connect(chooseModelMRI)
 
     def processFiles(self):
-        print("")
+        self.predictions = []
+        self.allData = {"EEG": [], "MRI": []}
+
         for path in self.filePaths:
             data = np.array([])
             dataType = ""
@@ -196,6 +208,9 @@ class DoctorViewController:
             self.predictions.append(result)
 
     def loadModels(self):
+        self.modelEEG = None
+        self.modelMRI = None
+
         if self.chosenModelNameEEG is not None:
             self.modelEEG = self.db_conn.select_model(self.chosenModelNameEEG)
         if self.chosenModelNameMRI is not None:
@@ -247,6 +262,11 @@ class DoctorViewController:
         result, prob = check_result(predictions_means)
 
         self.ui.resultLabel.setText(f"{result} ({prob}%)")
+
+        self.currIdxEEG = 0
+        self.currIdxMRI = 0
+        self.ui.plotLabelEEG.clear()
+        self.ui.plotLabelMRI.clear()
 
         if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", "EEG")
         if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0], "MRI", "MRI")
