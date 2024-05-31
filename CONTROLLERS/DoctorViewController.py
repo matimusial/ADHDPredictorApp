@@ -80,7 +80,7 @@ class DoctorViewController:
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
         for path in self.filePaths:
-            if path.endswith('.mat'):
+            if path.endswith('.mat') or path.endswith('.edf'):
                 self.loadedEEGfiles += 1
             if path.endswith('.nii') or path.endswith('.nii.gz'):
                 self.loadedMRIfiles += 1
