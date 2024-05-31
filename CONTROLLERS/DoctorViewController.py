@@ -34,10 +34,10 @@ class DoctorViewController:
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
 
-        self.db_conn = DBConnector()
 
         # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
 
+        self.db_conn = None
         self.filePaths = None
         self.modelEEG = None
         self.modelMRI = None
@@ -67,11 +67,8 @@ class DoctorViewController:
             print("Brak załadowanych plików lub modelu")
             return
 
-        print("chuj1")
         self.loadModels()
-        print("chuj2")
         self.processFiles()
-        print("chuj3")
         self.showResult()
 
     def getFilePaths(self):
@@ -91,6 +88,7 @@ class DoctorViewController:
             self.chosenModelNameMRI = item.text()
             self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
 
+        self.db_conn = DBConnector()
         modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
         modelEEG = QStandardItemModel()
 
