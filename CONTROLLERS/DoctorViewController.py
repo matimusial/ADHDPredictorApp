@@ -5,7 +5,7 @@ import nibabel as nib
 import pyedflib
 import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex
+from PyQt5.QtCore import QStringListModel, QModelIndex, QThread
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator
 from matplotlib.backends.backend_template import FigureCanvas
@@ -69,7 +69,7 @@ class DoctorViewController:
         self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
         self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
 
-        self.ui.predictBtn.clicked.connect(self.on_pred_click)
+        self.ui.predictBtn.clicked.connect(self.predict)
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
 
@@ -140,16 +140,6 @@ class DoctorViewController:
 
         self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
-
-    def on_pred_click(self):
-        print("Button clicked, starting task...")
-        self.runTask()
-
-    def runTask(self):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(self.predict)
-            future.add_done_callback(self.showResult)
-
     def predict(self):
 
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
@@ -161,8 +151,33 @@ class DoctorViewController:
         self.currIdxChannel = 0
         self.currIdxPlane = 0
 
-        self.loadModels()
-        self.processFiles()
+        # Create a QThread object
+        self.thread = QThread()
+
+        # Create a worker object
+        self.worker = Worker(self)
+
+        # Move the worker to the thread
+        self.worker.moveToThread(self.thread)
+
+        # Connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.onFinished)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.error.connect(self.onError)
+
+        # Start the thread
+        self.thread.start()
+
+    def onFinished(self):
+        print("Processing completed")
+        self.showResult()
+
+    def onError(self, error):
+        print(f"Error: {error}")
+
 
     def getFilePaths(self):
         options = QFileDialog.Options()
@@ -345,7 +360,7 @@ class DoctorViewController:
 
         return result
 
-    def showResult(self, future):
+    def showResult(self):
         print("Async task finished...")
         if self.predictions is None: return
 
@@ -491,3 +506,29 @@ class DoctorViewController:
         qpm = QPixmap()
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
+
+
+from PyQt5.QtCore import QObject, pyqtSignal
+
+
+class Worker(QObject):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+
+    def run(self):
+        try:
+            self.loadModels()
+            self.processFiles()
+            self.finished.emit()
+        except Exception as e:
+            self.error.emit(str(e))
+
+    def loadModels(self):
+        self.controller.loadModels()
+
+    def processFiles(self):
+        self.controller.processFiles()
