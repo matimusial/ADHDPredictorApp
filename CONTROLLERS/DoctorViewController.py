@@ -105,7 +105,10 @@ class DoctorViewController:
         self.ui.chosenModelEEG.setText("----------")
         self.ui.chosenModelMRI.setText("----------")
 
+
         self.db_conn = DBConnector()
+        if self.db_conn == None: return
+
 
         modelEEG = self.ui.modelListViewEEG.model()
         if modelEEG:

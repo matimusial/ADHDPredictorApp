@@ -18,10 +18,13 @@ class DBConnector:
             if self.connection.is_connected():
                 self.cursor = self.connection.cursor()
                 print("Połączenie do bazy danych zostało nawiązane.")
+            else:
+                raise Error("Nie udało się nawiązać połączenia z bazą danych.")
         except Error as e:
             print(f"Błąd połączenia: {e}")
             print("Pamiętaj o włączeniu ZUT VPN.")
             self.connection = None
+            raise e
 
     def __del__(self):
         if self.connection and self.connection.is_connected():
