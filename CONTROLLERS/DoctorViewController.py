@@ -1,7 +1,5 @@
 import os
 import io
-
-
 import numpy as np
 import nibabel as nib
 import pyedflib
@@ -159,6 +157,8 @@ class DoctorViewController:
         fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
         defaultPath = os.path.join('CONTROLLERS', 'INPUT_DATA')
         self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
+
+        if len(self.filePaths) == 0: return
 
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
