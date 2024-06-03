@@ -94,6 +94,8 @@ class DoctorViewController:
         validator = QIntValidator(0, 20, input_number)
         input_number.setValidator(validator)
 
+        input_number.setText("3")
+
         layout.addWidget(label)
         layout.addWidget(input_number)
 
