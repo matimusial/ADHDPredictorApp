@@ -151,13 +151,15 @@ class DoctorViewController:
             future.add_done_callback(self.showResult)
 
     def predict(self):
+
+        if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
+            print("Brak załadowanych plików lub modelu")
+            return
+
         self.currIdxEEG = 0
         self.currIdxMRI = 0
         self.currIdxChannel = 0
         self.currIdxPlane = 0
-        if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
-            print("Brak załadowanych plików lub modelu")
-            return
 
         self.loadModels()
         self.processFiles()
