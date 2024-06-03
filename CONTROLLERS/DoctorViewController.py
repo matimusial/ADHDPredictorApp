@@ -69,6 +69,9 @@ class DoctorViewController:
         self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
 
+        self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
+        self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
+
         self.ui.predictBtn.clicked.connect(self.on_pred_click)
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
@@ -245,11 +248,15 @@ class DoctorViewController:
 
                 data = horizontalPlane
                 dataType = "MRI"
+                self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
                 model = self.modelMRI
                 print(data.shape)
 
             result = self.processData(data, model, dataType=dataType)
-            self.allData[dataType].append(data)
+
+            if dataType == "EEG" :
+                self.allData[dataType].append(data)
+
             self.predictions.append(result)
 
     def loadModels(self):
@@ -314,8 +321,8 @@ class DoctorViewController:
         self.ui.plotLabelEEG.clear()
         self.ui.plotLabelMRI.clear()
 
-        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", "EEG")
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0], "MRI", "MRI")
+        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showNextPlotEEG(self):
         if(len(self.allData["EEG"]) == 0): return
@@ -370,6 +377,15 @@ class DoctorViewController:
 
         self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
+    def showNextPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane += 1
+
+        if self.currIdxPlane > 3-1:
+            self.currIdxPlane = 3-1
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
@@ -381,7 +397,6 @@ class DoctorViewController:
             self.currIdxMRI = 0
 
         self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
-
 
 
     def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
@@ -410,6 +425,17 @@ class DoctorViewController:
             except Exception as e:
                 print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
         self.showPlot(self.allData["MRI"][0], "MRI")
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+
+    def showPrevPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane -= 1
+
+        if self.currIdxPlane < 0:
+            self.currIdxPlane = 0
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showPlot(self, data, dataType, name):
         if dataType == "EEG":
