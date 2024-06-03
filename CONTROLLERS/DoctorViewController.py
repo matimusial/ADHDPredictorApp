@@ -87,12 +87,17 @@ class DoctorViewController:
         layout.addWidget(input_number)
 
         submit_button = QPushButton('Submit')
-        submit_button.clicked.connect(lambda: self.onSubmit(radio_healthy, radio_sick, input_number, dialog))
+        submit_button.clicked.connect(lambda: self.plotGenerated(radio_healthy, radio_sick, input_number, dialog))
 
         layout.addWidget(submit_button)
 
         dialog.setLayout(layout)
         dialog.exec_()
+
+
+    def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+
+        path = f"../MRI/GENERATED_MRI/{radio_healthy}"
 
 
     def on_pred_click(self):

@@ -68,13 +68,6 @@ QPushButton{
            </property>
           </spacer>
          </item>
-         <item>
-          <widget class="QPushButton" name="exitButton_doctor">
-           <property name="text">
-            <string>Exit</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
