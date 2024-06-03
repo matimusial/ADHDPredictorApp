@@ -33,6 +33,7 @@ UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
 
+
 class DoctorViewController:
     def __init__(self, mainWindow):
 
@@ -72,7 +73,6 @@ class DoctorViewController:
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
 
-
     def showGenerated(self):
         dialog = QDialog(self.ui)
         dialog.setWindowTitle('Choose option')
@@ -103,36 +103,6 @@ class DoctorViewController:
 
         dialog.setLayout(layout)
         dialog.exec_()
-
-
-    def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
-        from MRI.file_io import read_pickle
-        import random
-        dialog.close()
-
-
-        if radio_healthy.isChecked():
-
-            DATA = read_pickle("MRI/GENERATED_MRI/ADHD_GENERATED.pkl")
-
-        elif radio_sick.isChecked():
-
-            DATA = read_pickle("MRI/GENERATED_MRI/CONTROL_GENERATED.pkl")
-
-
-        input_number = int(input_number.text())
-        if input_number >= 20:
-            input_number = 20
-
-
-        range_list = list(range(len(DATA)))
-        img_numbers = random.sample(range_list, input_number)
-        for i, img_number in enumerate(img_numbers):
-            try:
-                self.show_plot_mri(DATA[img_number], f"Generated image nr {img_number}")
-            except Exception as e:
-                print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
-
 
     def on_pred_click(self):
         print("Button clicked, starting task...")
@@ -398,7 +368,8 @@ class DoctorViewController:
         if self.currIdxMRI > len(self.allData["MRI"])-1:
             self.currIdxMRI = len(self.allData["MRI"])-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
@@ -409,13 +380,42 @@ class DoctorViewController:
         if self.currIdxMRI < 0:
             self.currIdxMRI = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+
+
+
+    def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+        from MRI.file_io import read_pickle
+        import random
+        dialog.close()
+
+        if radio_healthy.isChecked():
+            file_path = os.path.join("MRI", "GENERATED_MRI", "ADHD_GENERATED.pkl")
+            DATA = read_pickle(file_path)
+
+        elif radio_sick.isChecked():
+            file_path = os.path.join("MRI", "GENERATED_MRI", "CONTROL_GENERATED.pkl")
+            DATA = read_pickle(file_path)
+
+        input_number = int(input_number.text())
+        if input_number >= 20:
+            input_number = 20
+
+        range_list = list(range(len(DATA)))
+        img_numbers = random.sample(range_list, input_number)
+        for i, img_number in enumerate(img_numbers):
+            try:
+                self.allData["MRI"].append(DATA[img_number])
+
+            except Exception as e:
+                print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
+        self.showPlot(self.allData["MRI"][0], "MRI")
 
     def showPlot(self, data, dataType, name):
         if dataType == "EEG":
             self.show_plot_eeg(data, name, self.currIdxChannel)
         if dataType == "MRI":
-            self.show_plot_mri(data, name, self.currIdxPlane)
+            self.show_plot_mri(data, name)
 
     def show_plot_eeg(self, data, name, channel_number):
         fig = Figure(figsize=(5,5))
@@ -438,7 +438,7 @@ class DoctorViewController:
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelEEG.setPixmap(qpm)
 
-    def show_plot_mri(self, img, name, plane):
+    def show_plot_mri(self, img, name):
 
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
@@ -446,7 +446,7 @@ class DoctorViewController:
         ax = fig.add_subplot(111)
 
         ax.imshow(img, cmap="gray")
-        ax.set_title(f'Zdjęcie mri {name}')
+        ax.set_title(f'MRI image {name}')
         #ax.colorbar()
         #ax.legend()
 
