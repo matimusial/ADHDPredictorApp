@@ -84,4 +84,5 @@ class AdminEegCnn:
         print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
         print("FS:", EEG.config.FS)
 
-        #train(True, TRAIN_PATH, PREDICT_PATH, MODEL_PATH)
+        train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+

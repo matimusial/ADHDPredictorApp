@@ -10,6 +10,8 @@ from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH
 from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_data
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 
+from  CONTROLLERS.metrics import RealTimeMetrics
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
@@ -41,7 +43,7 @@ def build_eeg_cnn_model(input_shape):
     ])
     return model
 
-def train_cnn_eeg(save, pickle_path, predict_path, model_path):
+def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
     """Trains a CNN model on EEG data.
 
     Args:
@@ -80,11 +82,13 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
+        real_time_metrics = RealTimeMetrics(total_epochs=CNN_EPOCHS,plot_label=ui.plotLabel_CNN)
+
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS,
                       batch_size=CNN_BATCH_SIZE,
-                      callbacks=[reduce_lr],
+                      callbacks=[reduce_lr, real_time_metrics],
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)

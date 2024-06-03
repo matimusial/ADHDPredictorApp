@@ -16,7 +16,7 @@ class RealTimeMetrics(Callback):
     """
     def __init__(self, total_epochs, plot_label):
         super().__init__()
-        self.epoch_count = 0
+        self.epoch_count = 1
         self.total_epochs = total_epochs
         self.plot_label = plot_label
         self.x_data = []
@@ -52,11 +52,11 @@ class RealTimeMetrics(Callback):
 
     def plot_metrics(self):
         try:
-            fig = Figure(figsize=(12, 6))
+            fig = Figure()
             fig.tight_layout()
             canvas = FigureCanvas(fig)
 
-            ax1 = fig.add_subplot(121)
+            ax1 = fig.add_subplot(122)
             ax1.plot(self.x_data, self.y_data, 'r-', label='Training Accuracy')
             ax1.plot(self.x_data, self.val_y_data, 'b-', label='Validation Accuracy')
             ax1.set_xlabel('Epoch')
@@ -65,9 +65,9 @@ class RealTimeMetrics(Callback):
             ax1.legend()
             ax1.grid(True)
             ax1.set_ylim(0, 1.0)
-            ax1.set_xlim(0, self.total_epochs)
+            ax1.set_xlim(1, self.total_epochs)
 
-            ax2 = fig.add_subplot(122)
+            ax2 = fig.add_subplot(121)
             ax2.plot(self.x_data, self.loss_data, 'r-', label='Training Loss')
             ax2.plot(self.x_data, self.val_loss_data, 'b-', label='Validation Loss')
             ax2.set_xlabel('Epoch')
@@ -75,7 +75,7 @@ class RealTimeMetrics(Callback):
             ax2.set_title('Loss')
             ax2.legend()
             ax2.grid(True)
-            ax2.set_xlim(0, self.total_epochs)
+            ax2.set_xlim(1, self.total_epochs)
 
             buf = io.BytesIO()
             canvas.print_png(buf)
