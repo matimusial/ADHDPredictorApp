@@ -35,7 +35,7 @@ class DoctorViewController:
     def __init__(self, mainWindow):
 
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView2.ui'), mainWindow)
+        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
 
         # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
