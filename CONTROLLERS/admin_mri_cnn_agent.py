@@ -33,7 +33,7 @@ class AdminMriCnn:
             epochs = int(self.ui.textEdit_epochs.toPlainText())
 
         if self.ui.textEdit_batch_size.toPlainText().strip() == "":
-            batch_size = MRI.config.BATCH_SIZE_MRI
+            batch_size = MRI.config.CNN_BATCH_SIZE_MRI
         else:
             batch_size = int(self.ui.textEdit_batch_size.toPlainText())
 
@@ -53,7 +53,7 @@ class AdminMriCnn:
         MRI.config.set_mri_input_shape(input_shape)
 
         print("GAN_EPOCHS:", MRI.config.CNN_EPOCHS_MRI)
-        print("GAN_BATCH_SIZE:", MRI.config.BATCH_SIZE_MRI)
+        print("GAN_BATCH_SIZE:", MRI.config.CNN_BATCH_SIZE_MRI)
         print("GAN_LEARNING_RATE:", MRI.config.CNN_LEARNING_RATE_MRI)
         print("GAN_TEST_SIZE:", MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI)
 
