@@ -107,6 +107,10 @@ class DoctorViewController:
 
 
     def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+        self.currIdxEEG = 0
+        self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
         from MRI.file_io import read_pickle
         import random
         dialog.close()
@@ -145,6 +149,10 @@ class DoctorViewController:
             future.add_done_callback(self.showResult)
 
     def predict(self):
+        self.currIdxEEG = 0
+        self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
             print("Brak załadowanych plików lub modelu")
             return
