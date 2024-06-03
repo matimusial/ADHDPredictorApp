@@ -351,8 +351,8 @@ class DoctorViewController:
         self.ui.plotLabelEEG.clear()
         self.ui.plotLabelMRI.clear()
 
-        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", "EEG")
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", "MRI")
+        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showNextPlotEEG(self):
         if(len(self.allData["EEG"]) == 0): return
