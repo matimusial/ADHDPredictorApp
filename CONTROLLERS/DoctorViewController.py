@@ -1,5 +1,7 @@
 import os
 import io
+
+
 import numpy as np
 import nibabel as nib
 import pyedflib
@@ -7,7 +9,7 @@ import concurrent.futures
 from PyQt5 import uic
 from PyQt5.QtCore import QStringListModel, QModelIndex
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel
+from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -37,8 +39,6 @@ class DoctorViewController:
         self.mainWindow = mainWindow
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView1.ui'), mainWindow)
         self.addEvents()
-
-        # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
 
         self.db_conn = None
         self.filePaths = None
@@ -70,18 +70,23 @@ class DoctorViewController:
 
     def showGenerated(self):
         dialog = QDialog(self.ui)
-        dialog.setWindowTitle('Wybor Opcji')
+        dialog.setWindowTitle('Choose option')
 
         layout = QVBoxLayout()
 
-        radio_healthy = QRadioButton('Zdrowy')
-        radio_sick = QRadioButton('Chory')
+        radio_healthy = QRadioButton('ADHD')
+        radio_sick = QRadioButton('CONTROL')
 
         layout.addWidget(radio_healthy)
         layout.addWidget(radio_sick)
+        radio_healthy.setChecked(True)
 
-        label = QLabel('Liczba zdjęć:')
+        label = QLabel('IMG amount (max 20):')
+
         input_number = QLineEdit()
+
+        validator = QIntValidator(0, 20, input_number)
+        input_number.setValidator(validator)
 
         layout.addWidget(label)
         layout.addWidget(input_number)
@@ -96,8 +101,32 @@ class DoctorViewController:
 
 
     def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+        from MRI.file_io import read_pickle
+        import random
+        dialog.close()
 
-        path = f"../MRI/GENERATED_MRI/{radio_healthy}"
+
+        if radio_healthy.isChecked():
+
+            DATA = read_pickle("MRI/GENERATED_MRI/ADHD_GENERATED.pkl")
+
+        elif radio_sick.isChecked():
+
+            DATA = read_pickle("MRI/GENERATED_MRI/CONTROL_GENERATED.pkl")
+
+
+        input_number = int(input_number.text())
+        if input_number >= 20:
+            input_number = 20
+
+
+        range_list = list(range(len(DATA)))
+        img_numbers = random.sample(range_list, input_number)
+        for i, img_number in enumerate(img_numbers):
+            try:
+                self.show_plot_mri(DATA[img_number], f"Generated image nr {img_number}")
+            except Exception as e:
+                print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
 
 
     def on_pred_click(self):
@@ -385,7 +414,7 @@ class DoctorViewController:
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
 
-        ax.imshow(img)
+        ax.imshow(img, cmap="gray")
         ax.set_title(f'Zdjęcie mri {name}')
         #ax.colorbar()
         #ax.legend()
@@ -395,29 +424,3 @@ class DoctorViewController:
         qpm = QPixmap()
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
-
-
-# 1. Wprowadzenie danych
-
-    # obsługa wielu plików naraz (np. lekarz wrzuca naraz 15 eeg i 10 mri)
-
-    # obsługa mri i eeg naraz
-
-    # obsługa eeg o różnych ilościach kanałów
-        # na tej podstawie wybranie modelu dostosowanego do konkretnej ilosci kanałów
-
-    # obsługa różnych płaszczyzn mri (różne modele nauczone na różnych płaszczyznach)
-    #liczba kanalow; czy eeg czy mri; czestotliwosc probkowania; charakterystyka grupy uczacej modelu
-# 2. Wyświetlenie diagnozy
-
-    # diagnoza od razu dla wszystkich wprowadzonych danych
-
-    # wyswietlenie danych na których podstawie zostala postawiona diagnoza (wykresy EEG / zdjecia MRI)
-        # dla większej ilości danych możliwość przewijania zdjęć
-
-    # wspolna diagnoza dla roznych danych tego samego pacjenta
-
-# Ponadto xd
-
-    # dodanie do modelu MRI etykiety dotyczącej płaszczyzny mózgu na której uczony był model
-    # dodanie do modelu etykiet dotyczących charakterystyki grupy uczącej (np. wiek, płeć, dominująca ręka)

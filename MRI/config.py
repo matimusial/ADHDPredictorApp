@@ -17,11 +17,6 @@ TRAIN_GAN_PRINT_INTERVAL = 1500
 TRAIN_GAN_DISP_INTERVAL = 15000
 
 
-def set_model_cnn_name(new_value):
-    global MODEL_CNN_NAME
-    MODEL_CNN_NAME = new_value
-
-
 def set_mri_epochs(new_value):
     global CNN_EPOCHS_MRI
     CNN_EPOCHS_MRI = new_value
