@@ -23,6 +23,8 @@ from EEG.PREDICT.predict import check_result
 from MRI.image_preprocessing import trim_one, normalize
 from MRI.config import CNN_INPUT_SHAPE_MRI
 from EEG.config import CNN_INPUT_SHAPE
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
+
 
 current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
@@ -62,6 +64,36 @@ class DoctorViewController:
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
 
         self.ui.predictBtn.clicked.connect(self.on_pred_click)
+
+        self.ui.showGenerated.clicked.connect(self.showGenerated)
+
+
+    def showGenerated(self):
+        dialog = QDialog(self.ui)
+        dialog.setWindowTitle('Wybor Opcji')
+
+        layout = QVBoxLayout()
+
+        radio_healthy = QRadioButton('Zdrowy')
+        radio_sick = QRadioButton('Chory')
+
+        layout.addWidget(radio_healthy)
+        layout.addWidget(radio_sick)
+
+        label = QLabel('Liczba zdjęć:')
+        input_number = QLineEdit()
+
+        layout.addWidget(label)
+        layout.addWidget(input_number)
+
+        submit_button = QPushButton('Submit')
+        submit_button.clicked.connect(lambda: self.onSubmit(radio_healthy, radio_sick, input_number, dialog))
+
+        layout.addWidget(submit_button)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+
 
     def on_pred_click(self):
         print("Button clicked, starting task...")

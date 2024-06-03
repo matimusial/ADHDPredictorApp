@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1334</width>
+    <width>1235</width>
     <height>819</height>
    </rect>
   </property>
@@ -45,6 +45,13 @@ QPushButton{
            </property>
            <property name="text">
             <string>Admin View</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="showGenerated">
+           <property name="text">
+            <string>Show Generated</string>
            </property>
           </widget>
          </item>
@@ -253,8 +260,11 @@ QPushButton{
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">font-size: 25px;</string>
+            </property>
             <property name="text">
-             <string>ADHD (100%)</string>
+             <string>0%</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
