@@ -329,7 +329,7 @@ QPushButton{
         <item>
          <widget class="QLabel" name="test_size">
           <property name="text">
-           <string>Test size</string>
+           <string>Model Name</string>
           </property>
          </widget>
         </item>
