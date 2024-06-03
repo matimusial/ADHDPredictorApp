@@ -35,7 +35,7 @@ class DoctorViewController:
     def __init__(self, mainWindow):
 
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView1.ui'), mainWindow)
+        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView2.ui'), mainWindow)
         self.addEvents()
 
         # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
@@ -50,6 +50,8 @@ class DoctorViewController:
         self.loadedMRIfiles = 0
         self.currIdxEEG = 0
         self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
         self.predictions = None
         self.allData = {"EEG": [], "MRI": []}
 
@@ -59,6 +61,9 @@ class DoctorViewController:
 
         self.ui.btnNextPlot.clicked.connect(self.showNextPlotEEG)
         self.ui.btnPrevPlot.clicked.connect(self.showPrevPlotEEG)
+
+        self.ui.btnNextChannel.clicked.connect(self.showNextChannel)
+        self.ui.btnPrevChannel.clicked.connect(self.showPrevChannel)
 
         self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
@@ -317,9 +322,20 @@ class DoctorViewController:
         if(len(self.allData["EEG"]) == 0): return
 
         self.currIdxEEG += 1
+        self.currIdxChannel = 0
 
         if self.currIdxEEG > len(self.allData["EEG"])-1:
             self.currIdxEEG = len(self.allData["EEG"])-1
+
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
+    def showNextChannel(self):
+        if (len(self.allData["EEG"]) == 0): return
+
+        self.currIdxChannel += 1
+
+        if self.currIdxChannel > 19 - 1:
+            self.currIdxChannel = 19 - 1
 
         self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
 
@@ -327,15 +343,28 @@ class DoctorViewController:
         if(len(self.allData["EEG"]) == 0): return
 
         self.currIdxEEG -= 1
+        self.currIdxChannel = 0
 
         if self.currIdxEEG < 0:
             self.currIdxEEG = 0
 
         self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
+    def showPrevChannel(self):
+        if(len(self.allData["EEG"]) == 0): return
+
+        self.currIdxChannel -= 1
+
+        if self.currIdxChannel < 0:
+            self.currIdxChannel = 0
+
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
     def showNextPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
 
         self.currIdxMRI += 1
+        self.currIdxPlane = 0
 
         if self.currIdxMRI > len(self.allData["MRI"])-1:
             self.currIdxMRI = len(self.allData["MRI"])-1
@@ -346,18 +375,20 @@ class DoctorViewController:
         if len(self.allData["MRI"]) == 0: return
 
         self.currIdxMRI -= 1
+        self.currIdxPlane = 0
 
         if self.currIdxMRI < 0:
             self.currIdxMRI = 0
 
         self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+
     def showPlot(self, data, dataType, name):
         if dataType == "EEG":
-            self.show_plot_eeg(data, name)
+            self.show_plot_eeg(data, name, self.currIdxChannel)
         if dataType == "MRI":
-            self.show_plot_mri(data, name)
+            self.show_plot_mri(data, name, self.currIdxPlane)
 
-    def show_plot_eeg(self, data, name, channel_number=5):
+    def show_plot_eeg(self, data, name, channel_number):
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
         canvas = FigureCanvas(fig)
@@ -369,7 +400,7 @@ class DoctorViewController:
         ax.plot(t, signal, label=f'Kanał {channel_number}')
         ax.set_xlabel('Czas (s)')
         ax.set_ylabel('Wartości próbek')
-        ax.set_title(f'Wykres sygnału {name}')
+        ax.set_title(f'Wykres sygnału {name}\nKanał: {channel_number+1}')
         #ax.legend()
 
         buf = io.BytesIO()
@@ -378,7 +409,7 @@ class DoctorViewController:
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelEEG.setPixmap(qpm)
 
-    def show_plot_mri(self, img, name):
+    def show_plot_mri(self, img, name, plane):
 
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
