@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1235</width>
-    <height>819</height>
+    <width>1254</width>
+    <height>826</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -280,7 +280,7 @@ QPushButton{
 }</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tabEEG">
          <property name="sizePolicy">
@@ -313,18 +313,44 @@ QPushButton{
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnPrevPlot">
-            <property name="text">
-             <string>&lt;-</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnNextPlot">
-            <property name="text">
-             <string>-&gt;</string>
-            </property>
-           </widget>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="btnPrevPlot">
+              <property name="text">
+               <string>&lt;- Previous file</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btnNextPlot">
+              <property name="text">
+               <string>Next file -&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btnPrevChannel">
+              <property name="styleSheet">
+               <string notr="true">background-color: white;
+color: black;</string>
+              </property>
+              <property name="text">
+               <string>&lt;- Previous channel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btnNextChannel">
+              <property name="styleSheet">
+               <string notr="true">background-color: white;
+color: black;</string>
+              </property>
+              <property name="text">
+               <string>Next channel -&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -359,18 +385,44 @@ QPushButton{
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnNextPlot_2">
-            <property name="text">
-             <string>-&gt;</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnPrevPlot_2">
-            <property name="text">
-             <string>&lt;-</string>
-            </property>
-           </widget>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="1" column="0">
+             <widget class="QPushButton" name="btnPrevPlot_2">
+              <property name="text">
+               <string>&lt;- Previous file</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btnNextPlot_2">
+              <property name="text">
+               <string>Next file -&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btnNextPlane">
+              <property name="styleSheet">
+               <string notr="true">background-color: white;
+color: black;</string>
+              </property>
+              <property name="text">
+               <string>Next plane -&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btnPrevPlane">
+              <property name="styleSheet">
+               <string notr="true">background-color: white;
+color: black;</string>
+              </property>
+              <property name="text">
+               <string>&lt;- Previous plane</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

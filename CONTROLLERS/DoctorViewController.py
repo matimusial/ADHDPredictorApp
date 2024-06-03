@@ -5,9 +5,9 @@ import nibabel as nib
 import pyedflib
 import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex
+from PyQt5.QtCore import QStringListModel, QModelIndex, QThread
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel
+from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -35,10 +35,8 @@ class DoctorViewController:
     def __init__(self, mainWindow):
 
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView1.ui'), mainWindow)
+        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
-
-        # self.db_conn.insert_data_into_models("0.9307", os.path.join('EEG','MODELS','0.9307.keras'), 19, CNN_INPUT_SHAPE, 'cnn_eeg',128,"","")
 
         self.db_conn = None
         self.filePaths = None
@@ -50,6 +48,8 @@ class DoctorViewController:
         self.loadedMRIfiles = 0
         self.currIdxEEG = 0
         self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
         self.predictions = None
         self.allData = {"EEG": [], "MRI": []}
 
@@ -60,28 +60,41 @@ class DoctorViewController:
         self.ui.btnNextPlot.clicked.connect(self.showNextPlotEEG)
         self.ui.btnPrevPlot.clicked.connect(self.showPrevPlotEEG)
 
+        self.ui.btnNextChannel.clicked.connect(self.showNextChannel)
+        self.ui.btnPrevChannel.clicked.connect(self.showPrevChannel)
+
         self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
 
-        self.ui.predictBtn.clicked.connect(self.on_pred_click)
+        self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
+        self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
+
+        self.ui.predictBtn.clicked.connect(self.predict)
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
 
 
     def showGenerated(self):
         dialog = QDialog(self.ui)
-        dialog.setWindowTitle('Wybor Opcji')
+        dialog.setWindowTitle('Choose option')
 
         layout = QVBoxLayout()
 
-        radio_healthy = QRadioButton('Zdrowy')
-        radio_sick = QRadioButton('Chory')
+        radio_healthy = QRadioButton('ADHD')
+        radio_sick = QRadioButton('CONTROL')
 
         layout.addWidget(radio_healthy)
         layout.addWidget(radio_sick)
+        radio_healthy.setChecked(True)
 
-        label = QLabel('Liczba zdjęć:')
+        label = QLabel('IMG amount (max 20):')
+
         input_number = QLineEdit()
+
+        validator = QIntValidator(0, 20, input_number)
+        input_number.setValidator(validator)
+
+        input_number.setText("3")
 
         layout.addWidget(label)
         layout.addWidget(input_number)
@@ -96,32 +109,83 @@ class DoctorViewController:
 
 
     def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+        self.currIdxEEG = 0
+        self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
+        self.allData = {"EEG": [], "MRI": []}
+        from MRI.file_io import read_pickle
+        import random
+        dialog.close()
 
-        path = f"../MRI/GENERATED_MRI/{radio_healthy}"
+        if radio_healthy.isChecked():
+            file_path = os.path.join("MRI", "GENERATED_MRI", "ADHD_GENERATED.pkl")
+            DATA = read_pickle(file_path)
 
+        elif radio_sick.isChecked():
+            file_path = os.path.join("MRI", "GENERATED_MRI", "CONTROL_GENERATED.pkl")
+            DATA = read_pickle(file_path)
 
-    def on_pred_click(self):
-        print("Button clicked, starting task...")
-        self.runTask()
+        input_number = int(input_number.text())
+        if input_number >= 20:
+            input_number = 20
+        range_list = list(range(len(DATA)))
+        img_numbers = random.sample(range_list, input_number)
+        for i, img_number in enumerate(img_numbers):
+            try:
+                self.allData["MRI"].append([DATA[img_number],np.zeros(DATA[img_number].shape), np.zeros(DATA[img_number].shape)])
 
-    def runTask(self):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(self.predict)
-            future.add_done_callback(self.showResult)
+            except Exception as e:
+                print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
+
+        self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
     def predict(self):
+
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
             print("Brak załadowanych plików lub modelu")
             return
 
-        self.loadModels()
-        self.processFiles()
+        self.currIdxEEG = 0
+        self.currIdxMRI = 0
+        self.currIdxChannel = 0
+        self.currIdxPlane = 0
+
+        # Create a QThread object
+        self.thread = QThread()
+
+        # Create a worker object
+        self.worker = Worker(self)
+
+        # Move the worker to the thread
+        self.worker.moveToThread(self.thread)
+
+        # Connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.onFinished)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.error.connect(self.onError)
+
+        # Start the thread
+        self.thread.start()
+
+    def onFinished(self):
+        print("Processing completed")
+        self.showResult()
+
+    def onError(self, error):
+        print(f"Error: {error}")
+
 
     def getFilePaths(self):
         options = QFileDialog.Options()
         fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
         defaultPath = os.path.join('CONTROLLERS', 'INPUT_DATA')
         self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
+
+        if len(self.filePaths) == 0: return
 
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
@@ -241,11 +305,15 @@ class DoctorViewController:
 
                 data = horizontalPlane
                 dataType = "MRI"
+                self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
                 model = self.modelMRI
                 print(data.shape)
 
             result = self.processData(data, model, dataType=dataType)
-            self.allData[dataType].append(data)
+
+            if dataType == "EEG" :
+                self.allData[dataType].append(data)
+
             self.predictions.append(result)
 
     def loadModels(self):
@@ -292,7 +360,7 @@ class DoctorViewController:
 
         return result
 
-    def showResult(self, future):
+    def showResult(self):
         print("Async task finished...")
         if self.predictions is None: return
 
@@ -310,16 +378,27 @@ class DoctorViewController:
         self.ui.plotLabelEEG.clear()
         self.ui.plotLabelMRI.clear()
 
-        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", "EEG")
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0], "MRI", "MRI")
+        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showNextPlotEEG(self):
         if(len(self.allData["EEG"]) == 0): return
 
         self.currIdxEEG += 1
+        self.currIdxChannel = 0
 
         if self.currIdxEEG > len(self.allData["EEG"])-1:
             self.currIdxEEG = len(self.allData["EEG"])-1
+
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
+    def showNextChannel(self):
+        if (len(self.allData["EEG"]) == 0): return
+
+        self.currIdxChannel += 1
+
+        if self.currIdxChannel > 19 - 1:
+            self.currIdxChannel = 19 - 1
 
         self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
 
@@ -327,37 +406,72 @@ class DoctorViewController:
         if(len(self.allData["EEG"]) == 0): return
 
         self.currIdxEEG -= 1
+        self.currIdxChannel = 0
 
         if self.currIdxEEG < 0:
             self.currIdxEEG = 0
 
         self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
+    def showPrevChannel(self):
+        if(len(self.allData["EEG"]) == 0): return
+
+        self.currIdxChannel -= 1
+
+        if self.currIdxChannel < 0:
+            self.currIdxChannel = 0
+
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+
     def showNextPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
 
         self.currIdxMRI += 1
+        self.currIdxPlane = 0
 
         if self.currIdxMRI > len(self.allData["MRI"])-1:
             self.currIdxMRI = len(self.allData["MRI"])-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+
+    def showNextPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane += 1
+
+        if self.currIdxPlane > 3-1:
+            self.currIdxPlane = 3-1
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
 
         self.currIdxMRI -= 1
+        self.currIdxPlane = 0
 
         if self.currIdxMRI < 0:
             self.currIdxMRI = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
-    def showPlot(self, data, dataType, name):
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+
+    def showPrevPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane -= 1
+
+        if self.currIdxPlane < 0:
+            self.currIdxPlane = 0
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+
+    def showPlot(self, data, dataType, name=""):
         if dataType == "EEG":
-            self.show_plot_eeg(data, name)
+            self.show_plot_eeg(data, name, self.currIdxChannel)
         if dataType == "MRI":
             self.show_plot_mri(data, name)
 
-    def show_plot_eeg(self, data, name, channel_number=5):
+    def show_plot_eeg(self, data, name, channel_number):
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
         canvas = FigureCanvas(fig)
@@ -369,7 +483,7 @@ class DoctorViewController:
         ax.plot(t, signal, label=f'Kanał {channel_number}')
         ax.set_xlabel('Czas (s)')
         ax.set_ylabel('Wartości próbek')
-        ax.set_title(f'Wykres sygnału {name}')
+        ax.set_title(f'Wykres sygnału {name}\nKanał: {channel_number+1}')
         #ax.legend()
 
         buf = io.BytesIO()
@@ -379,16 +493,13 @@ class DoctorViewController:
         self.ui.plotLabelEEG.setPixmap(qpm)
 
     def show_plot_mri(self, img, name):
-
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
 
-        ax.imshow(img)
+        ax.imshow(img, cmap="gray")
         ax.set_title(f'Zdjęcie mri {name}')
-        #ax.colorbar()
-        #ax.legend()
 
         buf = io.BytesIO()
         canvas.print_png(buf)
@@ -397,27 +508,27 @@ class DoctorViewController:
         self.ui.plotLabelMRI.setPixmap(qpm)
 
 
-# 1. Wprowadzenie danych
+from PyQt5.QtCore import QObject, pyqtSignal
 
-    # obsługa wielu plików naraz (np. lekarz wrzuca naraz 15 eeg i 10 mri)
 
-    # obsługa mri i eeg naraz
+class Worker(QObject):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
 
-    # obsługa eeg o różnych ilościach kanałów
-        # na tej podstawie wybranie modelu dostosowanego do konkretnej ilosci kanałów
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
 
-    # obsługa różnych płaszczyzn mri (różne modele nauczone na różnych płaszczyznach)
-    #liczba kanalow; czy eeg czy mri; czestotliwosc probkowania; charakterystyka grupy uczacej modelu
-# 2. Wyświetlenie diagnozy
+    def run(self):
+        try:
+            self.loadModels()
+            self.processFiles()
+            self.finished.emit()
+        except Exception as e:
+            self.error.emit(str(e))
 
-    # diagnoza od razu dla wszystkich wprowadzonych danych
+    def loadModels(self):
+        self.controller.loadModels()
 
-    # wyswietlenie danych na których podstawie zostala postawiona diagnoza (wykresy EEG / zdjecia MRI)
-        # dla większej ilości danych możliwość przewijania zdjęć
-
-    # wspolna diagnoza dla roznych danych tego samego pacjenta
-
-# Ponadto xd
-
-    # dodanie do modelu MRI etykiety dotyczącej płaszczyzny mózgu na której uczony był model
-    # dodanie do modelu etykiet dotyczących charakterystyki grupy uczącej (np. wiek, płeć, dominująca ręka)
+    def processFiles(self):
+        self.controller.processFiles()

@@ -49,8 +49,8 @@ class DBConnector:
             return
 
         type_value = type_value.lower()
-        if type_value not in ['cnn_mri', 'cnn_eeg']:
-            print("Błąd: 'type' musi być jedną z wartości 'cnn_mri', 'cnn_eeg'.")
+        if type_value not in ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control']:
+            print("Błąd: 'type' musi być jedną z wartości 'cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'.")
             return
 
         if fs is not None:
@@ -86,9 +86,9 @@ class DBConnector:
             file_path (str): Path to the model (.keras).
             channels (int): The channels or None
             input_shape (tuple): The input shape of the model.
-            type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg']
+            type_value (str): The type of the model - only ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control']
             fs (float): The sampling frequency or None
-            plane (str): The plane of the model - only ['A', 'S', 'C', None]
+            plane (str): The plane of the model - only ['A', 'S', 'C', None] (axial, sagittal, coronal)
             description (str)
 
         Returns:

@@ -63,20 +63,13 @@ class AdminEegCnn:
         else:
             frequency = int(self.ui.textEdit_frequency.toPlainText())
 
-        if self.ui.textEdit.toPlainText().strip() == "":
-            cnn_model_name = EEG.config.MODEL_CNN_NAME
-        else:
-            cnn_model_name = self.ui.textEdit.toPlainText()
-
         EEG.config.set_cnn_epochs(epochs)
         EEG.config.set_cnn_batch_size(batch_size)
         EEG.config.set_learning_rate(learning_rate)
         EEG.config.set_electrodes(electrodes)
         EEG.config.set_frame(frame_size)
         EEG.config.set_fs(frequency)
-        EEG.config.set_cnn_model_name(cnn_model_name)
 
-        print("CNN_MODEL_NAME:", EEG.config.MODEL_CNN_NAME)
         print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
         print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
         print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
@@ -84,5 +77,5 @@ class AdminEegCnn:
         print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
         print("FS:", EEG.config.FS)
 
-        train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
 
+        train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
