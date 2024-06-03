@@ -77,6 +77,8 @@ class RealTimeMetrics(Callback):
             ax2.grid(True)
             ax2.set_xlim(1, self.total_epochs)
 
+            fig.subplots_adjust(wspace=0.4)
+
             buf = io.BytesIO()
             canvas.print_png(buf)
             qpm = QPixmap()

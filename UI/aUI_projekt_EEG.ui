@@ -114,18 +114,18 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>10</y>
-       <width>561</width>
-       <height>581</height>
+       <y>0</y>
+       <width>851</width>
+       <height>601</height>
       </rect>
      </property>
      <widget class="QLabel" name="plotLabel_CNN">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>831</width>
-        <height>561</height>
+        <x>0</x>
+        <y>0</y>
+        <width>851</width>
+        <height>601</height>
        </rect>
       </property>
       <property name="styleSheet">
