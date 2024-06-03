@@ -1,7 +1,5 @@
 import os
 import io
-
-
 import numpy as np
 import nibabel as nib
 import pyedflib
