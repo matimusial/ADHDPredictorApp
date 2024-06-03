@@ -5,8 +5,8 @@ import nibabel as nib
 import pyedflib
 import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex, QThread
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal
+from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
@@ -23,8 +23,6 @@ from EEG.PREDICT.predict import check_result
 from MRI.image_preprocessing import trim_one, normalize
 from MRI.config import CNN_INPUT_SHAPE_MRI
 from EEG.config import CNN_INPUT_SHAPE
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
-
 
 current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
@@ -361,7 +359,6 @@ class DoctorViewController:
         return result
 
     def showResult(self):
-        print("Async task finished...")
         if self.predictions is None: return
 
         predictions_means = []
@@ -472,7 +469,7 @@ class DoctorViewController:
             self.show_plot_mri(data, name)
 
     def show_plot_eeg(self, data, name, channel_number):
-        fig = Figure(figsize=(5,5))
+        fig = Figure()
         fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
@@ -493,7 +490,7 @@ class DoctorViewController:
         self.ui.plotLabelEEG.setPixmap(qpm)
 
     def show_plot_mri(self, img, name):
-        fig = Figure(figsize=(5,5))
+        fig = Figure()
         fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
@@ -506,9 +503,6 @@ class DoctorViewController:
         qpm = QPixmap()
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
-
-
-from PyQt5.QtCore import QObject, pyqtSignal
 
 
 class Worker(QObject):

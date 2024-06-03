@@ -1,4 +1,5 @@
 from PyQt5 import uic
+from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog
 import EEG.config
 from EEG.TRAIN.train import *
@@ -79,11 +80,57 @@ class AdminEegCnn:
         print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
         print("FS:", EEG.config.FS)
 
+        self.thread = QThread()
 
+        # Create a worker object
+        self.worker = Worker(self)
+
+        # Move the worker to the thread
+        self.worker.moveToThread(self.thread)
+
+        # Connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.onFinished)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.error.connect(self.onError)
+
+        # Start the thread
+        self.thread.start()
+
+    def train(self):
         train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
 
+    def onFinished(self):
+        print("Processing completed")
+        self.connect_to_db()
+
+    def onError(self, error):
+        print(f"Error: {error}")
+
+    def connect_to_db(self):
         self.db_conn = DBConnector()
         print(self.db_conn.connection)
         if self.db_conn.connection == None: return
 
         print("chuj")
+
+
+class Worker(QObject):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+
+    def run(self):
+        try:
+            self.train_cnn_eeg()
+            self.finished.emit()
+        except Exception as e:
+            self.error.emit(str(e))
+
+    def train_cnn_eeg(self):
+        self.controller.train()
