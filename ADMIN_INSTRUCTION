@@ -1,0 +1,25 @@
+Żeby dostać się do widoku admina wciśnij przycisk "Admin View" w lewym górnym rogu głównego okna (tego po uruchomieniu programu).
+
+USER VIEW - Przywraca do głównego okna
+GAN for MRI - Okno z uczeniem modelu GAN do generowania zdjęć MRI
+CNN for MRI - Okno z uczeniem modelu CNN dla zdjęć MRI
+CNN for EEG - Okno z uczeniem modelu CNN dla fal EEG
+
+=CNN for EEG=====================================================================================:
+    - "Chose folder with data" - Musisz wybrać folder z następującą strukturą:
+        (wybrany folder)
+                        |
+                        | ADHD
+                        |    |
+                        |    [pliki grupy z ADHD .mat/.csv/.edf]
+                        |
+                        | CONTROL
+                                |
+                                [pliki grupy kontrolnej .mat/.csv/.edf]
+
+    - "Epochs"          -   typ liczbowy,               domyślnie 20
+    - "Batch size"      -   typ liczbowy,               domyślnie 32
+    - "Learning rate"   -   typ zmiennoprzecinkowy,     domyślnie 0.001
+    - "Electrodes"      -   typ liczbowy,               domyślnie 19
+    - "Frame size"      -   typ liczbowy,               domyślnie 128
+    - "Frequency"       -   typ liczbowy,               domyślnie 128
