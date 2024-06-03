@@ -113,6 +113,7 @@ class DoctorViewController:
         self.currIdxMRI = 0
         self.currIdxChannel = 0
         self.currIdxPlane = 0
+        self.allData = {"EEG": [], "MRI": []}
         from MRI.file_io import read_pickle
         import random
         dialog.close()
@@ -128,7 +129,6 @@ class DoctorViewController:
         input_number = int(input_number.text())
         if input_number >= 20:
             input_number = 20
-
         range_list = list(range(len(DATA)))
         img_numbers = random.sample(range_list, input_number)
         for i, img_number in enumerate(img_numbers):
