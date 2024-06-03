@@ -68,6 +68,9 @@ class DoctorViewController:
         self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
         self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
 
+        self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
+        self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
+
         self.ui.predictBtn.clicked.connect(self.on_pred_click)
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
@@ -246,11 +249,15 @@ class DoctorViewController:
 
                 data = horizontalPlane
                 dataType = "MRI"
+                self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
                 model = self.modelMRI
                 print(data.shape)
 
             result = self.processData(data, model, dataType=dataType)
-            self.allData[dataType].append(data)
+
+            if dataType == "EEG" :
+                self.allData[dataType].append(data)
+
             self.predictions.append(result)
 
     def loadModels(self):
@@ -316,7 +323,7 @@ class DoctorViewController:
         self.ui.plotLabelMRI.clear()
 
         if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", "EEG")
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0], "MRI", "MRI")
+        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", "MRI")
 
     def showNextPlotEEG(self):
         if(len(self.allData["EEG"]) == 0): return
@@ -369,7 +376,17 @@ class DoctorViewController:
         if self.currIdxMRI > len(self.allData["MRI"])-1:
             self.currIdxMRI = len(self.allData["MRI"])-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+
+    def showNextPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane += 1
+
+        if self.currIdxPlane > 3-1:
+            self.currIdxPlane = 3-1
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
@@ -380,13 +397,23 @@ class DoctorViewController:
         if self.currIdxMRI < 0:
             self.currIdxMRI = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+
+    def showPrevPlane(self):
+        if len(self.allData["MRI"]) == 0: return
+
+        self.currIdxPlane -= 1
+
+        if self.currIdxPlane < 0:
+            self.currIdxPlane = 0
+
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showPlot(self, data, dataType, name):
         if dataType == "EEG":
             self.show_plot_eeg(data, name, self.currIdxChannel)
         if dataType == "MRI":
-            self.show_plot_mri(data, name, self.currIdxPlane)
+            self.show_plot_mri(data, name)
 
     def show_plot_eeg(self, data, name, channel_number):
         fig = Figure(figsize=(5,5))
@@ -409,7 +436,7 @@ class DoctorViewController:
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelEEG.setPixmap(qpm)
 
-    def show_plot_mri(self, img, name, plane):
+    def show_plot_mri(self, img, name):
 
         fig = Figure(figsize=(5,5))
         fig.tight_layout()
