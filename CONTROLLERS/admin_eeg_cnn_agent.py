@@ -2,6 +2,7 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QFileDialog
 import EEG.config
 from EEG.TRAIN.train import *
+from CONTROLLERS.DBConnector import DBConnector
 import numpy as np
 import sys
 import os
@@ -11,7 +12,7 @@ parent_dir = os.path.dirname(current_dir)
 UI_PATH = rf'{current_dir}/UI'
 parent_directory = os.path.dirname(current_dir)
 
-MODEL_PATH = rf'{parent_dir}/EEG/CNN/MODEL'
+MODEL_PATH = rf'{parent_dir}/EEG/CNN/temp_model_path'
 TRAIN_PATH = rf'{parent_dir}/EEG/TRAIN/TRAIN_DATA'
 PREDICT_PATH = rf'{parent_dir}/EEG/PREDICT/PREDICT_DATA'
 
@@ -21,6 +22,7 @@ class AdminEegCnn:
         self.ui = uic.loadUi(rf'{parent_directory}/UI/aUI_projekt_EEG.ui', mainWindow)
 
         self.pathTrain = TRAIN_PATH
+        self.db_conn = None
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -79,3 +81,9 @@ class AdminEegCnn:
 
 
         train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+
+        self.db_conn = DBConnector()
+        print(self.db_conn.connection)
+        if self.db_conn.connection == None: return
+
+        print("chuj")
