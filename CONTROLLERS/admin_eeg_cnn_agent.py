@@ -2,7 +2,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog
 import EEG.config
-from EEG.TRAIN.train import *
+from EEG.TRAIN.train import train_cnn_eeg
 from CONTROLLERS.DBConnector import DBConnector
 import numpy as np
 import sys
@@ -100,11 +100,15 @@ class AdminEegCnn:
         self.thread.start()
 
     def train(self):
-        train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+        #train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+        print("chuj")
 
     def onFinished(self):
         print("Processing completed")
         self.connect_to_db()
+        file_name = os.path.basename(MODEL_PATH)
+        file_path = rf'./EEG/CNN/temp_model_path'
+        #self.db_conn.insert_data_into_models(file_name, file_path, None, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "Chuj")
 
     def onError(self, error):
         print(f"Error: {error}")
@@ -113,8 +117,6 @@ class AdminEegCnn:
         self.db_conn = DBConnector()
         print(self.db_conn.connection)
         if self.db_conn.connection == None: return
-
-        print("chuj")
 
 
 class Worker(QObject):
