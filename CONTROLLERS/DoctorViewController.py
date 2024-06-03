@@ -129,12 +129,12 @@ class DoctorViewController:
         img_numbers = random.sample(range_list, input_number)
         for i, img_number in enumerate(img_numbers):
             try:
-                self.allData["MRI"].append(DATA[img_number])
+                self.allData["MRI"].append([DATA[img_number],np.zeros(DATA[img_number].shape), np.zeros(DATA[img_number].shape)])
 
             except Exception as e:
                 print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
 
-        self.showPlot(self.allData["MRI"][0], "MRI", "")
+        self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
 
     def on_pred_click(self):
@@ -415,7 +415,7 @@ class DoctorViewController:
         if self.currIdxPlane > 3-1:
             self.currIdxPlane = 3-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
@@ -436,9 +436,9 @@ class DoctorViewController:
         if self.currIdxPlane < 0:
             self.currIdxPlane = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
-    def showPlot(self, data="", dataType="", name=""):
+    def showPlot(self, data, dataType, name=""):
         if dataType == "EEG":
             self.show_plot_eeg(data, name, self.currIdxChannel)
         if dataType == "MRI":
@@ -473,8 +473,6 @@ class DoctorViewController:
 
         ax.imshow(img, cmap="gray")
         ax.set_title(f'Zdjęcie mri {name}')
-        #ax.colorbar()
-        #ax.legend()
 
         buf = io.BytesIO()
         canvas.print_png(buf)
