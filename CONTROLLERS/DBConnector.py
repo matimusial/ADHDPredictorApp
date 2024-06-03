@@ -4,6 +4,14 @@ from mysql.connector import Error
 
 class DBConnector:
     def __init__(self):
+        self.connection = None
+
+    def __del__(self):
+        if self.connection and self.connection.is_connected():
+            self.connection.close()
+            print("Połączenie do bazy danych zostało zamknięte.")
+
+    def establish_connection(self):
         try:
             host = '192.168.205.218'
             database = 'mydatabase'
@@ -23,13 +31,6 @@ class DBConnector:
         except Error as e:
             print(f"Błąd połączenia: {e}")
             print("Pamiętaj o włączeniu ZUT VPN.")
-            self.connection = None
-            raise e
-
-    def __del__(self):
-        if self.connection and self.connection.is_connected():
-            self.connection.close()
-            print("Połączenie do bazy danych zostało zamknięte.")
 
     def validate_and_convert_input_models(self, file_data, channels, input_shape, type_value, fs, plane, description):
         """

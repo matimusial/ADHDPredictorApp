@@ -105,9 +105,10 @@ class DoctorViewController:
         self.ui.chosenModelEEG.setText("----------")
         self.ui.chosenModelMRI.setText("----------")
 
-
         self.db_conn = DBConnector()
-        if self.db_conn == None: return
+        self.db_conn.establish_connection()
+        print(self.db_conn.connection)
+        if self.db_conn.connection == None: return
 
 
         modelEEG = self.ui.modelListViewEEG.model()
@@ -256,6 +257,7 @@ class DoctorViewController:
 
     def showResult(self, future):
         print("Async task finished...")
+        if self.predictions is None: return
 
         predictions_means = []
 
