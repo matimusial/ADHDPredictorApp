@@ -458,7 +458,8 @@ class DoctorViewController:
         if self.currIdxMRI < 0:
             self.currIdxMRI = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
+                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showPrevPlane(self):
         if len(self.allData["MRI"]) == 0: return
@@ -468,7 +469,8 @@ class DoctorViewController:
         if self.currIdxPlane < 0:
             self.currIdxPlane = 0
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
+                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showPlot(self, data, dataType, name=""):
         if dataType == "EEG":
