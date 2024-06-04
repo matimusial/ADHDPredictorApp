@@ -563,6 +563,8 @@ class DoctorViewController:
         self.ui.showGenerated.setEnabled(state)
         self.ui.switchSceneBtn.setEnabled(state)
         self.ui.loadDataBtn.setEnabled(state)
+        self.ui.generateNew.setEnabled(state)
+        self.ui.showReal.setEnabled(state)
 
     def showModelInfo(self, type):
         alert = QMessageBox()
