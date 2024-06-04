@@ -190,7 +190,9 @@ class DoctorViewController:
         defaultPath = os.path.join('CONTROLLERS', 'INPUT_DATA')
         self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
 
-        if len(self.filePaths) == 0: return
+        if len(self.filePaths) == 0:
+            self.filePaths = None
+            return
 
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
