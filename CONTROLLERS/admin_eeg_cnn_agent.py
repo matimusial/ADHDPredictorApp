@@ -11,7 +11,7 @@ parent_dir = os.path.dirname(current_dir)
 UI_PATH = rf'{current_dir}/UI'
 parent_directory = os.path.dirname(current_dir)
 
-MODEL_PATH = rf'{parent_dir}/EEG/CNN/temp_model_path'
+MODEL_PATH = rf'{parent_dir}/EEG/temp_model_path'
 TRAIN_PATH = rf'{parent_dir}/EEG/TRAIN/TRAIN_DATA'
 PREDICT_PATH = rf'{parent_dir}/EEG/PREDICT/PREDICT_DATA'
 
@@ -99,14 +99,16 @@ class AdminEegCnn:
 
     def train(self):
         #train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
-        print("chuj")
+        print("debug_train in (admin_eeg_cnn_agent.py)")
 
     def onFinished(self):
         print("Processing completed")
         self.connect_to_db()
-        file_name = os.path.basename(MODEL_PATH)
-        file_path = rf'./EEG/CNN/temp_model_path'
-        #self.db_conn.insert_data_into_models(file_name, file_path, None, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "Chuj")
+        file_name = os.listdir(MODEL_PATH)
+        file_path = rf'./EEG/temp_model_path/{file_name[0]}'
+        print(file_name[0])
+        self.db_conn.insert_data_into_models(
+            file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
 
     def onError(self, error):
         print(f"Error: {error}")
