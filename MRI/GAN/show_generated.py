@@ -18,7 +18,7 @@ def show_generated(im_amount=3, adhd_path="", control_path=""):
         ADHD = read_pickle(f"{adhd_path}.pkl")
         CONTROL = read_pickle(f"{control_path}.pkl")
     except Exception as e:
-        print(f"Nie udało się odczytać plików z wygenerowanymi danymi: {e}")
+        print(f"Failed to read files with generated data: {e}")
         return
 
     if im_amount >= 20:
@@ -41,4 +41,4 @@ def show_generated(im_amount=3, adhd_path="", control_path=""):
 
             plt.show()
         except Exception as e:
-            print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
+            print(f"Failed to display image for index {img_number}: {e}")

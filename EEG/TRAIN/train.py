@@ -53,15 +53,15 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
         model_path (str): Path to save the trained model.
     """
     try:
-        print(f"TRENING CNN ROZPOCZETY na {CNN_EPOCHS} EPOK...")
+        print(f"CNN TRAINING STARTED for {CNN_EPOCHS} EPOCHS...")
         print("\n")
 
         try:
             ADHD_DATA = read_pickle(os.path.join(pickle_path, "ADHD_EEG_DATA.pkl"))
             CONTROL_DATA = read_pickle(os.path.join(pickle_path, "CONTROL_EEG_DATA.pkl"))
         except Exception as e:
-            print(f"Błąd przy ładowaniu plików EEG: {e}")
-            print("Czy pobrałeś pliki z linku w folderze EEG/TRAIN/TRAIN_DATA ?")
+            print(f"Error loading EEG files: {e}")
+            print("Did you download the files from the link in the folder EEG/TRAIN/TRAIN_DATA?")
             return
 
         try:
@@ -71,7 +71,7 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
             ADHD_NORMALIZED, CONTROL_NORMALIZED = normalize_eeg_data(ADHD_CLIPPED, CONTROL_CLIPPED)
             X_train, y_train, X_test, y_test = prepare_for_cnn(ADHD_NORMALIZED, CONTROL_NORMALIZED)
         except Exception as e:
-            print(f"Błąd przy przetwarzaniu danych EEG: {e}")
+            print(f"Error processing EEG data: {e}")
             return
 
         model = build_eeg_cnn_model(CNN_INPUT_SHAPE)
@@ -92,13 +92,13 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)
-        print(f"Dokładnośc testowa: {round(final_accuracy, 4)}")
+        print(f"Test accuracy: {round(final_accuracy, 4)}")
 
         if save:
             model.save(os.path.join(model_path, f'{round(final_accuracy, 4)}.keras'))
-            #save_pickle(os.path.join(predict_path, f"X_pred_{round(final_accuracy, 4)}.pkl"), X_pred)
-            #save_pickle(os.path.join(predict_path, f"y_pred_{round(final_accuracy, 4)}.pkl"), y_pred)
+            # save_pickle(os.path.join(predict_path, f"X_pred_{round(final_accuracy, 4)}.pkl"), X_pred)
+            # save_pickle(os.path.join(predict_path, f"y_pred_{round(final_accuracy, 4)}.pkl"), y_pred)
 
     except Exception as e:
-        print(f"Błąd podczas treningu CNN: {e}")
+        print(f"Error during CNN training: {e}")
         return

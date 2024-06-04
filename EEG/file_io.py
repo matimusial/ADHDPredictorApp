@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 
 from EEG.config import EEG_SIGNAL_FRAME_SIZE
 
+
 def read_pickle(filepath):
     """Reads data from a pickle link.
 
@@ -42,7 +43,7 @@ def split_into_frames(data):
     """
     try:
         if data.shape[1] < EEG_SIGNAL_FRAME_SIZE:
-            raise ValueError("Liczba próbek jest mniejsza niż rozmiar ramki.")
+            raise ValueError("The number of samples is less than the frame size.")
 
         num_frames = data.shape[1] // EEG_SIGNAL_FRAME_SIZE
         framed_data = np.zeros((num_frames, data.shape[0], EEG_SIGNAL_FRAME_SIZE))
@@ -55,15 +56,16 @@ def split_into_frames(data):
         print(f"Error splitting data into frames: {e}")
         return None
 
+
 def make_pred_data(adhd_data, control_data):
-    """Aktualizuje zbiór danych, usuwając dane predykcyjne i zwracając je.
+    """Updates the dataset by removing predictive data and returning it.
 
     Args:
-        adhd_data (list of numpy.ndarray): Lista tablic danych EEG dla osób z ADHD.
-        control_data (list of numpy.ndarray): Lista tablic danych EEG dla grupy kontrolnej.
+        adhd_data (list of numpy.ndarray): List of EEG data arrays for individuals with ADHD.
+        control_data (list of numpy.ndarray): List of EEG data arrays for the control group.
 
     Returns:
-        tuple: Zaktualizowane zbiory danych oraz dane predykcyjne.
+        tuple: Updated datasets and predictive data.
     """
     try:
         adhd_index = np.random.choice(range(0, len(adhd_data)), size=4, replace=False)
@@ -95,20 +97,21 @@ def make_pred_data(adhd_data, control_data):
         return adhd_data_tt, control_data_tt, x_pred, y_pred
 
     except Exception as e:
-        print(f"Błąd w funkcji update_data: {e}")
+        print(f"Error in function update_data: {e}")
         return None, None, None, None
 
 
 def prepare_for_cnn(adhd_data_tt, control_data_tt):
-    """Przygotowuje dane EEG do trenowania i testowania CNN.
+    """Prepares EEG data for training and testing CNN.
 
     Args:
-        adhd_data_tt (list of numpy.ndarray): Zaktualizowana lista tablic danych EEG dla osób z ADHD.
-        control_data_tt (list of numpy.ndarray): Zaktualizowana lista tablic danych EEG dla grupy kontrolnej.
+        adhd_data_tt (list of numpy.ndarray): Updated list of EEG data arrays for individuals with ADHD.
+        control_data_tt (list of numpy.ndarray): Updated list of EEG data arrays for the control group.
 
     Returns:
-        tuple: Przygotowane dane do trenowania i testowania CNN.
+        tuple: Prepared data for training and testing the CNN.
     """
+
     try:
         adhd_framed_list = []
         for patient_data in adhd_data_tt:
@@ -133,5 +136,5 @@ def prepare_for_cnn(adhd_data_tt, control_data_tt):
         return x_train, y_train, x_test, y_test
 
     except Exception as e:
-        print(f"Błąd w funkcji prepare_for_cnn: {e}")
+        print(f"Error in function prepare_for_cnn: {e}")
         return None, None, None, None

@@ -19,11 +19,11 @@ def print_index_ranges(y):
     adhd_indices = np.where(y == 1)[0]
     healthy_indices = np.where(y == 0)[0]
 
-    adhd_range = f"{adhd_indices[0]}-{adhd_indices[-1]}" if adhd_indices.size > 0 else "Brak indeksów"
-    healthy_range = f"{healthy_indices[0]}-{healthy_indices[-1]}" if healthy_indices.size > 0 else "Brak indeksów"
+    adhd_range = f"{adhd_indices[0]}-{adhd_indices[-1]}" if adhd_indices.size > 0 else "No indices"
+    healthy_range = f"{healthy_indices[0]}-{healthy_indices[-1]}" if healthy_indices.size > 0 else "No indices"
 
-    print(f"Indeksy ADHD: {adhd_range}")
-    print(f"Indeksy Zdrowe: {healthy_range}")
+    print(f"ADHD indices: {adhd_range}")
+    print(f"Healthy indices: {healthy_range}")
 
 
 def check_result(predictions, threshold=0.5):
@@ -42,10 +42,10 @@ def check_result(predictions, threshold=0.5):
         result = "ADHD"
         prob = np.round(mean * 100, 2)
     else:
-        result = "ZDROWY"
+        result = "HEALTHY"
         prob = np.abs(np.round((1 - mean) * 100, 2))
 
-    print(f"Wynik pacjenta: {result}, z prawdopodobieństwem: {prob}%")
+    print(f"Patient result: {result}, with probability: {prob}%")
 
     return result, prob
 
@@ -69,25 +69,25 @@ def predict(MODEL_NAME, model_path, pickle_path):
         X = read_pickle(X_path)
         y = read_pickle(y_path)
     except Exception as e:
-        print(f'Błędna ścieżka do modelu: {e}')
+        print(f'Invalid model path: {e}')
         return
 
     print_index_ranges(y)
 
     while True:
         try:
-            patient_number = int(input("Wybierz numer pacjenta: "))
+            patient_number = int(input("Choose patient number: "))
             if 0 <= patient_number < len(X):
                 break
             else:
-                print("Wpisz numer pacjenta w zakresie")
+                print("Enter a patient number within the range")
         except Exception as e:
-            print("Wpisz numer pacjenta w zakresie")
+            print("Enter a patient number within the range")
 
     if y[patient_number] == 1:
-        print("Wybrałeś ADHD")
+        print("You selected ADHD")
     elif y[patient_number] == 0:
-        print("Wybrałeś Zdrowy")
+        print("You selected Healthy")
 
     DATA = X[patient_number]
 

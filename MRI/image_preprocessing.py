@@ -22,7 +22,7 @@ def check_dimensions(data):
     for i, item in enumerate(data):
         rows, columns = item.shape
         if rows != columns:
-            print(f"Data {i} ma wymiary nie będące kwadratem: {rows, columns}")
+            print(f"Data {i} has non-square dimensions: {rows, columns}")
 
 
 def trim_rows(data, nr_rows=4):

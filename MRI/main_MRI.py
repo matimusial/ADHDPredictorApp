@@ -25,15 +25,15 @@ GAN_MODEL_PATH = os.path.join(current_dir, 'GAN', 'MODELS')
 def MRI():
     print("MRI")
     while True:
-        main_choice = input('Wybierz opcję:   1-(CNN)   2-(GAN): ')
+        main_choice = input('Choose an option:   1-(CNN)   2-(GAN): ')
 
         if main_choice == '1':
-            cnn_choice = input('Wybierz opcję:   1-(uruchom trening CNN)   2-(uruchom predict CNN): ')
+            cnn_choice = input('Choose an option:   1-(run CNN training)   2-(run CNN prediction): ')
 
             if cnn_choice == '1':
-                save = input('Wybierz opcję:   1-(zapisz model)   2-(nie zapisuj modelu): ')
+                save = input('Choose an option:   1-(save model)   2-(do not save model): ')
                 if save not in ['1', '2']:
-                    print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+                    print("Invalid choice. Enter 1 or 2.")
                     continue
                 save_model = True if save == '1' else False
                 train_cnn(save_model, REAL_MRI_PATH, CNN_PREDICT_PATH, CNN_MODEL_PATH)
@@ -44,15 +44,15 @@ def MRI():
                 break
 
             else:
-                print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+                print("Invalid choice. Enter 1 or 2.")
 
         elif main_choice == '2':
-            gan_choice = input('Wybierz opcję:   1-(trenuj GAN)   2-(wyświetl wygenerowane zdjęcia)   3-(wygeneruj zdjęcia): ')
+            gan_choice = input('Choose an option:   1-(train GAN)   2-(display generated images)   3-(generate images): ')
 
             if gan_choice == '1':
-                save = input('Wybierz opcję:   1-(nadpisz model)   2-(nie zapisuj modelu): ')
+                save = input('Choose an option:   1-(overwrite model)   2-(do not save model): ')
                 if save not in ['1', '2']:
-                    print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+                    print("Invalid choice. Enter 1 or 2.")
                     continue
                 save_model = True if save == '1' else False
                 for data_type in ["ADHD", "CONTROL"]:
@@ -61,34 +61,34 @@ def MRI():
 
             elif gan_choice == '2':
                 try:
-                    im_amount = int(input('Podaj ilość zdjęć do wyświetlenia (max 20): '))
+                    im_amount = int(input('Enter the number of images to display (max 20): '))
                     if im_amount <= 0:
-                        print("Liczba zdjęć musi być większa od zera.")
+                        print("The number of images must be greater than zero.")
                         continue
                 except ValueError:
-                    print("Niepoprawny format liczby. Podaj liczbę całkowitą.")
+                    print("Invalid number format. Enter an integer.")
                     continue
                 show_generated(im_amount, ADHD_GEN_PATH, CONTROL_GEN_PATH)
                 break
+
             elif gan_choice == '3':
-                save = input('Wybierz opcję:   1-(nadpisz plik)   2-(nie zapisuj pliku): ')
+                save = input('Choose an option:   1-(overwrite file)   2-(do not save file): ')
                 if save not in ['1', '2']:
-                    print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+                    print("Invalid choice. Enter 1 or 2.")
                     continue
                 save_model = True if save == '1' else False
                 try:
-                    im_amount = int(input('Podaj ilość zdjęć do wygenerowania: '))
+                    im_amount = int(input('Enter the number of images to generate: '))
                     if im_amount <= 0:
-                        print("Liczba zdjęć musi być większa od zera.")
+                        print("The number of images must be greater than zero.")
                         continue
                     generate_images(save_model, im_amount, GAN_MODEL_PATH)
                 except ValueError:
-                    print("Niepoprawny format liczby. Podaj liczbę całkowitą.")
+                    print("Invalid number format. Enter an integer.")
                 break
+
             else:
-                print("Niepoprawny wybór. Wprowadź 1, 2 lub 3.")
+                print("Invalid choice. Enter 1, 2, or 3.")
 
         else:
-            print("Niepoprawny wybór. Wprowadź 1 lub 2.")
-
-#MRI()
+            print("Invalid choice. Enter 1 or 2.")

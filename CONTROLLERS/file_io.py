@@ -3,39 +3,40 @@ import pandas as pd
 import mne
 from scipy.io import loadmat, savemat
 
+# function not used in our project (one-time use)
+
 
 def read_eeg_raw(path_or_folder):
     """
-    Wczytuje surowe dane EEG / do poprawy i analizy
+    Loads raw EEG data for correction and analysis.
 
     Args:
-    path_or_folder (str): Ścieżka do pliku .mat lub folderu z danymi.
+        path_or_folder (str): Path to the .mat file or a folder with data.
 
     Returns:
-    list lub tuple: Zawiera dane EEG w zależności od typu wejścia.
+        list or tuple: Contains EEG data depending on the input type.
     """
 
-    # Automatyczne wykrywanie typu wejścia
     if os.path.isfile(path_or_folder) and path_or_folder.endswith('.mat'):
-        # Wersja 1: Wczytywanie pojedynczego pliku .mat
+        # Version 1: Loading a single .mat file
         mat_data = loadmat(path_or_folder, mat_dtype=True)
         file, _ = os.path.splitext(os.path.basename(path_or_folder))
         if file not in mat_data:
-            raise KeyError(f"Klucz {file} nie znaleziony w pliku .mat.")
+            raise KeyError(f"Key {file} not found in the .mat file.")
 
         return mat_data[file].T
 
     elif os.path.isdir(path_or_folder):
-        # Wersja 2: Wczytywanie danych z folderu
+        # Version 2: Loading data from a folder
         subfolders = ["ADHD", "CONTROL"]
         ADHD_DATA = []
         CONTROL_DATA = []
 
-        # Sprawdzanie i konwersja plików CSV/EDF do formatu MATLAB
+        # Checking and converting CSV/EDF files to MATLAB format
         for subfolder in subfolders:
             current_folder = os.path.join(path_or_folder, subfolder)
             if not os.path.isdir(current_folder):
-                raise FileNotFoundError(f"Podfolder {current_folder} nie istnieje.")
+                raise FileNotFoundError(f"Subfolder {current_folder} does not exist.")
 
             for file in os.listdir(current_folder):
                 if file.endswith('.csv') or file.endswith('.edf'):
@@ -54,7 +55,7 @@ def read_eeg_raw(path_or_folder):
                         key_name = os.path.splitext(file)[0]
                         savemat(os.path.join(current_folder, mat_file_name), {key_name: data})
 
-        # Import plików .mat
+        # Importing .mat files
         for subfolder in subfolders:
             current_folder = os.path.join(path_or_folder, subfolder)
             mat_files = [f for f in os.listdir(current_folder) if f.endswith('.mat')]
@@ -64,7 +65,7 @@ def read_eeg_raw(path_or_folder):
                 loaded_data = loadmat(file_path, mat_dtype=True)
                 file_name, _ = os.path.splitext(mat_file)
                 if file_name not in loaded_data:
-                    raise KeyError(f"Klucz {file_name} nie znaleziony w pliku .mat {mat_file}.")
+                    raise KeyError(f"Key {file_name} not found in .mat file {mat_file}.")
 
                 if "ADHD" in subfolder:
                     ADHD_DATA.append(loaded_data[file_name].T)
@@ -74,4 +75,14 @@ def read_eeg_raw(path_or_folder):
         return ADHD_DATA, CONTROL_DATA
 
     else:
-        raise ValueError("Podana ścieżka nie jest prawidłowym plikiem .mat ani folderem.")
+        raise ValueError("The provided path is not a valid .mat file or folder.")
+
+# Usage example:
+# To load data from a .mat file
+# eeg_data = read_eeg_raw('path/to/eeg_file.mat')
+# print("EEG data from file:", eeg_data)
+
+# To load data from a folder containing ADHD and CONTROL subfolders
+# adhd_data, control_data = read_eeg_raw('path/to/eeg_data_folder')
+# print("ADHD data:", adhd_data)
+# print("Control data:", control_data)

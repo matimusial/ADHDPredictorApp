@@ -8,5 +8,5 @@ def plot_mri(img, title=""):
         plt.colorbar()
         plt.show()
     except Exception as e:
-        print("Wystąpił błąd podczas wyświetlania obrazu MRI:", str(e))
+        print("An error occurred while displaying the MRI image:", str(e))
         return

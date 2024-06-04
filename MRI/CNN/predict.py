@@ -17,11 +17,11 @@ def print_index_ranges(y):
     adhd_indices = np.where(y == 1)[0]
     healthy_indices = np.where(y == 0)[0]
 
-    adhd_range = f"{adhd_indices[0]}-{adhd_indices[-1]}" if adhd_indices.size > 0 else "Brak indeksów"
-    healthy_range = f"{healthy_indices[0]}-{healthy_indices[-1]}" if healthy_indices.size > 0 else "Brak indeksów"
+    adhd_range = f"{adhd_indices[0]}-{adhd_indices[-1]}" if adhd_indices.size > 0 else "No indices"
+    healthy_range = f"{healthy_indices[0]}-{healthy_indices[-1]}" if healthy_indices.size > 0 else "No indices"
 
-    print(f"Indeksy ADHD: {adhd_range}")
-    print(f"Indeksy Zdrowe: {healthy_range}")
+    print(f"ADHD indices: {adhd_range}")
+    print(f"Healthy indices: {healthy_range}")
 
 
 def check_result(predictions, threshold=0.5):
@@ -40,10 +40,10 @@ def check_result(predictions, threshold=0.5):
         result = "ADHD"
         probability = np.round(mean_prediction * 100, 2)
     else:
-        result = "ZDROWY"
+        result = "HEALTHY"
         probability = np.round((1 - mean_prediction) * 100, 2)
 
-    print(f"Wynik pacjenta: {result}, z prawdopodobieństwem: {probability}%")
+    print(f"Patient result: {result}, with probability: {probability}%")
     return result, probability
 
 
@@ -64,28 +64,28 @@ def predict_cnn(model_name, cnn_model, cnn_predict):
         y = read_pickle(os.path.join(cnn_predict, f'y_pred_{model_name}.pkl'))
 
     except OSError as e:
-        print(f'Błąd wczytywania modelu: {e}')
+        print(f'Error loading model: {e}')
         return
     except Exception as e:
-        print(f'Błąd wczytywania danych: {e}')
+        print(f'Error loading data: {e}')
         return
 
     print_index_ranges(y)
 
     while True:
         try:
-            image_number = int(input(f"Wybierz zdjęcie (0 - {X.shape[0] - 1}): "))
+            image_number = int(input(f"Choose an image (0 - {X.shape[0] - 1}): "))
             if 0 <= image_number < X.shape[0]:
                 break
             else:
-                print("Wpisz numer zdjęcia w zakresie")
+                print("Enter an image number within the range")
         except ValueError:
-            print("Wpisz numer zdjęcia w zakresie")
+            print("Enter an image number within the range")
 
     if y[image_number] == 1:
-        print("Wybrałeś ADHD")
+        print("You selected ADHD")
     else:
-        print("Wybrałeś Zdrowy")
+        print("You selected Healthy")
 
     plot_mri(X[image_number])
 
@@ -94,4 +94,4 @@ def predict_cnn(model_name, cnn_model, cnn_predict):
     predictions = model.predict(img_for_predict)
 
     check_result(predictions)
-    print(f"Wynik na całym zbiorze walidacyjnym: {accuracy * 100:.2f} %")
+    print(f"Result on the entire validation set: {accuracy * 100:.2f} %")

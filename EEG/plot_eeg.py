@@ -18,7 +18,7 @@ def plot_frequency_band(data, channel_index, patient_index, band_number=2):
     signal = data[patient_index][channel_index]
 
     if band_number >= len(CUTOFFS):
-        raise ValueError(f'Maksymalny numer pasma: {len(CUTOFFS) - 1}')
+        raise ValueError(f'Maximum band number: {len(CUTOFFS) - 1}')
 
     if signal.ndim == 1:
         frequencies = np.fft.fftfreq(len(signal), d=1 / FS)
@@ -26,13 +26,13 @@ def plot_frequency_band(data, channel_index, patient_index, band_number=2):
         magnitude_spectrum = np.abs(fft_values)
 
         plt.plot(frequencies, magnitude_spectrum, label=f'{CUTOFFS[band_number]} Hz')
-        plt.title('Widmo częstotliwościowe')
-        plt.xlabel('Częstotliwość (Hz)')
-        plt.ylabel('Amplituda')
+        plt.title('Frequency Spectrum')
+        plt.xlabel('Frequency (Hz)')
+        plt.ylabel('Amplitude')
         plt.legend()
         plt.show()
     else:
-        raise ValueError("Nieprawidłowe wymiary danych. Dane powinny być jednowymiarowe.")
+        raise ValueError("Invalid data dimensions. Data should be one-dimensional.")
 
 
 def plot_eeg_signal(data, channel_index, patient_index=None):
@@ -49,25 +49,26 @@ def plot_eeg_signal(data, channel_index, patient_index=None):
         t = np.arange(0, data[patient_index][channel_index].shape[0]) / FS
         signal = data[patient_index][channel_index]
 
-        print(f"Ilość próbek: {data[patient_index][channel_index].shape[0]}")
-        print(f"Czas: {t[-1]:.3f} s")
+        print(f"Number of samples: {data[patient_index][channel_index].shape[0]}")
+        print(f"Time: {t[-1]:.3f} s")
 
-        plt.plot(t, signal, label=f'Pacjent {patient_index}, Kanał {channel_index}')
+        plt.plot(t, signal, label=f'Patient {patient_index}, Channel {channel_index}')
 
     elif patient_index is None:
         t = np.arange(0, data[channel_index].shape[0]) / FS
         signal = data[channel_index]
 
-        print(f"Ilość próbek: {data[channel_index].shape[0]}")
-        print(f"Czas: {t[-1]:.3f} s")
+        print(f"Number of samples: {data[channel_index].shape[0]}")
+        print(f"Time: {t[-1]:.3f} s")
 
-        plt.plot(t, signal, label=f'Kanał {channel_index}')
+        plt.plot(t, signal, label=f'Channel {channel_index}')
 
     else:
-        raise ValueError("Nieprawidłowy wymiar danych. Dane powinny być dwuwymiarowe lub trójwymiarowe.")
+        raise ValueError("Invalid data dimension. Data should be two-dimensional or three-dimensional.")
 
-    plt.xlabel('Czas (s)')
-    plt.ylabel('Wartości próbek')
-    plt.title('Wykres sygnału EEG')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Sample values')
+    plt.title('EEG Signal Plot')
     plt.legend()
     plt.show()
+

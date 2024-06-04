@@ -51,7 +51,7 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
         model_path (str): Path to save the trained model.
     """
     try:
-        print(f"TRENING CNN ROZPOCZETY na {CNN_EPOCHS_MRI} EPOK...")
+        print(f"CNN TRAINING STARTED for {CNN_EPOCHS_MRI} EPOCHS...")
         print("\n")
 
         try:
@@ -59,7 +59,7 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
             CONTROL_DATA = read_pickle(os.path.join(real_mri_path, "CONTROL_REAL.pkl"))
 
         except Exception as e:
-            print(f"Błąd w ładowaniu plików oryginalnych: {e}")
+            print(f"Error loading original files: {e}")
             return
 
         try:
@@ -71,7 +71,7 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
             check_dimensions(CONTROL_TRIMMED)
             CONTROL_NORMALIZED = normalize(CONTROL_TRIMMED)
         except Exception as e:
-            print(f"Błąd w przetwarzaniu obrazów: {e}")
+            print(f"Error processing images: {e}")
             return
 
         X_pred, y_pred, ADHD_UPDATED, CONTROL_UPDATED = make_predict_data(ADHD_NORMALIZED, CONTROL_NORMALIZED)
@@ -92,13 +92,14 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
                       verbose=1)
 
         _, test_accuracy = model.evaluate(X_test, y_test)
-        print(f"Dokładność testowa: {round(test_accuracy, 4)}")
+        print(f"Test accuracy: {round(test_accuracy, 4)}")
 
         if save:
             model.save(os.path.join(model_path, f'{round(test_accuracy, 4)}.keras'))
-            #save_pickle(os.path.join(predict_path, f"X_pred_{round(test_accuracy, 4)}.pkl"), X_pred)
-            #save_pickle(os.path.join(predict_path, f"y_pred_{round(test_accuracy, 4)}.pkl"), y_pred)
+            # save_pickle(os.path.join(predict_path, f"X_pred_{round(test_accuracy, 4)}.pkl"), X_pred)
+            # save_pickle(os.path.join(predict_path, f"y_pred_{round(test_accuracy, 4)}.pkl"), y_pred)
 
     except Exception as e:
-        print(f"Błąd podczas treningu CNN: {e}")
+        print(f"Error during CNN training: {e}")
         return
+

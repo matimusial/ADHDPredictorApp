@@ -18,12 +18,12 @@ PREDICT_PATH = os.path.join(current_dir, "PREDICT", "PREDICT_DATA")
 def EEG():
     print("EEG")
     while True:
-        main_choice = input('Wybierz opcję:   1-(uruchom trening CNN)   2-(uruchom predict CNN): ')
+        main_choice = input('Choose an option:   1-(run CNN training)   2-(run CNN prediction): ')
 
         if main_choice == '1':
-            save = input('Wybierz opcję:   1-(zapisz model)   2-(nie zapisuj modelu): ')
+            save = input('Choose an option:   1-(save model)   2-(do not save model): ')
             if save not in ['1', '2']:
-                print("Niepoprawny wybór. Wprowadź 1 lub 2.")
+                print("Invalid choice. Enter 1 or 2.")
                 continue
             save_model = True if save == '1' else False
             train_cnn_eeg(save_model, TRAIN_PATH, PREDICT_PATH, MODEL_PATH)
@@ -34,6 +34,4 @@ def EEG():
             break
 
         else:
-            print("Niepoprawny wybór. Wprowadź 1 lub 2.")
-
-#EEG()
+            print("Invalid choice. Enter 1 or 2.")

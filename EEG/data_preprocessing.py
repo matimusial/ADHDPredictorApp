@@ -68,7 +68,7 @@ def normalize_eeg_data(ADHD_DATA, CONTROL_DATA=None):
 
     if CONTROL_DATA is not None:
         if (len(ADHD_DATA) <= 1) or (len(CONTROL_DATA) <= 1):
-            raise ValueError("Ta funkcja wymaga więcej niż jednego pacjenta w każdej grupie")
+            raise ValueError("This function requires more than one patient in each group")
 
         ADHD_DATA_normalized = normalize(ADHD_DATA)
         CONTROL_DATA_normalized = normalize(CONTROL_DATA)
@@ -77,7 +77,7 @@ def normalize_eeg_data(ADHD_DATA, CONTROL_DATA=None):
 
     else:
         if len(ADHD_DATA) <= 1:
-            raise ValueError("Ta funkcja wymaga więcej niż jednego pacjenta")
+            raise ValueError("This function requires more than one patient")
 
         ADHD_DATA_normalized = normalize(ADHD_DATA)
         return ADHD_DATA_normalized
@@ -110,7 +110,7 @@ def clip_eeg_data(ADHD_DATA, CONTROL_DATA=None):
 
     if CONTROL_DATA is not None:
         if (len(ADHD_DATA) <= 1) or (len(CONTROL_DATA) <= 1):
-            raise ValueError("Ta funkcja wymaga więcej niż jednego pacjenta w każdej grupie")
+            raise ValueError("This function requires more than one patient in each group")
 
         ADHD_CLIPPED = clip_data(ADHD_DATA)
         CONTROL_CLIPPED = clip_data(CONTROL_DATA)
@@ -119,7 +119,7 @@ def clip_eeg_data(ADHD_DATA, CONTROL_DATA=None):
 
     else:
         if len(ADHD_DATA) <= 1:
-            raise ValueError("Ta funkcja wymaga więcej niż jednego pacjenta")
+            raise ValueError("This function requires more than one patient")
 
         ADHD_CLIPPED = clip_data(ADHD_DATA)
         return ADHD_CLIPPED

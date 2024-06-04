@@ -15,6 +15,7 @@ from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI,
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle
 
+
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
     """
     Trains a GAN using MRI data.
@@ -26,9 +27,9 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
         gan_model_path (str): The path to save the trained model.
     """
     try:
-        print(f"TRENING GAN {data_type} ROZPOCZETY na {GAN_EPOCHS_MRI} EPOK...")
-        print(f"WYNIK BEDZIE WYSWIETLANY CO {TRAIN_GAN_PRINT_INTERVAL}")
-        print(f"ZDJECIE POGLADOWE GENEROWANE CO {TRAIN_GAN_DISP_INTERVAL}")
+        print(f"TRAINING GAN {data_type} STARTED for {GAN_EPOCHS_MRI} EPOCHS...")
+        print(f"RESULTS WILL BE DISPLAYED EVERY {TRAIN_GAN_PRINT_INTERVAL}")
+        print(f"PREVIEW IMAGE GENERATED EVERY {TRAIN_GAN_DISP_INTERVAL}")
         print("\n")
 
         try:
@@ -37,7 +38,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             elif data_type == "CONTROL":
                 DATA = read_pickle(os.path.join(pickle_path, "CONTROL_REAL.pkl"))
         except Exception as e:
-            print(f"Błąd podczas wczytywania danych: {e}")
+            print(f"Error loading data: {e}")
             return
 
         try:
@@ -45,7 +46,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             check_dimensions(TRIMMED)
             NORMALIZED = normalize(TRIMMED)
         except Exception as e:
-            print(f"Błąd podczas przetwarzania danych: {e}")
+            print(f"Error processing data: {e}")
             return
 
         try:
@@ -53,7 +54,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             train_data = np.expand_dims(train_data, axis=-1)
             val_data = np.expand_dims(val_data, axis=-1)
         except Exception as e:
-            print(f"Błąd podczas dzielenia danych na zestawy treningowe i walidacyjne: {e}")
+            print(f"Error splitting data into training and validation sets: {e}")
             return
 
         def build_generator():
@@ -73,7 +74,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 model.add(Reshape(GAN_INPUT_SHAPE_MRI))
                 return model
             except Exception as e:
-                print(f"Błąd podczas budowania generatora: {e}")
+                print(f"Error building generator: {e}")
                 return
 
         def build_discriminator():
@@ -90,7 +91,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 model.add(Dense(1, activation='sigmoid'))
                 return model
             except Exception as e:
-                print(f"Błąd podczas budowania dyskryminatora: {e}")
+                print(f"Error building discriminator: {e}")
                 return
 
         def build_gan(generator, discriminator):
@@ -100,7 +101,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 model.add(discriminator)
                 return model
             except Exception as e:
-                print(f"Błąd podczas budowania GAN: {e}")
+                print(f"Error building GAN: {e}")
                 return
 
         generator = build_generator()
@@ -115,7 +116,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             generator_optimizer = tf.keras.optimizers.Adam(GAN_LEARNING_RATE)
             discriminator_optimizer = tf.keras.optimizers.Adam(GAN_LEARNING_RATE)
         except Exception as e:
-            print(f"Błąd podczas tworzenia optymalizatorów: {e}")
+            print(f"Error creating optimizers: {e}")
             return
 
         try:
@@ -123,7 +124,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             gan = build_gan(generator, discriminator)
             gan.compile(loss='binary_crossentropy', optimizer=generator_optimizer)
         except Exception as e:
-            print(f"Błąd podczas kompilacji modeli: {e}")
+            print(f"Error compiling models: {e}")
             return
 
         def generate_image(generator, epoch):
@@ -131,9 +132,9 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 noise = np.random.normal(0, 1, [1, 100])
                 generated_image = generator.predict(noise)
                 generated_image = generated_image * 0.5 + 0.5
-                plot_mri(generated_image[0], f'Epoka: {epoch}')
+                plot_mri(generated_image[0], f'Epoch: {epoch}')
             except Exception as e:
-                print(f"Nie udało się wygenerować obrazu w epoce {epoch}: {e}")
+                print(f"Failed to generate image in epoch {epoch}: {e}")
 
         @tf.function
         def train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer):
@@ -173,7 +174,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
 
                 return d_loss, g_loss
             except Exception as e:
-                print(f"Błąd podczas kroku treningowego: {e}")
+                print(f"Error during training step: {e}")
                 return None, None
 
         def train_gan(generator, discriminator, epochs, batch_size, train_data, val_data):
@@ -207,17 +208,18 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
                         generate_image(generator, epoch + 1)
                 except Exception as e:
-                    print(f"Błąd w epoce {epoch + 1}: {e}")
+                    print(f"Error in epoch {epoch + 1}: {e}")
                     return
 
             if save:
                 try:
                     generator.save(os.path.join(gan_model_path, f'{data_type}_GAN.keras'))
                 except Exception as e:
-                    print(f"Błąd w zapisie modelu: {e}")
+                    print(f"Error saving model: {e}")
                     return
 
         train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
     except Exception as e:
-        print(f"Wystąpił błąd podczas treningu GAN: {e}")
+        print(f"An error occurred during GAN training: {e}")
         return
+

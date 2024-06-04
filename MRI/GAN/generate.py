@@ -23,8 +23,8 @@ def generate_images(save, im_amount, model_path):
         try:
             generator = load_model(os.path.join(model_path, f'{data_type}_GAN.keras'))
         except Exception as e:
-            print(f"Nie udało się załadować modelu GAN: {e}")
-            print("Czy pobrałeś modele z linku w folderze MRI/GAN/MODELS ?")
+            print(f"Failed to load the GAN model: {e}")
+            print("Did you download the models from the link in the folder MRI/GAN/MODELS?")
             return
 
         data = []
@@ -33,13 +33,13 @@ def generate_images(save, im_amount, model_path):
             try:
                 generated_image = generator.predict(noise)
             except Exception as e:
-                print(f"Nie udało się wygenerować obrazu: {e}")
+                print(f"Failed to generate image: {e}")
                 return
             generated_image = generated_image * 0.5 + 0.5
             data.append(generated_image[0])
 
             if (i + 1) % GENERATE_GAN_DISP_INTERVAL == 0:
-                plot_mri(generated_image[0], f"Indeks obrazu {data_type}: {i + 1}")
+                plot_mri(generated_image[0], f"Image index {data_type}: {i + 1}")
 
         if save:
             save_pickle(os.path.join("GENERATED_MRI", f"{data_type}_GENERATED.pkl"), data)
