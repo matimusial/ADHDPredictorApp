@@ -206,9 +206,9 @@ class DoctorViewController:
 
         self.db_conn = DBConnector()
         self.db_conn.establish_connection()
-        print(self.db_conn.connection)
-        if self.db_conn.connection == None: return
 
+        if self.db_conn.connection is None:
+            return
 
         modelEEG = self.ui.modelListViewEEG.model()
         if modelEEG:
@@ -232,7 +232,6 @@ class DoctorViewController:
 
             self.ui.modelListViewEEG.setModel(modelEEG)
             self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
-
 
         modelMRI = self.ui.modelListViewMRI.model()
         if modelMRI:
@@ -375,11 +374,14 @@ class DoctorViewController:
         self.ui.plotLabelEEG.clear()
         self.ui.plotLabelMRI.clear()
 
-        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1])
+        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG",
+                                              self.filePaths[self.currIdxEEG].split("/")[-1])
+
+        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI",
+                                              self.filePaths[self.currIdxMRI].split("/")[-1])
 
     def showNextPlotEEG(self):
-        if(len(self.allData["EEG"]) == 0): return
+        if len(self.allData["EEG"]) == 0: return
 
         self.currIdxEEG += 1
         self.currIdxChannel = 0
@@ -387,20 +389,22 @@ class DoctorViewController:
         if self.currIdxEEG > len(self.allData["EEG"])-1:
             self.currIdxEEG = len(self.allData["EEG"])-1
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
+                      self.filePaths[self.currIdxEEG].split("/")[-1])
 
     def showNextChannel(self):
-        if (len(self.allData["EEG"]) == 0): return
+        if len(self.allData["EEG"]) == 0: return
 
         self.currIdxChannel += 1
 
         if self.currIdxChannel > 19 - 1:
             self.currIdxChannel = 19 - 1
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
+                      self.filePaths[self.currIdxEEG].split("/")[-1])
 
     def showPrevPlotEEG(self):
-        if(len(self.allData["EEG"]) == 0): return
+        if len(self.allData["EEG"]) == 0: return
 
         self.currIdxEEG -= 1
         self.currIdxChannel = 0
@@ -408,17 +412,19 @@ class DoctorViewController:
         if self.currIdxEEG < 0:
             self.currIdxEEG = 0
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
+                      self.filePaths[self.currIdxEEG].split("/")[-1])
 
     def showPrevChannel(self):
-        if(len(self.allData["EEG"]) == 0): return
+        if len(self.allData["EEG"]) == 0: return
 
         self.currIdxChannel -= 1
 
         if self.currIdxChannel < 0:
             self.currIdxChannel = 0
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG", self.filePaths[self.currIdxEEG].split("/")[-1])
+        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
+                      self.filePaths[self.currIdxEEG].split("/")[-1])
 
     def showNextPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
@@ -429,7 +435,8 @@ class DoctorViewController:
         if self.currIdxMRI > len(self.allData["MRI"])-1:
             self.currIdxMRI = len(self.allData["MRI"])-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
+                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showNextPlane(self):
         if len(self.allData["MRI"]) == 0: return
@@ -439,7 +446,8 @@ class DoctorViewController:
         if self.currIdxPlane > 3-1:
             self.currIdxPlane = 3-1
 
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI", self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
+        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
+                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
 
     def showPrevPlotMRI(self):
         if len(self.allData["MRI"]) == 0: return
