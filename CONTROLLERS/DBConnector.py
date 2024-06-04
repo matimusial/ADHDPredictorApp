@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 
+
 class DBConnector:
     def __init__(self):
         self.connection = None
@@ -74,8 +75,8 @@ class DBConnector:
 
         return file_data, channels, str(input_shape), type_value, float(fs) if fs is not None else None, plane, description
 
-    def insert_data_into_models(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
-                                type_value="none", fs=None, plane=None, description="none"):
+    def insert_data_into_models_table(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
+                                      type_value="none", fs=None, plane=None, description="none"):
         """
         Inserts data into the 'models' and 'files' tables.
 
@@ -119,7 +120,7 @@ class DBConnector:
                 model_id = self.cursor.lastrowid
 
                 query_files = """
-                INSERT INTO files (model_id, files) 
+                INSERT INTO files (model_id, file) 
                 VALUES (%s, %s)
                 """
                 self.cursor.execute(query_files, (model_id, model_data))
@@ -129,7 +130,7 @@ class DBConnector:
             except Error as e:
                 print(f"Error inserting data: {e}")
         else:
-            print("No database connection.")
+            print("No database connection, use establish_connection function.")
 
     def select_data(self, table_name=""):
         """
@@ -151,7 +152,7 @@ class DBConnector:
                 print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("No database connection.")
+            print("No database connection, use establish_connection function.")
             return None
 
     def select_model_name(self, condition=""):
@@ -175,8 +176,9 @@ class DBConnector:
                 print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("No database connection.")
+            print("No database connection, use establish_connection function.")
             return None
+
     def select_model_info(self, condition=""):
         """
         Selects and returns data from the 'models' table based on a condition.
@@ -198,8 +200,9 @@ class DBConnector:
                 print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("No database connection.")
+            print("No database connection, use establish_connection function.")
             return None
+
     def select_model(self, model_name=""):
         """
         Selects and returns the data for a specified model name.
@@ -251,5 +254,35 @@ class DBConnector:
                 print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("No database connection.")
+            print("No database connection, use establish_connection function.")
             return None
+
+    def delete_data_from_models_table(self, model_id):
+        """
+        Deletes data from the 'models' and 'files' tables based on the provided model ID.
+
+        Args:
+            model_id (int): The ID of the model to be deleted.
+
+        Returns:
+            None
+        """
+        if self.connection and self.connection.is_connected():
+            try:
+                query_files = """DELETE FROM files WHERE model_id = %s"""
+                self.cursor.execute(query_files, (model_id,))
+                self.connection.commit()
+
+                query_models = """DELETE FROM models WHERE id = %s"""
+                self.cursor.execute(query_models, (model_id,))
+                self.connection.commit()
+
+                print(f"Model with ID {model_id} successfully deleted from 'models' and 'files' tables.")
+            except Error as e:
+                print(f"Error deleting data: {e}")
+        else:
+            print("No database connection, use establish_connection function.")
+
+
+#db = DBConnector()
+#db.establish_connection()

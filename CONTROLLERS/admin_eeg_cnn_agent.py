@@ -108,7 +108,7 @@ class AdminEegCnn:
         file_name = os.listdir(MODEL_PATH)
         file_path = os.path.join('./EEG/temp_model_path', file_name[0])
         print(file_name[0])
-        self.db_conn.insert_data_into_models(
+        self.db_conn.insert_data_into_models_table(
             file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
         for filename in os.listdir(MODEL_PATH):
             file_path = os.path.join(MODEL_PATH, filename)
