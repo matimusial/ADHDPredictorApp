@@ -1,5 +1,7 @@
 import os
 import io
+import random
+
 import numpy as np
 import nibabel as nib
 import pyedflib
@@ -20,6 +22,7 @@ from EEG.config import FS
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 from EEG.file_io import split_into_frames
 from EEG.PREDICT.predict import check_result
+from MRI.file_io import read_pickle
 from MRI.image_preprocessing import trim_one, normalize
 from MRI.config import CNN_INPUT_SHAPE_MRI
 from EEG.config import CNN_INPUT_SHAPE
@@ -73,77 +76,85 @@ class DoctorViewController:
 
         self.ui.predictBtn.clicked.connect(self.predict)
 
-        self.ui.showGenerated.clicked.connect(self.showGenerated)
+        self.ui.showReal.clicked.connect(lambda: self.showDialog('REAL'))
+        self.ui.showGenerated.clicked.connect(lambda: self.showDialog('GENERATED'))
 
-
-    def showGenerated(self):
+    def showDialog(self, data_type):
         dialog = QDialog(self.ui)
         dialog.setWindowTitle('Choose option')
 
         layout = QVBoxLayout()
-
         radio_healthy = QRadioButton('ADHD')
         radio_sick = QRadioButton('CONTROL')
+        radio_healthy.setChecked(True)
 
         layout.addWidget(radio_healthy)
         layout.addWidget(radio_sick)
-        radio_healthy.setChecked(True)
 
         label = QLabel('IMG amount (max 20):')
-
         input_number = QLineEdit()
-
         validator = QIntValidator(0, 20, input_number)
         input_number.setValidator(validator)
-
         input_number.setText("3")
 
         layout.addWidget(label)
         layout.addWidget(input_number)
 
         submit_button = QPushButton('Submit')
-        submit_button.clicked.connect(lambda: self.plotGenerated(radio_healthy, radio_sick, input_number, dialog))
+        submit_button.clicked.connect(
+            lambda: self.prepareAndPlotData(data_type, radio_healthy, radio_sick, input_number, dialog))
 
         layout.addWidget(submit_button)
-
         dialog.setLayout(layout)
         dialog.exec_()
 
+    def prepareAndPlotData(self, data_type, radio_healthy, radio_sick, input_number, dialog):
 
-    def plotGenerated(self, radio_healthy, radio_sick, input_number, dialog):
+        self.ui.btnNextPlane.setEnabled(False)
+        self.ui.btnPrevPlane.setEnabled(False)
+
+
         self.currIdxEEG = 0
         self.currIdxMRI = 0
         self.currIdxChannel = 0
         self.currIdxPlane = 0
         self.allData = {"EEG": [], "MRI": []}
-        from MRI.file_io import read_pickle
-        import random
+
         dialog.close()
 
-        if radio_healthy.isChecked():
-            file_path = os.path.join("MRI", "GENERATED_MRI", "ADHD_GENERATED.pkl")
-            DATA = read_pickle(file_path)
+        file_path = os.path.join("MRI", f"{data_type}_MRI",
+                                 f"{'ADHD' if radio_healthy.isChecked() else 'CONTROL'}_{data_type}.pkl")
+        DATA = read_pickle(file_path)
 
-        elif radio_sick.isChecked():
-            file_path = os.path.join("MRI", "GENERATED_MRI", "CONTROL_GENERATED.pkl")
-            DATA = read_pickle(file_path)
+        input_number = min(int(input_number.text()), 20)
+        img_numbers = random.sample(range(len(DATA)), input_number)
 
-        input_number = int(input_number.text())
-        if input_number >= 20:
-            input_number = 20
-        range_list = list(range(len(DATA)))
-        img_numbers = random.sample(range_list, input_number)
-        for i, img_number in enumerate(img_numbers):
+        for img_number in img_numbers:
             try:
-                self.allData["MRI"].append([DATA[img_number],np.zeros(DATA[img_number].shape), np.zeros(DATA[img_number].shape)])
-
+                self.allData["MRI"].append(
+                    [DATA[img_number], np.zeros(DATA[img_number].shape), np.zeros(DATA[img_number].shape)])
             except Exception as e:
                 print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
 
         self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
-    def predict(self):
 
+
+
+
+
+
+
+
+    def generateNew(self):
+        pass
+
+
+
+
+    def predict(self):
+        self.ui.btnNextPlane.setEnabled(False)
+        self.ui.btnPrevPlane.setEnabled(False)
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
             self.show_alert("No files or models chosen")
             return

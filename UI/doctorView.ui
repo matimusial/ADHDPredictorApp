@@ -33,14 +33,14 @@ QPushButton{
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QPushButton" name="GenerateNew">
+          <widget class="QPushButton" name="generateNew">
            <property name="text">
             <string>Generate New</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="ShowReal">
+          <widget class="QPushButton" name="showReal">
            <property name="text">
             <string>Show Real</string>
            </property>
