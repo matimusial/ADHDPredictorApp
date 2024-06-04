@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QFileDialog
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg
 from CONTROLLERS.DBConnector import DBConnector
-import numpy as np
-import sys
 import os
 
 current_dir = os.path.dirname(__file__)

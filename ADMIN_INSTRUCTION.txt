@@ -6,7 +6,8 @@ CNN for MRI - Okno z uczeniem modelu CNN dla zdjęć MRI
 CNN for EEG - Okno z uczeniem modelu CNN dla fal EEG
 
 =CNN for EEG=====================================================================================:
-    - "Chose folder with data" - Musisz wybrać folder z następującą strukturą:
+    - "Chose folder with data" - (przycisk) typ tekstowy,          domyślnie rf'{parent_dir}/EEG/TRAIN/TRAIN_DATA'
+        Folder z danymi uczącymi musi mieć następującą strukturę:
         (wybrany folder)
                         |
                         | ADHD
@@ -23,3 +24,7 @@ CNN for EEG - Okno z uczeniem modelu CNN dla fal EEG
     - "Electrodes"      -   typ liczbowy,               domyślnie 19
     - "Frame size"      -   typ liczbowy,               domyślnie 128
     - "Frequency"       -   typ liczbowy,               domyślnie 128
+
+    - "Start"           -   (przycisk) Uruchamia proces uczenia modelu
+
+    - [PLOT]            -   (graf) Wyświetla wartość Accuracy i Loss po uruchomieniu uczenia w czasie rzeczywistym
