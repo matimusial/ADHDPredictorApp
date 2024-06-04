@@ -28,7 +28,7 @@ current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
-GIF_PATH = os.path.join('UI','loading.gif')
+GIF_PATH = os.path.join('UI', 'loading.gif')
 
 class DoctorViewController:
     def __init__(self, mainWindow):

@@ -177,7 +177,29 @@ class DBConnector:
         else:
             print("No database connection.")
             return None
+    def select_model_info(self, condition=""):
+        """
+        Selects and returns data from the 'models' table based on a condition.
 
+        Args:
+            condition (str): The condition to filter the models.
+            example: "WHERE cond1 = 'val1' AND/OR cond2 = 'val'" check insert_data_for_models for table structure.
+
+        Returns:
+            list: A list of tuples containing the data from the table, or None if an error occurs.
+        """
+        if self.connection and self.connection.is_connected():
+            try:
+                query = f"SELECT name, description FROM models WHERE {condition}"
+                self.cursor.execute(query)
+                results = self.cursor.fetchall()
+                return results
+            except Error as e:
+                print(f"Error retrieving data: {e}")
+                return None
+        else:
+            print("No database connection.")
+            return None
     def select_model(self, model_name=""):
         """
         Selects and returns the data for a specified model name.
