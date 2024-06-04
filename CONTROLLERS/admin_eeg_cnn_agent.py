@@ -5,6 +5,7 @@ import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg
 from CONTROLLERS.DBConnector import DBConnector
 import os
+import shutil
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
@@ -98,7 +99,9 @@ class AdminEegCnn:
         self.thread.start()
 
     def train(self):
-        train_cnn_eeg(True, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+        if not os.path.exists(MODEL_PATH):
+            os.makedirs(MODEL_PATH)
+        #train_cnn_eeg(True, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
 
     def onFinished(self):
         self.connect_to_db()
@@ -107,6 +110,22 @@ class AdminEegCnn:
         print(file_name[0])
         self.db_conn.insert_data_into_models(
             file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
+        # Usuń wszystkie pliki w katalogu MODEL_PATH i sam katalog
+        for filename in os.listdir(MODEL_PATH):
+            file_path = os.path.join(MODEL_PATH, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+
+        # Usuń sam katalog MODEL_PATH
+        try:
+            os.rmdir(MODEL_PATH)
+        except Exception as e:
+            print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
 
     def onError(self, error):
         print(f"Error: {error}")
