@@ -41,8 +41,8 @@ class DoctorViewController:
         self.filePaths = None
         self.modelEEG = None
         self.modelMRI = None
-        self.chosenModelNameEEG = None
-        self.chosenModelNameMRI = None
+        self.chosenModelInfoEEG = None
+        self.chosenModelInfoMRI = None
         self.loadedEEGfiles = 0
         self.loadedMRIfiles = 0
         self.currIdxEEG = 0
@@ -144,7 +144,7 @@ class DoctorViewController:
 
     def predict(self):
 
-        if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
+        if self.filePaths is None or (self.chosenModelInfoEEG is None and self.chosenModelInfoMRI is None):
             self.show_alert("No files or models chosen")
             return
 
@@ -208,8 +208,8 @@ class DoctorViewController:
         self.getModelNames()
 
     def getModelNames(self):
-        self.chosenModelNameEEG = None
-        self.chosenModelNameMRI = None
+        self.chosenModelInfoEEG = None
+        self.chosenModelInfoMRI = None
         self.ui.chosenModelEEG.setText("----------")
         self.ui.chosenModelMRI.setText("----------")
 
@@ -228,16 +228,16 @@ class DoctorViewController:
         if self.loadedEEGfiles > 0:
             def chooseModelEEG(index: QModelIndex):
                 item = modelEEG.itemFromIndex(index)
-                self.chosenModelNameEEG = item.text()
-                self.ui.chosenModelEEG.setText(self.chosenModelNameEEG)
+                self.chosenModelInfoEEG = item.data()
+                self.ui.chosenModelEEG.setText(self.chosenModelInfoEEG[0])
 
-            modelsList = self.db_conn.select_model_name("type='cnn_eeg'")
+            modelsList = self.db_conn.select_model_info("type='cnn_eeg'")
 
-            for modelName in modelsList:
-                item = QStandardItem(modelName[0])
+            for modelInfo in modelsList:
+                item = QStandardItem(modelInfo[0])
                 item.setEditable(False)
+                item.setData(modelInfo)
                 modelEEG.appendRow(item)
-
 
             self.ui.modelListViewEEG.setModel(modelEEG)
             self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
@@ -251,14 +251,15 @@ class DoctorViewController:
         if self.loadedMRIfiles:
             def chooseModelMRI(index: QModelIndex):
                 item = modelMRI.itemFromIndex(index)
-                self.chosenModelNameMRI = item.text()
-                self.ui.chosenModelMRI.setText(self.chosenModelNameMRI)
+                self.chosenModelInfoMRI = item.data()
+                self.ui.chosenModelMRI.setText(self.chosenModelInfoMRI[0])
 
-            modelsList = self.db_conn.select_model_name("type='cnn_mri'")
+            modelsList = self.db_conn.select_model_info("type='cnn_mri'")
 
-            for modelName in modelsList:
-                item = QStandardItem(modelName[0])
+            for modelInfo in modelsList:
+                item = QStandardItem(modelInfo[0])
                 item.setEditable(False)
+                item.setData(modelInfo)
                 modelMRI.appendRow(item)
 
             self.ui.modelListViewMRI.setModel(modelMRI)
@@ -326,10 +327,10 @@ class DoctorViewController:
         self.modelEEG = None
         self.modelMRI = None
 
-        if self.chosenModelNameEEG is not None:
-            self.modelEEG = self.db_conn.select_model(self.chosenModelNameEEG)
-        if self.chosenModelNameMRI is not None:
-            self.modelMRI = self.db_conn.select_model(self.chosenModelNameMRI)
+        if self.chosenModelInfoEEG is not None:
+            self.modelEEG = self.db_conn.select_model(self.chosenModelInfoEEG[0])
+        if self.chosenModelInfoMRI is not None:
+            self.modelMRI = self.db_conn.select_model(self.chosenModelInfoMRI[0])
 
     def processData(self, DATA, model, dataType="EEG"):
         result = []
@@ -551,8 +552,13 @@ class DoctorViewController:
         alert.setStandardButtons(QMessageBox.Ok)
 
         if type == "EEG":
-            msg = "eeg"
+            if self.chosenModelInfoEEG is None:
+                return
+            msg = self.chosenModelInfoEEG[1]
+
         if type == "MRI":
+            if self.chosenModelInfoMRI is None:
+                return
             msg = "mri"
 
         alert.setText(msg)
