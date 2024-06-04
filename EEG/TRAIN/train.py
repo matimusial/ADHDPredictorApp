@@ -10,7 +10,7 @@ from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH
 from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_data
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 
-from  CONTROLLERS.metrics import RealTimeMetrics
+from CONTROLLERS.metrics import RealTimeMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
