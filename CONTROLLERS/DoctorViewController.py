@@ -68,6 +68,9 @@ class DoctorViewController:
         self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
         self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
 
+        self.ui.modelInfoEEG.clicked.connect(lambda: self.showModelInfo("EEG"))
+        self.ui.modelInfoMRI.clicked.connect(lambda: self.showModelInfo("MRI"))
+
         self.ui.predictBtn.clicked.connect(self.predict)
 
         self.ui.showGenerated.clicked.connect(self.showGenerated)
@@ -538,6 +541,21 @@ class DoctorViewController:
         self.ui.showGenerated.setEnabled(state)
         self.ui.switchSceneBtn.setEnabled(state)
         self.ui.loadDataBtn.setEnabled(state)
+
+    def showModelInfo(self, type):
+        alert = QMessageBox()
+        alert.setWindowTitle("Info")
+        alert.setIcon(QMessageBox.Information)
+        alert.setStandardButtons(QMessageBox.Ok)
+
+        if type == "EEG":
+            msg = "eeg"
+        if type == "MRI":
+            msg = "mri"
+
+        alert.setText(msg)
+        alert.exec_()
+
 
 class Worker(QObject):
     finished = pyqtSignal()
