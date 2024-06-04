@@ -98,11 +98,9 @@ class AdminEegCnn:
         self.thread.start()
 
     def train(self):
-        #train_cnn_eeg(False, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
-        print("debug_train in (admin_eeg_cnn_agent.py)")
+        train_cnn_eeg(True, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
 
     def onFinished(self):
-        print("Processing completed")
         self.connect_to_db()
         file_name = os.listdir(MODEL_PATH)
         file_path = rf'./EEG/temp_model_path/{file_name[0]}'
