@@ -231,8 +231,9 @@ class DoctorViewController:
         self.ui.chosenModelEEG.setText("----------")
         self.ui.chosenModelMRI.setText("----------")
 
-        self.db_conn = DBConnector()
-        self.db_conn.establish_connection()
+        if self.db_conn is None:
+            self.db_conn = DBConnector()
+            self.db_conn.establish_connection()
 
         if self.db_conn.connection is None:
             self.show_alert("Cannot establish database connection")
