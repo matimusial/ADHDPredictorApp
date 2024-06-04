@@ -1,7 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
 
-
 class DBConnector:
     def __init__(self):
         self.connection = None
@@ -9,7 +8,7 @@ class DBConnector:
     def __del__(self):
         if self.connection and self.connection.is_connected():
             self.connection.close()
-            print("Połączenie do bazy danych zostało zamknięte.")
+            print("Database connection closed.")
 
     def establish_connection(self):
         try:
@@ -25,56 +24,55 @@ class DBConnector:
             )
             if self.connection.is_connected():
                 self.cursor = self.connection.cursor()
-                print("Połączenie do bazy danych zostało nawiązane.")
+                print("Database connection established.")
             else:
-                raise Error("Nie udało się nawiązać połączenia z bazą danych.")
+                raise Error("Failed to establish database connection.")
         except Error as e:
-            print(f"Błąd połączenia: {e}")
-            print("Pamiętaj o włączeniu ZUT VPN.")
+            print(f"Connection error: {e}")
+            print("Remember to enable ZUT VPN.")
 
     def validate_and_convert_input_models(self, file_data, channels, input_shape, type_value, fs, plane, description):
         """
         Validates input for models table
         """
         if not file_data.endswith('.keras'):
-            print("Błąd: 'model path' musi mieć rozszerzenie '.keras'.")
+            print("Error: 'model path' must have '.keras' extension.")
             return
 
         if channels is not None and not isinstance(channels, int):
-            print("Błąd: 'channels' musi być liczbą całkowitą lub None.")
+            print("Error: 'channels' must be an integer or None.")
             return
 
         if not (isinstance(input_shape, tuple) and all(isinstance(i, int) for i in input_shape)):
-            print("Błąd: 'input_shape' musi być tuplą z liczbami całkowitymi.")
+            print("Error: 'input_shape' must be a tuple of integers.")
             return
 
         type_value = type_value.lower()
         if type_value not in ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control']:
-            print("Błąd: 'type' musi być jedną z wartości 'cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'.")
+            print("Error: 'type' must be one of 'cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'.")
             return
 
         if fs is not None:
             if not isinstance(fs, (float, int)):
-                print("Błąd: 'fs' musi być liczbą zmiennoprzecinkową, całkowitą lub None.")
+                print("Error: 'fs' must be a float, integer, or None.")
                 return
             if fs == 0:
-                print("Błąd: 'fs' nie może być równe 0.")
+                print("Error: 'fs' cannot be 0.")
                 return
 
         if plane is not None and plane not in ['A', 'S', 'C']:
-            print("Błąd: 'plane' musi być jedną z wartości 'A', 'S', 'C' lub None.")
+            print("Error: 'plane' must be one of 'A', 'S', 'C' or None.")
             return
 
         if len(description) > 254:
-            print("Błąd: 'description' nie może być dłuższy niż 254 znaki.")
+            print("Error: 'description' cannot be longer than 254 characters.")
             return
 
         channels = channels if channels is not None else None
         fs = fs if fs is not None else None
         plane = plane if plane is not None else None
 
-        return file_data, channels, str(input_shape), type_value, float(
-            fs) if fs is not None else None, plane, description
+        return file_data, channels, str(input_shape), type_value, float(fs) if fs is not None else None, plane, description
 
     def insert_data_into_models(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
                                 type_value="none", fs=None, plane=None, description="none"):
@@ -94,10 +92,9 @@ class DBConnector:
         Returns:
             None
         """
-        validated_data = self.validate_and_convert_input_models(file_path, channels, input_shape, type_value, fs, plane,
-                                                                description)
+        validated_data = self.validate_and_convert_input_models(file_path, channels, input_shape, type_value, fs, plane, description)
         if not validated_data:
-            print("Nieprawidłowe dane wejściowe.")
+            print("Invalid input data.")
             return
 
         file_path, channels, input_shape_str, type_value, fs, plane, description = validated_data
@@ -106,7 +103,7 @@ class DBConnector:
             with open(file_path, 'rb') as file:
                 model_data = file.read()
         except Exception as e:
-            print(f"Błąd podczas wczytywania modelu: {e}")
+            print(f"Error loading model: {e}")
             return
 
         if self.connection and self.connection.is_connected():
@@ -128,11 +125,11 @@ class DBConnector:
                 self.cursor.execute(query_files, (model_id, model_data))
                 self.connection.commit()
 
-                print(f"Model {type} {name} został pomyślnie wstawiony do tabel models i files.")
+                print(f"Model {type_value} {name} successfully inserted into 'models' and 'files' tables.")
             except Error as e:
-                print(f"Błąd podczas wstawiania danych: {e}")
+                print(f"Error inserting data: {e}")
         else:
-            print("Brak połączenia z bazą danych.")
+            print("No database connection.")
 
     def select_data(self, table_name=""):
         """
@@ -151,10 +148,10 @@ class DBConnector:
                 results = self.cursor.fetchall()
                 return results
             except Error as e:
-                print(f"Błąd podczas pobierania danych: {e}")
+                print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("Brak połączenia z bazą danych.")
+            print("No database connection.")
             return None
 
     def select_model_name(self, condition=""):
@@ -175,10 +172,10 @@ class DBConnector:
                 results = self.cursor.fetchall()
                 return results
             except Error as e:
-                print(f"Błąd podczas pobierania danych: {e}")
+                print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("Brak połączenia z bazą danych.")
+            print("No database connection.")
             return None
 
     def select_model(self, model_name=""):
@@ -213,9 +210,9 @@ class DBConnector:
 
                         try:
                             loaded_model = load_model("tmp.keras")
-                            print("Model został prawidłowo załadowany przez Keras.")
+                            print("Model successfully loaded by Keras.")
                         except Exception as e:
-                            print(f"Błąd podczas ładowania modelu przez Keras: {e}")
+                            print(f"Error loading model by Keras: {e}")
                             return None
 
                         if os.path.exists("tmp.keras"):
@@ -223,19 +220,14 @@ class DBConnector:
 
                         return loaded_model
                     else:
-                        print("Nie znaleziono pliku dla podanego modelu.")
+                        print("No file found for the specified model.")
                         return None
                 else:
-                    print("Nie znaleziono modelu o podanej nazwie.")
+                    print("No model found with the specified name.")
                     return None
             except Error as e:
-                print(f"Błąd podczas pobierania danych: {e}")
+                print(f"Error retrieving data: {e}")
                 return None
         else:
-            print("Brak połączenia z bazą danych.")
+            print("No database connection.")
             return None
-
-
-#db = DBConnector()
-
-#db.insert_data_into_models("0.7466", "../MRI/CNN/MODELS/0.7466.keras", None, (120, 120, 1), "cnn_mri",None, "A", "model testowy mri 6")
