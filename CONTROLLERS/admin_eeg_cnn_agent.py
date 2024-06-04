@@ -9,17 +9,17 @@ import shutil
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
-UI_PATH = rf'{current_dir}/UI'
+UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 
-MODEL_PATH = rf'{parent_dir}/EEG/temp_model_path'
-TRAIN_PATH = rf'{parent_dir}/EEG/TRAIN/TRAIN_DATA'
-PREDICT_PATH = rf'{parent_dir}/EEG/PREDICT/PREDICT_DATA'
+MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
+TRAIN_PATH = os.path.join(parent_dir, 'EEG', 'TRAIN', 'TRAIN_DATA')
+PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(rf'{parent_directory}/UI/aUI_projekt_EEG.ui', mainWindow)
+        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
 
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
@@ -101,16 +101,15 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        #train_cnn_eeg(True, TRAIN_PATH, PREDICT_PATH, MODEL_PATH, self.ui)
+        train_cnn_eeg(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
 
     def onFinished(self):
         self.connect_to_db()
         file_name = os.listdir(MODEL_PATH)
-        file_path = rf'./EEG/temp_model_path/{file_name[0]}'
+        file_path = os.path.join('./EEG/temp_model_path', file_name[0])
         print(file_name[0])
         self.db_conn.insert_data_into_models(
             file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
-        # Usuń wszystkie pliki w katalogu MODEL_PATH i sam katalog
         for filename in os.listdir(MODEL_PATH):
             file_path = os.path.join(MODEL_PATH, filename)
             try:
@@ -121,7 +120,6 @@ class AdminEegCnn:
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
 
-        # Usuń sam katalog MODEL_PATH
         try:
             os.rmdir(MODEL_PATH)
         except Exception as e:
@@ -133,8 +131,7 @@ class AdminEegCnn:
     def connect_to_db(self):
         self.db_conn = DBConnector()
         print(self.db_conn.connection)
-        if self.db_conn.connection == None: return
-
+        if self.db_conn.connection is None: return
 
 class Worker(QObject):
     finished = pyqtSignal()
