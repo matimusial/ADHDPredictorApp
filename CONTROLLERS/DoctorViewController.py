@@ -5,9 +5,9 @@ import nibabel as nib
 import pyedflib
 import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal
+from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal, QSize
 from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
-from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator
+from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator, QMovie
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -28,6 +28,7 @@ current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
+GIF_PATH = os.path.join('UI','loading.gif')
 
 class DoctorViewController:
     def __init__(self, mainWindow):
@@ -141,8 +142,7 @@ class DoctorViewController:
     def predict(self):
 
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
-            self.show_alert("Brak załadowanych plików lub modelu")
-            print("Brak załadowanych plików lub modelu")
+            self.show_alert("No files or models chosen")
             return
 
         self.currIdxEEG = 0
@@ -169,14 +169,17 @@ class DoctorViewController:
 
         # Start the thread
         self.thread.start()
+        self.show_loading_animation()
+        self.change_btn_state(False)
 
     def onFinished(self):
         print("Processing completed")
+        self.change_btn_state(True)
+        self.movie.stop()
         self.showResult()
 
     def onError(self, error):
-        print(f"Error: {error}")
-
+        self.show_alert(f"Error: {error}")
 
     def getFilePaths(self):
         options = QFileDialog.Options()
@@ -339,7 +342,7 @@ class DoctorViewController:
                 result = model.predict(DATA_FRAMED)
 
             except Exception as e:
-                print(f"Error processing EEG data: {e}")
+                self.show_alert(f"Error processing EEG data: {e}")
                 return
 
         if dataType == "MRI":
@@ -353,7 +356,7 @@ class DoctorViewController:
                 result = model.predict(img_for_predict)
 
             except Exception as e:
-                print(f"Error processing MRI data: {e}")
+                self.show_alert(f"Error processing MRI data: {e}")
                 return
 
         return result
@@ -523,6 +526,18 @@ class DoctorViewController:
         alert.setStandardButtons(QMessageBox.Ok)
 
         alert.exec_()
+
+    def show_loading_animation(self):
+        self.movie = QMovie(GIF_PATH)
+        self.ui.resultLabel.setMovie(self.movie)
+        self.movie.start()
+        self.movie.setScaledSize(QSize(50, 50))
+
+    def change_btn_state(self, state):
+        self.ui.predictBtn.setEnabled(state)
+        self.ui.showGenerated.setEnabled(state)
+        self.ui.switchSceneBtn.setEnabled(state)
+        self.ui.loadDataBtn.setEnabled(state)
 
 class Worker(QObject):
     finished = pyqtSignal()
