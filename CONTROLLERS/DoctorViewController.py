@@ -141,6 +141,7 @@ class DoctorViewController:
     def predict(self):
 
         if self.filePaths is None or (self.chosenModelNameEEG is None and self.chosenModelNameMRI is None):
+            self.show_alert("Brak załadowanych plików lub modelu")
             print("Brak załadowanych plików lub modelu")
             return
 
@@ -514,6 +515,14 @@ class DoctorViewController:
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
 
+    def show_alert(self, msg):
+        alert = QMessageBox()
+        alert.setWindowTitle("Warning")
+        alert.setText(msg)
+        alert.setIcon(QMessageBox.Warning)
+        alert.setStandardButtons(QMessageBox.Ok)
+
+        alert.exec_()
 
 class Worker(QObject):
     finished = pyqtSignal()
