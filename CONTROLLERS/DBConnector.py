@@ -87,7 +87,7 @@ class DBConnector:
         Inserts data into the 'models' and 'files' tables.
 
         Args:
-            name (str): Lowercase name of the model.
+            name (str): Accuracy of the model.
             file_path (str): Path to the model (.keras).
             channels (int): The channels or None
             input_shape (tuple): The input shape of the model.
