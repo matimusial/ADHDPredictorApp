@@ -11,7 +11,7 @@ from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_dat
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 from CONTROLLERS.file_io import read_eeg_raw
 
-from CONTROLLERS.metrics import RealTimeMetrics
+from CONTROLLERS.metrics import WorkerMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -83,13 +83,11 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
-        real_time_metrics = RealTimeMetrics(total_epochs=CNN_EPOCHS,plot_label=ui.plotLabel_CNN)
-
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS,
                       batch_size=CNN_BATCH_SIZE,
-                      callbacks=[reduce_lr, real_time_metrics],
+                      callbacks=[reduce_lr],
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)
@@ -104,7 +102,7 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
         print(f"Error during CNN training: {e}")
         return
 
-def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
+def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
     """Trains a CNN model on EEG data.
 
     Args:
@@ -142,13 +140,13 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
-        real_time_metrics = RealTimeMetrics(total_epochs=CNN_EPOCHS,plot_label=ui.plotLabel_CNN)
+        #worker_metrics = WorkerMetrics()
 
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS,
                       batch_size=CNN_BATCH_SIZE,
-                      callbacks=[reduce_lr, real_time_metrics],
+                      callbacks=[reduce_lr],
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)

@@ -4,8 +4,16 @@ from PyQt5.QtWidgets import QFileDialog
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg, train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
+from CONTROLLERS.metrics import *
 import os
 import shutil
+
+from PyQt5.QtCore import QMutex,QMutexLocker
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvas
+from PyQt5.QtGui import QPixmap
+import io
+import time
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
@@ -27,7 +35,7 @@ TO DO:
 -Wspólne umiejscowienie przycisków przełączania użytkownika i admina
 -dane z configa są ignorowane przez resztę kodu
 -Ten graf to zadziała kiedyś?
--TESTOWAĆ WSZYSTKO
+-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 '''
 
 class AdminEegCnn:
@@ -108,6 +116,9 @@ class AdminEegCnn:
 
         self.thread = QThread()
 
+        #self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
+        #self.real_time_metrics.start()
+
         # Create a worker object
         self.worker = Worker(self)
 
@@ -128,7 +139,7 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
+        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
 
     def onFinished(self):
         self.connect_to_db()
@@ -177,3 +188,70 @@ class Worker(QObject):
 
     def train_cnn_eeg(self):
         self.controller.train()
+
+class RealTimeMetrics(QThread):
+    """Thread for visualizing accuracy and loss in real time during model training."""
+
+    def __init__(self, total_epochs, plot_label):
+        super().__init__()
+        self.total_epochs = total_epochs
+        self.plot_label = plot_label
+        self.mutex = QMutex()
+
+    def run(self):
+        while global_epoch_count <= self.total_epochs:
+            self.plot_metrics()
+            time.sleep(10)
+
+    def plot_metrics(self):
+        try:
+            with QMutexLocker(self.mutex):
+                fig = Figure()
+                fig.tight_layout()
+                canvas = FigureCanvas(fig)
+
+                print()
+                print("\nTest 2: ")
+                print("global_accuracy: ", global_accuracy)
+                print("global_val_accuracy: ", global_val_accuracy)
+                print("global_loss: ", global_loss)
+                print("global_val_loss: ", global_val_loss)
+                print("global_epoch_count: ", global_epoch_count,"\n")
+                print()
+
+                # Plot for accuracy
+                ax1 = fig.add_subplot(211)
+                ax1.plot(global_epoch_count, global_accuracy, 'r-', label='Training Accuracy')
+                ax1.plot(global_epoch_count, global_val_accuracy, 'b-', label='Validation Accuracy')
+                ax1.set_xlabel('Epoch')
+                ax1.set_ylabel('Accuracy')
+                ax1.set_title('Accuracy')
+                ax1.legend()
+                ax1.grid(True)
+                ax1.set_ylim(0, 1.0)
+                ax1.set_xlim(1, self.total_epochs)
+
+                # Plot for loss
+                ax2 = fig.add_subplot(212)
+                ax2.plot(global_epoch_count, global_loss, 'r-', label='Training Loss')
+                ax2.plot(global_epoch_count, global_val_loss, 'b-', label='Validation Loss')
+                ax2.set_xlabel('Epoch')
+                ax2.set_ylabel('Loss')
+                ax2.set_title('Loss')
+                ax2.legend()
+                ax2.grid(True)
+                ax2.set_xlim(1, self.total_epochs)
+
+                fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
+
+                buf = io.BytesIO()
+                canvas.print_png(buf)
+                qpm = QPixmap()
+                qpm.loadFromData(buf.getvalue(), 'PNG')
+                self.plot_label.setPixmap(qpm)
+
+                buf.close()
+        except Exception as e:
+            print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
+
+
