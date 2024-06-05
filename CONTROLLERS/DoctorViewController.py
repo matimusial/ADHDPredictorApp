@@ -288,7 +288,6 @@ class DoctorViewController:
         for path in self.filePaths:
             data = np.array([])
             dataType = ""
-            modelName = ""
 
             if path.endswith('.edf'):
                 print("EDF")
