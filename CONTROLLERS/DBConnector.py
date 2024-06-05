@@ -32,10 +32,15 @@ class DBConnector:
             print(f"Connection error: {e}")
             print("Remember to enable ZUT VPN.")
 
-    def validate_and_convert_input_models(self, file_data, channels, input_shape, type_value, fs, plane, description):
+    def validate_and_convert_input_models(self, name, file_data, channels, input_shape, type_value, fs, plane,
+                                          description):
         """
         Validates input for models table
         """
+        if not all(char.isdigit() or char == '.' for char in name):
+            print("Error: 'name' must consist only of digits (0-9) and/or dots ('.').")
+            return
+
         if not file_data.endswith('.keras'):
             print("Error: 'model path' must have '.keras' extension.")
             return
@@ -73,7 +78,8 @@ class DBConnector:
         fs = fs if fs is not None else None
         plane = plane if plane is not None else None
 
-        return file_data, channels, str(input_shape), type_value, float(fs) if fs is not None else None, plane, description
+        return name, file_data, channels, str(input_shape), type_value, float(
+            fs) if fs is not None else None, plane, description
 
     def insert_data_into_models_table(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
                                       type_value="none", fs=None, plane=None, description="none"):
@@ -93,12 +99,12 @@ class DBConnector:
         Returns:
             None
         """
-        validated_data = self.validate_and_convert_input_models(file_path, channels, input_shape, type_value, fs, plane, description)
+        validated_data = self.validate_and_convert_input_models(name, file_path, channels, input_shape, type_value, fs, plane, description)
         if not validated_data:
             print("Invalid input data.")
             return
 
-        file_path, channels, input_shape_str, type_value, fs, plane, description = validated_data
+        name, file_path, channels, input_shape_str, type_value, fs, plane, description = validated_data
 
         try:
             with open(file_path, 'rb') as file:
@@ -114,7 +120,7 @@ class DBConnector:
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
                 self.cursor.execute(query_models, (
-                    name.lower(), channels, input_shape_str, type_value, fs, plane, description))
+                    name, channels, input_shape_str, type_value, fs, plane, description))
                 self.connection.commit()
 
                 model_id = self.cursor.lastrowid
