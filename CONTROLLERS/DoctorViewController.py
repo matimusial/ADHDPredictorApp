@@ -259,7 +259,6 @@ class DoctorViewController:
                 item.setData(modelInfo)
                 modelEEG.appendRow(item)
 
-
             self.ui.modelListViewEEG.setModel(modelEEG)
             self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
 
