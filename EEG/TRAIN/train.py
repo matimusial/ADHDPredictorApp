@@ -102,3 +102,63 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
     except Exception as e:
         print(f"Error during CNN training: {e}")
         return
+
+def train_cnn_eeg_readraw(save, ADHD_DATA, CONTROL_DATA, predict_path, model_path, ui):
+    """Trains a CNN model on EEG data.
+
+    Args:
+        save (bool): Whether to save the model after training.
+        pickle_path (str): Path to the EEG data.
+        predict_path (str): Path to save validation data.
+        model_path (str): Path to save the trained model.
+    """
+    try:
+        print(f"CNN TRAINING STARTED for {CNN_EPOCHS} EPOCHS...")
+        print("\n")
+
+        try:
+            ADHD_DATA = read_pickle(os.path.join(pickle_path, "ADHD_EEG_DATA.pkl"))
+            CONTROL_DATA = read_pickle(os.path.join(pickle_path, "CONTROL_EEG_DATA.pkl"))
+        except Exception as e:
+            print(f"Error loading EEG files: {e}")
+            print("Did you download the files from the link in the folder EEG/TRAIN/TRAIN_DATA?")
+            return
+
+        try:
+            ADHD_UPDATED, CONTROL_UPDATED, X_pred, y_pred = make_pred_data(ADHD_DATA, CONTROL_DATA)
+            ADHD_FILTERED, CONTROL_FILTERED = filter_eeg_data(ADHD_UPDATED, CONTROL_UPDATED)
+            ADHD_CLIPPED, CONTROL_CLIPPED = clip_eeg_data(ADHD_FILTERED, CONTROL_FILTERED)
+            ADHD_NORMALIZED, CONTROL_NORMALIZED = normalize_eeg_data(ADHD_CLIPPED, CONTROL_CLIPPED)
+            X_train, y_train, X_test, y_test = prepare_for_cnn(ADHD_NORMALIZED, CONTROL_NORMALIZED)
+        except Exception as e:
+            print(f"Error processing EEG data: {e}")
+            return
+
+        model = build_eeg_cnn_model(CNN_INPUT_SHAPE)
+
+        optimizer = Adam(learning_rate=CNN_LEARNING_RATE)
+
+        model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
+
+        real_time_metrics = RealTimeMetrics(total_epochs=CNN_EPOCHS,plot_label=ui.plotLabel_CNN)
+
+        _ = model.fit(X_train, y_train,
+                      validation_data=(X_test, y_test),
+                      epochs=CNN_EPOCHS,
+                      batch_size=CNN_BATCH_SIZE,
+                      callbacks=[reduce_lr, real_time_metrics],
+                      verbose=1)
+
+        _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)
+        print(f"Test accuracy: {round(final_accuracy, 4)}")
+
+        if save:
+            model.save(os.path.join(model_path, f'{round(final_accuracy, 4)}.keras'))
+            # save_pickle(os.path.join(predict_path, f"X_pred_{round(final_accuracy, 4)}.pkl"), X_pred)
+            # save_pickle(os.path.join(predict_path, f"y_pred_{round(final_accuracy, 4)}.pkl"), y_pred)
+
+    except Exception as e:
+        print(f"Error during CNN training: {e}")
+        return
