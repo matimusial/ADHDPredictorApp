@@ -39,19 +39,6 @@ QPushButton{
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="switchSceneBtn">
-         <property name="text">
-          <string>USER View</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="GAN_MRI_Button">
          <property name="text">
           <string>GAN for MRI</string>
@@ -91,6 +78,19 @@ QPushButton{
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="switchSceneBtn">
+       <property name="text">
+        <string>USER View</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="exitButton">
@@ -163,70 +163,16 @@ QPushButton{
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <widget class="QLabel" name="epochs">
+         <widget class="QLabel" name="frequency">
           <property name="text">
-           <string>Epochs</string>
+           <string>Frequency</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="textEdit_epochs">
-          <property name="minimumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="batch_size">
-          <property name="text">
-           <string>Batch size</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit_batch_size">
-          <property name="minimumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="learning_rate">
-          <property name="text">
-           <string>Learning rate</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit_learning_rate">
+         <widget class="QTextEdit" name="textEdit_frequency">
           <property name="minimumSize">
            <size>
             <width>181</width>
@@ -298,16 +244,70 @@ QPushButton{
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLabel" name="frequency">
+         <widget class="QLabel" name="epochs">
           <property name="text">
-           <string>Frequency</string>
+           <string>Epochs</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="textEdit_frequency">
+         <widget class="QTextEdit" name="textEdit_epochs">
+          <property name="minimumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="batch_size">
+          <property name="text">
+           <string>Batch size</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="textEdit_batch_size">
+          <property name="minimumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="learning_rate">
+          <property name="text">
+           <string>Learning rate</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="textEdit_learning_rate">
           <property name="minimumSize">
            <size>
             <width>181</width>

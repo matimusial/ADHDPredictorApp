@@ -37,6 +37,7 @@ class DoctorViewController:
     def __init__(self, mainWindow):
 
         self.mainWindow = mainWindow
+        self.mainWindow.setWindowTitle("DOCTOR VIEW")
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
         self.addEvents()
 

@@ -1,94 +1,34 @@
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
 from tensorflow.keras.callbacks import Callback
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtGui import QPixmap
-import io
 
 
-class RealTimeMetrics(Callback):
-    """Callback for visualizing accuracy and loss in real time during model training.
+# Global variables for metrics
+global_accuracy = []
+global_val_accuracy = []
+global_loss = []
+global_val_loss = []
+global_epoch_count = []
 
-    Args:
-        total_epochs (int): Total number of training epochs.
-        plot_label (QLabel): QLabel widget where the plots will be displayed.
-    """
-    def __init__(self, total_epochs, plot_label):
-        super().__init__()
-        self.epoch_count = 1
-        self.total_epochs = total_epochs
-        self.plot_label = plot_label
-        self.x_data = []
-        self.y_data = []
-        self.val_y_data = []
-        self.loss_data = []
-        self.val_loss_data = []
-        self.METRICS_DISP_INTERVAL = 5
+class WorkerMetrics(Callback):
+    """Callback for updating global metrics during model training."""
 
     def on_epoch_end(self, epoch, logs=None):
-        """Method called at the end of each epoch.
-
-        Args:
-            epoch (int): Current epoch number.
-            logs (dict): Dictionary of logs containing metrics.
-        """
+        global global_accuracy, global_val_accuracy, global_loss, global_val_loss, global_epoch_count
         logs = logs or {}
-        accuracy = logs.get('accuracy')
-        val_accuracy = logs.get('val_accuracy')
-        loss = logs.get('loss')
-        val_loss = logs.get('val_loss')
+        epoch_count = 1
+        global_accuracy.append(logs.get('accuracy'))
+        global_val_accuracy.append(logs.get('val_accuracy'))
+        global_loss.append(logs.get('loss'))
+        global_val_loss.append(logs.get('val_loss'))
+        global_epoch_count.append(logs.get(epoch_count))
 
-        self.x_data.append(self.epoch_count)
-        self.y_data.append(accuracy)
-        self.val_y_data.append(val_accuracy)
-        self.loss_data.append(loss)
-        self.val_loss_data.append(val_loss)
 
-        if self.epoch_count % self.METRICS_DISP_INTERVAL == 0 or self.epoch_count == self.total_epochs - 1:
-            self.plot_metrics()
+        print("\nTest: ")
+        print("global_accuracy: ",global_accuracy)
+        print("global_val_accuracy: ",global_val_accuracy)
+        print("global_loss: ",global_loss)
+        print("global_val_loss: ",global_val_loss)
+        print("global_epoch_count: ",global_epoch_count,"\n")
 
-        self.epoch_count += 1
 
-    def plot_metrics(self):
-        try:
-            fig = Figure()
-            fig.tight_layout()
-            canvas = FigureCanvas(fig)
-
-            ax1 = fig.add_subplot(122)
-            ax1.plot(self.x_data, self.y_data, 'r-', label='Training Accuracy')
-            ax1.plot(self.x_data, self.val_y_data, 'b-', label='Validation Accuracy')
-            ax1.set_xlabel('Epoch')
-            ax1.set_ylabel('Accuracy')
-            ax1.set_title('Accuracy')
-            ax1.legend()
-            ax1.grid(True)
-            ax1.set_ylim(0, 1.0)
-            ax1.set_xlim(1, self.total_epochs)
-
-            ax2 = fig.add_subplot(121)
-            ax2.plot(self.x_data, self.loss_data, 'r-', label='Training Loss')
-            ax2.plot(self.x_data, self.val_loss_data, 'b-', label='Validation Loss')
-            ax2.set_xlabel('Epoch')
-            ax2.set_ylabel('Loss')
-            ax2.set_title('Loss')
-            ax2.legend()
-            ax2.grid(True)
-            ax2.set_xlim(1, self.total_epochs)
-
-            fig.subplots_adjust(wspace=0.4)
-
-            buf = io.BytesIO()
-            canvas.print_png(buf)
-            qpm = QPixmap()
-            qpm.loadFromData(buf.getvalue(), 'PNG')
-            self.plot_label.setPixmap(qpm)
-
-            buf.close()
-        except Exception as e:
-            print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
-
-    def on_train_end(self, logs=None):
-        plt.ioff()
-        self.plot_metrics()
+        epoch_count += 1

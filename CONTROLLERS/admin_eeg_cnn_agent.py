@@ -4,8 +4,16 @@ from PyQt5.QtWidgets import QFileDialog
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg, train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
+from CONTROLLERS.metrics import *
 import os
 import shutil
+
+from PyQt5.QtCore import QMutex,QMutexLocker
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvas
+from PyQt5.QtGui import QPixmap
+import io
+import time
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
@@ -18,23 +26,38 @@ PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 
 '''
 TO DO:
--Deaktywować wartości dla frequency i kanały
--Domyślne wartości wyświetlone w parametrach modelu
--Domyślna wartość wyświetlona w ścieżce modelu
+-U̶s̶t̶a̶w̶i̶ć̶ ̶t̶y̶t̶u̶ł̶ ̶o̶k̶n̶a̶ ̶n̶a̶ ̶w̶i̶d̶o̶k̶ ̶w̶ ̶k̶t̶ó̶r̶m̶ ̶s̶i̶ę̶ ̶j̶e̶s̶t̶
+-D̶o̶m̶y̶ś̶l̶n̶e̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶e̶ ̶w̶ ̶p̶a̶r̶a̶m̶e̶t̶r̶a̶c̶h̶ ̶m̶o̶d̶e̶l̶u̶
+-D̶o̶m̶y̶ś̶l̶n̶a̶ ̶w̶a̶r̶t̶o̶ś̶ć̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶a̶ ̶w̶ ̶ś̶c̶i̶e̶ż̶c̶e̶ ̶m̶o̶d̶e̶l̶u̶
+-P̶o̶d̶ł̶ą̶c̶z̶y̶ć̶ ̶d̶o̶ ̶t̶r̶a̶i̶n̶'̶a̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶_̶r̶e̶a̶d̶r̶a̶w̶ ̶z̶a̶m̶i̶a̶s̶t̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶
+-D̶e̶a̶k̶t̶y̶w̶o̶w̶a̶ć̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶d̶l̶a̶ ̶f̶r̶e̶q̶u̶e̶n̶c̶y̶ ̶i̶ ̶k̶a̶n̶a̶ł̶y̶
 -Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
 -Wspólne umiejscowienie przycisków przełączania użytkownika i admina
 -dane z configa są ignorowane przez resztę kodu
--Podłączyć do train'a train_cnn_eeg_readraw zamiast train_cnn_eeg
 -Ten graf to zadziała kiedyś?
+-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 '''
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
         self.mainWindow = mainWindow
+        self.mainWindow.setWindowTitle("ADMIN: EEG for CNN")
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
 
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
+
+        self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
+        self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
+        self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
+        self.ui.textEdit_electrodes.setPlainText(str(EEG.config.EEG_NUM_OF_ELECTRODES))
+        self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
+        self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
+        self.ui.path_label.setText(f'{TRAIN_PATH}')
+
+        self.ui.textEdit_frequency.setReadOnly(True)
+        self.ui.textEdit_electrodes.setReadOnly(True)
+        self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -93,6 +116,9 @@ class AdminEegCnn:
 
         self.thread = QThread()
 
+        #self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
+        #self.real_time_metrics.start()
+
         # Create a worker object
         self.worker = Worker(self)
 
@@ -113,8 +139,7 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        #train_cnn_eeg(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
-        #train_cnn_eeg_readraw
+        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
 
     def onFinished(self):
         self.connect_to_db()
@@ -163,3 +188,70 @@ class Worker(QObject):
 
     def train_cnn_eeg(self):
         self.controller.train()
+
+class RealTimeMetrics(QThread):
+    """Thread for visualizing accuracy and loss in real time during model training."""
+
+    def __init__(self, total_epochs, plot_label):
+        super().__init__()
+        self.total_epochs = total_epochs
+        self.plot_label = plot_label
+        self.mutex = QMutex()
+
+    def run(self):
+        while global_epoch_count <= self.total_epochs:
+            self.plot_metrics()
+            time.sleep(10)
+
+    def plot_metrics(self):
+        try:
+            with QMutexLocker(self.mutex):
+                fig = Figure()
+                fig.tight_layout()
+                canvas = FigureCanvas(fig)
+
+                print()
+                print("\nTest 2: ")
+                print("global_accuracy: ", global_accuracy)
+                print("global_val_accuracy: ", global_val_accuracy)
+                print("global_loss: ", global_loss)
+                print("global_val_loss: ", global_val_loss)
+                print("global_epoch_count: ", global_epoch_count,"\n")
+                print()
+
+                # Plot for accuracy
+                ax1 = fig.add_subplot(211)
+                ax1.plot(global_epoch_count, global_accuracy, 'r-', label='Training Accuracy')
+                ax1.plot(global_epoch_count, global_val_accuracy, 'b-', label='Validation Accuracy')
+                ax1.set_xlabel('Epoch')
+                ax1.set_ylabel('Accuracy')
+                ax1.set_title('Accuracy')
+                ax1.legend()
+                ax1.grid(True)
+                ax1.set_ylim(0, 1.0)
+                ax1.set_xlim(1, self.total_epochs)
+
+                # Plot for loss
+                ax2 = fig.add_subplot(212)
+                ax2.plot(global_epoch_count, global_loss, 'r-', label='Training Loss')
+                ax2.plot(global_epoch_count, global_val_loss, 'b-', label='Validation Loss')
+                ax2.set_xlabel('Epoch')
+                ax2.set_ylabel('Loss')
+                ax2.set_title('Loss')
+                ax2.legend()
+                ax2.grid(True)
+                ax2.set_xlim(1, self.total_epochs)
+
+                fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
+
+                buf = io.BytesIO()
+                canvas.print_png(buf)
+                qpm = QPixmap()
+                qpm.loadFromData(buf.getvalue(), 'PNG')
+                self.plot_label.setPixmap(qpm)
+
+                buf.close()
+        except Exception as e:
+            print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
+
+
