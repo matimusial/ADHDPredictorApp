@@ -33,7 +33,7 @@ QPushButton{
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QPushButton" name="generateNew">
+          <widget class="QPushButton" name="backBtn">
            <property name="text">
             <string>Back</string>
            </property>

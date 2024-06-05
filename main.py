@@ -1,6 +1,8 @@
 import os
 import sys
 import traceback
+
+from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from MRI.main_MRI import MRI
 from EEG.main_EEG import EEG
@@ -8,12 +10,13 @@ from CONTROLLERS.DoctorViewController import DoctorViewController
 from CONTROLLERS.admin_eeg_cnn_agent import AdminEegCnn
 from CONTROLLERS.admin_mri_cnn_agent import AdminMriCnn
 from CONTROLLERS.admin_mri_gan_agent import AdminMriGan
-
+from CONTROLLERS.generateNew import generateNew
 
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 current_dir = os.path.dirname(__file__)
 UI_PATH = os.path.join(current_dir, 'UI')
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,6 +28,16 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Wystąpił błąd podczas inicjalizacji MainWindow: {e}")
             traceback.print_exc()
+
+    def loadGenView(self):
+
+        ui_path = "UI/genView.ui"
+        ui = uic.loadUi(ui_path, self)
+        gN = generateNew(ui)
+        ui.backBtn.clicked.connect(self.loadDoctorUI)
+        ui.adhdGenInfo.clicked.connect(lambda: gN.showInfo("adhd"))
+        ui.controlGenInfo.clicked.connect(lambda: gN.showInfo("control"))
+        ui.genBtn.clicked.connect(gN.generate)
 
     def run_app(self):
         while True:
@@ -46,6 +59,7 @@ class MainWindow(QMainWindow):
         try:
             self.viewController = DoctorViewController(self)
             self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
+            self.viewController.ui.generateNew.clicked.connect(self.loadGenView)
         except Exception as e:
             print(f"Wystąpił błąd podczas ładowania UI doktora: {e}")
             traceback.print_exc()
