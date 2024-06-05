@@ -236,7 +236,7 @@ class DoctorViewController:
             self.db_conn.establish_connection()
 
         if self.db_conn.connection is None:
-            self.show_alert("Cannot establish database connection")
+            self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
             return
 
         modelEEG = self.ui.modelListViewEEG.model()
