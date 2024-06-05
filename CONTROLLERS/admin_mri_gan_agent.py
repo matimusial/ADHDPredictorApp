@@ -1,8 +1,13 @@
 from PyQt5 import uic
 import subprocess
 import sys
+
+from PyQt5.QtCore import QThread, QObject, pyqtSignal
+
 import MRI.config
 import os
+
+from CONTROLLERS.DBConnector import DBConnector
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
