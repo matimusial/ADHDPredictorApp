@@ -18,23 +18,38 @@ PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 
 '''
 TO DO:
--Deaktywować wartości dla frequency i kanały
--Domyślne wartości wyświetlone w parametrach modelu
--Domyślna wartość wyświetlona w ścieżce modelu
+-U̶s̶t̶a̶w̶i̶ć̶ ̶t̶y̶t̶u̶ł̶ ̶o̶k̶n̶a̶ ̶n̶a̶ ̶w̶i̶d̶o̶k̶ ̶w̶ ̶k̶t̶ó̶r̶m̶ ̶s̶i̶ę̶ ̶j̶e̶s̶t̶
+-D̶o̶m̶y̶ś̶l̶n̶e̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶e̶ ̶w̶ ̶p̶a̶r̶a̶m̶e̶t̶r̶a̶c̶h̶ ̶m̶o̶d̶e̶l̶u̶
+-D̶o̶m̶y̶ś̶l̶n̶a̶ ̶w̶a̶r̶t̶o̶ś̶ć̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶a̶ ̶w̶ ̶ś̶c̶i̶e̶ż̶c̶e̶ ̶m̶o̶d̶e̶l̶u̶
+-P̶o̶d̶ł̶ą̶c̶z̶y̶ć̶ ̶d̶o̶ ̶t̶r̶a̶i̶n̶'̶a̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶_̶r̶e̶a̶d̶r̶a̶w̶ ̶z̶a̶m̶i̶a̶s̶t̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶
+-D̶e̶a̶k̶t̶y̶w̶o̶w̶a̶ć̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶d̶l̶a̶ ̶f̶r̶e̶q̶u̶e̶n̶c̶y̶ ̶i̶ ̶k̶a̶n̶a̶ł̶y̶
 -Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
 -Wspólne umiejscowienie przycisków przełączania użytkownika i admina
 -dane z configa są ignorowane przez resztę kodu
--Podłączyć do train'a train_cnn_eeg_readraw zamiast train_cnn_eeg
 -Ten graf to zadziała kiedyś?
+-TESTOWAĆ WSZYSTKO
 '''
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
         self.mainWindow = mainWindow
+        self.mainWindow.setWindowTitle("ADMIN: EEG for CNN")
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
 
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
+
+        self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
+        self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
+        self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
+        self.ui.textEdit_electrodes.setPlainText(str(EEG.config.EEG_NUM_OF_ELECTRODES))
+        self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
+        self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
+        self.ui.path_label.setText(f'{TRAIN_PATH}')
+
+        self.ui.textEdit_frequency.setReadOnly(True)
+        self.ui.textEdit_electrodes.setReadOnly(True)
+        self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -113,8 +128,7 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        #train_cnn_eeg(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
-        #train_cnn_eeg_readraw
+        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
 
     def onFinished(self):
         self.connect_to_db()

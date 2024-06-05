@@ -39,19 +39,6 @@ QPushButton{
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="switchSceneBtn">
-         <property name="text">
-          <string>USER View</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="GAN_MRI_Button">
          <property name="text">
           <string>GAN for MRI</string>
@@ -91,6 +78,19 @@ QPushButton{
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="switchSceneBtn">
+       <property name="text">
+        <string>USER View</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="exitButton">

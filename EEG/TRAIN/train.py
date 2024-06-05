@@ -9,6 +9,7 @@ from tensorflow.keras.regularizers import l2
 from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH_SIZE
 from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_data
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
+from CONTROLLERS.file_io import read_eeg_raw
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
@@ -103,12 +104,12 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
         print(f"Error during CNN training: {e}")
         return
 
-def train_cnn_eeg_readraw(save, ADHD_DATA, CONTROL_DATA, predict_path, model_path, ui):
+def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
     """Trains a CNN model on EEG data.
 
     Args:
         save (bool): Whether to save the model after training.
-        pickle_path (str): Path to the EEG data.
+        folderPath (str): Path to the EEG data.
         predict_path (str): Path to save validation data.
         model_path (str): Path to save the trained model.
     """
@@ -117,8 +118,7 @@ def train_cnn_eeg_readraw(save, ADHD_DATA, CONTROL_DATA, predict_path, model_pat
         print("\n")
 
         try:
-            ADHD_DATA = read_pickle(os.path.join(pickle_path, "ADHD_EEG_DATA.pkl"))
-            CONTROL_DATA = read_pickle(os.path.join(pickle_path, "CONTROL_EEG_DATA.pkl"))
+            ADHD_DATA, CONTROL_DATA = read_eeg_raw(folderPath)
         except Exception as e:
             print(f"Error loading EEG files: {e}")
             print("Did you download the files from the link in the folder EEG/TRAIN/TRAIN_DATA?")
