@@ -71,3 +71,4 @@ def convert_mat_to_csv_and_edf(input_directory, csv_output_directory, edf_output
 
 # Usage example:
 # convert_mat_to_csv_and_edf('input_dir', 'output_csv_dir', 'output_edf_dir', ['Fz', 'Cz', 'Pz', 'C3', ...], 128)
+# electrode_positions = ["Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4", "F7", "F8", "P3", "P4", "T5", "T6", "O1", "O2"]

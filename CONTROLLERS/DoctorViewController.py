@@ -144,23 +144,19 @@ class DoctorViewController:
 
         self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
-
-
-
-
-
-
-
-
     def generateNew(self):
+
+
+
+
         pass
 
 
 
 
     def predict(self):
-        self.ui.btnNextPlane.setEnabled(False)
-        self.ui.btnPrevPlane.setEnabled(False)
+        self.ui.btnNextPlane.setEnabled(True)
+        self.ui.btnPrevPlane.setEnabled(True)
 
         if self.filePaths is None or (self.chosenModelInfoEEG is None and self.chosenModelInfoMRI is None):
             self.show_alert("No files or models chosen")
