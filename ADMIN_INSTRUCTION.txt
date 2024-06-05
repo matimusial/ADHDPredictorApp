@@ -1,4 +1,4 @@
-Żeby dostać się do widoku admina wciśnij przycisk "Admin View" w lewym górnym rogu głównego okna (tego po uruchomieniu programu).
+Żeby dostać się do widoku admina wciśnij przycisk "Admin View" po lewej stronie okienka programu (tego po uruchomieniu programu).
 
 USER VIEW - Przywraca do głównego okna
 GAN for MRI - Okno z uczeniem modelu GAN do generowania zdjęć MRI
