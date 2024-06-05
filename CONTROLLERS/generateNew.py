@@ -3,11 +3,10 @@ import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QMessageBox
-from keras.models import load_model
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
-
+from keras.models import load_model
 
 class Worker(QObject):
     """
@@ -204,22 +203,6 @@ class GenerateNew:
         alert.setStandardButtons(QMessageBox.Ok)
         alert.exec_()
 
-    def start_generation(self):
-        """
-        Start the generation of MRI images in a separate thread.
-        """
-        self.thread = QThread()
-        self.worker = Worker(self)
-        self.worker.moveToThread(self.thread)
-
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.error.connect(self.handle_error)
-
-        self.thread.start()
-
     def handle_error(self, error_msg):
         """
         Handle errors during the process.
@@ -233,7 +216,6 @@ class GenerateNew:
         """
         Generate MRI images using the selected model.
         """
-        img_amount = self.ui.imgNumberBox.value()
         self.generated = []
         self.currIdxMRI = 0
 
@@ -241,7 +223,6 @@ class GenerateNew:
             self.show_alert("Please select model!")
             return
 
-        # Start loading the model in a separate thread
         self.thread = QThread()
         self.worker = ModelWorker(self.db, self.chosen_model_data[0])
         self.worker.moveToThread(self.thread)

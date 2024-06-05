@@ -9,7 +9,7 @@ from MRI.file_io import read_pickle, save_pickle, prepare_for_cnn
 from MRI.data_validation import make_predict_data
 from MRI.config import CNN_EPOCHS_MRI, CNN_BATCH_SIZE_MRI, CNN_LEARNING_RATE_MRI, CNN_INPUT_SHAPE_MRI
 
-from CONTROLLERS.metrics import RealTimeMetrics
+#from CONTROLLERS.metrics import RealTimeMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
