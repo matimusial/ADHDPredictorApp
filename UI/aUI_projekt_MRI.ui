@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1050</width>
-    <height>620</height>
+    <width>1315</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,7 +106,7 @@ QPushButton{
      <rect>
       <x>150</x>
       <y>10</y>
-      <width>891</width>
+      <width>1161</width>
       <height>601</height>
      </rect>
     </property>
@@ -115,8 +115,8 @@ QPushButton{
       <rect>
        <x>310</x>
        <y>10</y>
-       <width>561</width>
-       <height>581</height>
+       <width>851</width>
+       <height>601</height>
       </rect>
      </property>
      <widget class="QLabel" name="plotLabel_CNN">
@@ -124,8 +124,8 @@ QPushButton{
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>541</width>
-        <height>561</height>
+        <width>851</width>
+        <height>601</height>
        </rect>
       </property>
       <property name="styleSheet">

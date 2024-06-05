@@ -2,7 +2,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog
 import EEG.config
-from EEG.TRAIN.train import train_cnn_eeg
+from EEG.TRAIN.train import train_cnn_eeg, train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
 import os
 import shutil
@@ -15,6 +15,18 @@ parent_directory = os.path.dirname(current_dir)
 MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
 TRAIN_PATH = os.path.join(parent_dir, 'EEG', 'TRAIN', 'TRAIN_DATA')
 PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
+
+'''
+TO DO:
+-Deaktywować wartości dla frequency i kanały
+-Domyślne wartości wyświetlone w parametrach modelu
+-Domyślna wartość wyświetlona w ścieżce modelu
+-Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
+-Wspólne umiejscowienie przycisków przełączania użytkownika i admina
+-dane z configa są ignorowane przez resztę kodu
+-Podłączyć do train'a train_cnn_eeg_readraw zamiast train_cnn_eeg
+-Ten graf to zadziała kiedyś?
+'''
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
@@ -38,32 +50,32 @@ class AdminEegCnn:
         if self.ui.textEdit_epochs.toPlainText().strip() == "":
             epochs = EEG.config.CNN_EPOCHS
         else:
-            epochs = int(self.ui.textEdit_epochs.toPlainText())
+            epochs = int(self.ui.textEdit_epochs)
 
         if self.ui.textEdit_batch_size.toPlainText().strip() == "":
             batch_size = EEG.config.CNN_BATCH_SIZE
         else:
-            batch_size = int(self.ui.textEdit_batch_size.toPlainText())
+            batch_size = int(self.ui.textEdit_batch_size)
 
         if self.ui.textEdit_learning_rate.toPlainText().strip() == "":
             learning_rate = EEG.config.CNN_LEARNING_RATE
         else:
-            learning_rate = int(self.ui.textEdit_learning_rate.toPlainText())
+            learning_rate = float(self.ui.textEdit_learning_rate)
 
         if self.ui.textEdit_electrodes.toPlainText().strip() == "":
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
         else:
-            electrodes = int(self.ui.textEdit_electrodes.toPlainText())
+            electrodes = int(self.ui.textEdit_electrodes)
 
         if self.ui.textEdit_frame_size.toPlainText().strip() == "":
             frame_size = EEG.config.EEG_SIGNAL_FRAME_SIZE
         else:
-            frame_size = int(self.ui.textEdit_frame_size.toPlainText())
+            frame_size = int(self.ui.textEdit_frame_size)
 
         if self.ui.textEdit_frequency.toPlainText().strip() == "":
             frequency = EEG.config.FS
         else:
-            frequency = int(self.ui.textEdit_frequency.toPlainText())
+            frequency = int(self.ui.textEdit_frequency)
 
         EEG.config.set_cnn_epochs(epochs)
         EEG.config.set_cnn_batch_size(batch_size)
@@ -101,14 +113,15 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        train_cnn_eeg(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
+        #train_cnn_eeg(True, self.pathTrain, PREDICT_PATH, MODEL_PATH, self.ui)
+        #train_cnn_eeg_readraw
 
     def onFinished(self):
         self.connect_to_db()
         file_name = os.listdir(MODEL_PATH)
         file_path = os.path.join('./EEG/temp_model_path', file_name[0])
         print(file_name[0])
-        self.db_conn.insert_data_into_models(
+        self.db_conn.insert_data_into_models_table(
             file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
         for filename in os.listdir(MODEL_PATH):
             file_path = os.path.join(MODEL_PATH, filename)
