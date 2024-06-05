@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1190</width>
-    <height>829</height>
+    <width>934</width>
+    <height>813</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -170,7 +170,7 @@ QPushButton{
         <item>
          <widget class="QPushButton" name="genBtn">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
