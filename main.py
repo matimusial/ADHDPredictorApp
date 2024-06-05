@@ -10,7 +10,7 @@ from CONTROLLERS.DoctorViewController import DoctorViewController
 from CONTROLLERS.admin_eeg_cnn_agent import AdminEegCnn
 from CONTROLLERS.admin_mri_cnn_agent import AdminMriCnn
 from CONTROLLERS.admin_mri_gan_agent import AdminMriGan
-from CONTROLLERS.generateNew import generateNew
+from CONTROLLERS.generateNew import GenerateNew
 
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -29,15 +29,20 @@ class MainWindow(QMainWindow):
             print(f"Wystąpił błąd podczas inicjalizacji MainWindow: {e}")
             traceback.print_exc()
 
-    def loadGenView(self):
-
-        ui_path = "UI/genView.ui"
+    def load_gen_view(self):
+        """
+        Load the generator view UI and connect signals to slots.
+        """
+        ui_path = os.path.join("UI", "genView.ui")
         ui = uic.loadUi(ui_path, self)
-        gN = generateNew(ui)
+        gn = GenerateNew(ui)
+
         ui.backBtn.clicked.connect(self.loadDoctorUI)
-        ui.adhdGenInfo.clicked.connect(lambda: gN.showInfo("adhd"))
-        ui.controlGenInfo.clicked.connect(lambda: gN.showInfo("control"))
-        ui.genBtn.clicked.connect(gN.generate)
+        ui.adhdGenInfo.clicked.connect(lambda: gn.show_info("adhd"))
+        ui.controlGenInfo.clicked.connect(lambda: gn.show_info("control"))
+        ui.genBtn.clicked.connect(gn.generate)
+        ui.btnPrevPlot.clicked.connect(gn.show_prev_plot_mri)
+        ui.btnNextPlot.clicked.connect(gn.show_next_plot_mri)
 
     def run_app(self):
         while True:
@@ -59,7 +64,7 @@ class MainWindow(QMainWindow):
         try:
             self.viewController = DoctorViewController(self)
             self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
-            self.viewController.ui.generateNew.clicked.connect(self.loadGenView)
+            self.viewController.ui.generateNew.clicked.connect(self.load_gen_view)
         except Exception as e:
             print(f"Wystąpił błąd podczas ładowania UI doktora: {e}")
             traceback.print_exc()

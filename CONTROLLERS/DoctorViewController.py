@@ -144,15 +144,6 @@ class DoctorViewController:
 
         self.showPlot(self.allData["MRI"][0][0], "MRI", "")
 
-    def generateNew(self):
-
-
-
-
-        pass
-
-
-
 
     def predict(self):
         self.ui.btnNextPlane.setEnabled(True)

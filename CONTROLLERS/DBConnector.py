@@ -31,6 +31,7 @@ class DBConnector:
         except Error as e:
             print(f"Connection error: {e}")
             print("Remember to enable ZUT VPN.")
+            raise Error("Failed to establish database connection, remember to enable ZUT VPN.")
 
     def validate_and_convert_input_models(self, name, file_data, channels, input_shape, type_value, fs, plane,
                                           description):
