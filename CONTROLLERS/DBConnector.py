@@ -198,7 +198,7 @@ class DBConnector:
         """
         if self.connection and self.connection.is_connected():
             try:
-                query = f"SELECT name, description FROM models WHERE {condition}"
+                query = f"SELECT name, input_shape, fs, channels, plane, description FROM models WHERE {condition}"
                 self.cursor.execute(query)
                 results = self.cursor.fetchall()
                 return results

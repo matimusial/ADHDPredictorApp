@@ -2,7 +2,7 @@ from PyQt5 import uic
 import subprocess
 import sys
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QThread, QObject, pyqtSignal
 
 import MRI.config
 import os

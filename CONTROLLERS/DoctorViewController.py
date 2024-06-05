@@ -288,7 +288,6 @@ class DoctorViewController:
         for path in self.filePaths:
             data = np.array([])
             dataType = ""
-            modelName = ""
 
             if path.endswith('.edf'):
                 print("EDF")
@@ -568,16 +567,28 @@ class DoctorViewController:
         alert.setWindowTitle("Info")
         alert.setIcon(QMessageBox.Information)
         alert.setStandardButtons(QMessageBox.Ok)
-
+        print(self.chosenModelInfoMRI)
         if type == "EEG":
             if self.chosenModelInfoEEG is None:
                 return
-            msg = self.chosenModelInfoEEG[1]
+            msg = f"""
+                    Model name: {self.chosenModelInfoEEG[0]}\n
+                    Input shape: {self.chosenModelInfoEEG[1]}\n
+                    Frequency: {self.chosenModelInfoEEG[2]}\n
+                    Channels: {self.chosenModelInfoEEG[3]}\n
+                    Description: {self.chosenModelInfoEEG[5]}
+                    """
 
         if type == "MRI":
             if self.chosenModelInfoMRI is None:
                 return
-            msg = "mri"
+            plane = self.chosenModelInfoMRI[4]
+            msg = f"""
+                Model name: {self.chosenModelInfoMRI[0]}\n
+                Input shape: {self.chosenModelInfoMRI[1]}\n
+                Plane: {'Axial' if plane=='A' else 'Sagittal' if plane=='S' else 'Coronal'}\n
+                Description: {self.chosenModelInfoMRI[5]}
+                """
 
         alert.setText(msg)
         alert.exec_()
