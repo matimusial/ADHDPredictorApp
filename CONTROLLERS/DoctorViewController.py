@@ -195,7 +195,7 @@ class DoctorViewController:
     def getFilePaths(self):
         options = QFileDialog.Options()
         fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
-        defaultPath = os.path.join('CONTROLLERS', 'INPUT_DATA')
+        defaultPath = 'INPUT_DATA'
         self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
 
         if len(self.filePaths) == 0:
