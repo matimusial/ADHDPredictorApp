@@ -1,12 +1,15 @@
 import io
+import os
+
 import numpy as np
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex
-from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
+from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap, QMovie
 from PyQt5.QtWidgets import QMessageBox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
 from keras.models import load_model
+GIF_PATH = os.path.join('UI', 'loading.gif')
 
 class Worker(QObject):
     """
@@ -228,14 +231,16 @@ class GenerateNew:
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.on_finished)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.model_loaded.connect(self.on_model_loaded)
         self.worker.error.connect(self.handle_error)
 
         self.thread.start()
-
+        self.show_loading_animation()
+    def on_finished(self):
+        self.movie.stop()
     def on_model_loaded(self, model):
         """
         Callback when the model is loaded. Generates images using the loaded model.
@@ -300,3 +305,9 @@ class GenerateNew:
         qpm = QPixmap()
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
+
+    def show_loading_animation(self):
+        self.movie = QMovie(GIF_PATH)
+        self.ui.plotLabelMRI.setMovie(self.movie)
+        self.movie.start()
+        self.movie.setScaledSize(QSize(50, 50))
