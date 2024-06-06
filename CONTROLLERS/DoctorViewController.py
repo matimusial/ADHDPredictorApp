@@ -203,7 +203,7 @@ class DoctorViewController:
         self.loadedMRIfiles = 0
 
         for path in self.filePaths:
-            if path.endswith('.mat') or path.endswith('.edf'):
+            if path.endswith('.mat') or path.endswith('.edf') or path.endswith('.csv'):
                 self.loadedEEGfiles += 1
             if path.endswith('.nii') or path.endswith('.nii.gz'):
                 self.loadedMRIfiles += 1
@@ -326,7 +326,6 @@ class DoctorViewController:
                 self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
                 model = self.modelMRI
                 modelInfo = self.chosenModelInfoMRI
-                print(data.shape)
 
             result = self.processData(data, model, modelInfo, dataType=dataType)
 
@@ -360,12 +359,10 @@ class DoctorViewController:
                 DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
 
                 DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
-                print("CHUJWIELKIISZELKI")
+
                 result = model.predict(DATA_FRAMED)
-                print("Proncie")
 
             except Exception as e:
-                print(e)
                 self.show_alert(f"Error processing EEG data: {e}")
                 return
 
@@ -571,7 +568,7 @@ class DoctorViewController:
         alert.setWindowTitle("Info")
         alert.setIcon(QMessageBox.Information)
         alert.setStandardButtons(QMessageBox.Ok)
-        print(self.chosenModelInfoMRI)
+
         if type == "EEG":
             if self.chosenModelInfoEEG is None:
                 return

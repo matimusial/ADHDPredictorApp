@@ -28,6 +28,7 @@ def save_pickle(filepath, data):
 
 
 def split_into_frames(data):
+
     """Splits the data into frames of EEG_SIGNAL_FRAME_SIZE.
 
     Args:
