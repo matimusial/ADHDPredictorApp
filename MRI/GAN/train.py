@@ -9,8 +9,6 @@ from tensorflow.keras.layers import Dense, Reshape, Flatten, LeakyReLU, Input, B
 from tensorflow.keras.models import Sequential
 
 from MRI.plot_mri import plot_mri
-from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
-                        TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
 
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle
@@ -26,6 +24,8 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
         pickle_path (str): The path to the pickle files with the data.
         gan_model_path (str): The path to save the trained model.
     """
+    from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
+                            TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
     try:
         print(f"TRAINING GAN {data_type} STARTED for {GAN_EPOCHS_MRI} EPOCHS...")
         print(f"RESULTS WILL BE DISPLAYED EVERY {TRAIN_GAN_PRINT_INTERVAL}")

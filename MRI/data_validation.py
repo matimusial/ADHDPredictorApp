@@ -1,7 +1,5 @@
 import numpy as np
 
-from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
-
 
 def make_predict_data(adhd_raw, control_raw):
     """Prepares predict data.
@@ -16,6 +14,7 @@ def make_predict_data(adhd_raw, control_raw):
         adhd_updated (list): Updated ADHD data after removing prediction samples.
         control_updated (list): Updated control data after removing prediction samples.
     """
+    from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
     adhd_pred = []
     adhd_updated = []
     control_pred = []
