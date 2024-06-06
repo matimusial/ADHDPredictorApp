@@ -201,7 +201,8 @@ class GenerateNew:
 
         self.thread.start()
         self.show_loading_animation()
-
+        self.ui.genBtn.setEnabled(False)
+        self.ui.backBtn.setEnabled(False)
 
     def on_model_loaded(self, model):
         """
@@ -220,6 +221,8 @@ class GenerateNew:
             self.generated.append(generated_image[0])
 
         self.show_plot_mri(self.generated[0])
+        self.ui.genBtn.setEnabled(True)
+        self.ui.backBtn.setEnabled(True)
 
     def show_prev_plot_mri(self):
         """
