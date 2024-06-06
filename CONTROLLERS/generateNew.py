@@ -271,5 +271,5 @@ class GenerateNew:
     def show_loading_animation(self):
         self.movie = QMovie(GIF_PATH)
         self.ui.plotLabelMRI.setMovie(self.movie)
-        self.movie.start()
         self.movie.setScaledSize(QSize(50, 50))
+        self.movie.start()

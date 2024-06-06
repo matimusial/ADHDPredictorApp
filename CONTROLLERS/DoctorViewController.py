@@ -543,8 +543,8 @@ class DoctorViewController:
     def show_loading_animation(self):
         self.movie = QMovie(GIF_PATH)
         self.ui.resultLabel.setMovie(self.movie)
+        self.movie.setScaledSize(QSize(40, 40))
         self.movie.start()
-        self.movie.setScaledSize(QSize(50, 50))
 
     def change_btn_state(self, state):
         self.ui.predictBtn.setEnabled(state)
