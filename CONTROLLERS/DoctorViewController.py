@@ -30,6 +30,7 @@ UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
 GIF_PATH = os.path.join('UI', 'loading.gif')
+electrode_positions = ["Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4", "F7", "F8", "P3", "P4", "T5", "T6", "O1", "O2"]
 
 class DoctorViewController:
     def __init__(self, mainWindow):
@@ -514,7 +515,7 @@ class DoctorViewController:
         ax.plot(t, signal, label=f'Kanał {channel_number}')
         ax.set_xlabel('Czas (s)')
         ax.set_ylabel('Wartości próbek')
-        ax.set_title(f'Wykres sygnału {name}\nKanał: {channel_number+1}')
+        ax.set_title(f'Wykres sygnału {name}\nKanał: {electrode_positions[channel_number]}')
         #ax.legend()
 
         buf = io.BytesIO()
