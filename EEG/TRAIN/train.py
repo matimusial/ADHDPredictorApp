@@ -119,12 +119,14 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
             ADHD_DATA, CONTROL_DATA = read_eeg_raw(folderPath)
         except Exception as e:
             print(f"Error loading EEG files: {e}")
-            print("Did you download the files from the link in the folder EEG/TRAIN/TRAIN_DATA?")
             return
 
         try:
             ADHD_UPDATED, CONTROL_UPDATED, X_pred, y_pred = make_pred_data(ADHD_DATA, CONTROL_DATA)
-            ADHD_FILTERED, CONTROL_FILTERED = filter_eeg_data(ADHD_UPDATED, CONTROL_UPDATED)
+            if(len(ADHD_UPDATED) <= 1 or len(CONTROL_UPDATED) <= 1):
+                ADHD_FILTERED, CONTROL_FILTERED = filter_eeg_data(ADHD_DATA, CONTROL_DATA)
+            else:
+                ADHD_FILTERED, CONTROL_FILTERED = filter_eeg_data(ADHD_UPDATED, CONTROL_UPDATED)
             ADHD_CLIPPED, CONTROL_CLIPPED = clip_eeg_data(ADHD_FILTERED, CONTROL_FILTERED)
             ADHD_NORMALIZED, CONTROL_NORMALIZED = normalize_eeg_data(ADHD_CLIPPED, CONTROL_CLIPPED)
             X_train, y_train, X_test, y_test = prepare_for_cnn(ADHD_NORMALIZED, CONTROL_NORMALIZED)
