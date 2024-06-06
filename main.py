@@ -29,6 +29,12 @@ class MainWindow(QMainWindow):
             print(f"Wystąpił błąd podczas inicjalizacji MainWindow: {e}")
             traceback.print_exc()
 
+    def load_admin_db_view(self):
+        ui_path = os.path.join("UI", "admin_db_view.ui")
+        print("chuj")
+        #ui = uic.loadUi(ui_path, self)
+
+
     def load_gen_view(self):
         """
         Load the generator view UI and connect signals to slots.
@@ -75,6 +81,7 @@ class MainWindow(QMainWindow):
             self.viewController.ui.switchSceneBtn.clicked.connect(self.loadDoctorUI)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
+            self.viewController.ui.dbButton.clicked.connect(self.load_admin_db_view)
         except Exception as e:
             print(f"Wystąpił błąd podczas ładowania Admin EEG CNN: {e}")
             traceback.print_exc()

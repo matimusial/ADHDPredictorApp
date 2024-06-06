@@ -80,6 +80,13 @@ QPushButton{
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="dbButton">
+       <property name="text">
+        <string>Database Admin</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="switchSceneBtn">
        <property name="text">
         <string>USER View</string>
