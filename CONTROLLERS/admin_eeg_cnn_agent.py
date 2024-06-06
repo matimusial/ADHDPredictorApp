@@ -21,7 +21,7 @@ UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 
 MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
-TRAIN_PATH = os.path.join(parent_dir, 'EEG', 'TRAIN', 'TRAIN_DATA')
+TRAIN_PATH = os.path.join(parent_dir, 'CONTROLLERS', 'INPUT_DATA', 'EEG', 'MAT')
 PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 
 '''
@@ -31,8 +31,8 @@ TO DO:
 -D̶o̶m̶y̶ś̶l̶n̶a̶ ̶w̶a̶r̶t̶o̶ś̶ć̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶a̶ ̶w̶ ̶ś̶c̶i̶e̶ż̶c̶e̶ ̶m̶o̶d̶e̶l̶u̶
 -P̶o̶d̶ł̶ą̶c̶z̶y̶ć̶ ̶d̶o̶ ̶t̶r̶a̶i̶n̶'̶a̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶_̶r̶e̶a̶d̶r̶a̶w̶ ̶z̶a̶m̶i̶a̶s̶t̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶
 -D̶e̶a̶k̶t̶y̶w̶o̶w̶a̶ć̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶d̶l̶a̶ ̶f̶r̶e̶q̶u̶e̶n̶c̶y̶ ̶i̶ ̶k̶a̶n̶a̶ł̶y̶
+-W̶s̶p̶ó̶l̶n̶e̶ ̶u̶m̶i̶e̶j̶s̶c̶o̶w̶i̶e̶n̶i̶e̶ ̶p̶r̶z̶y̶c̶i̶s̶k̶ó̶w̶ ̶p̶r̶z̶e̶ł̶ą̶c̶z̶a̶n̶i̶a̶ ̶u̶ż̶y̶t̶k̶o̶w̶n̶i̶k̶a̶ ̶i̶ ̶a̶d̶m̶i̶n̶a̶
 -Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
--Wspólne umiejscowienie przycisków przełączania użytkownika i admina
 -dane z configa są ignorowane przez resztę kodu
 -Ten graf to zadziała kiedyś?
 -!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
@@ -73,32 +73,32 @@ class AdminEegCnn:
         if self.ui.textEdit_epochs.toPlainText().strip() == "":
             epochs = EEG.config.CNN_EPOCHS
         else:
-            epochs = int(self.ui.textEdit_epochs)
+            epochs = int(self.ui.textEdit_epochs.toPlainText())
 
         if self.ui.textEdit_batch_size.toPlainText().strip() == "":
             batch_size = EEG.config.CNN_BATCH_SIZE
         else:
-            batch_size = int(self.ui.textEdit_batch_size)
+            batch_size = int(self.ui.textEdit_batch_size.toPlainText())
 
         if self.ui.textEdit_learning_rate.toPlainText().strip() == "":
             learning_rate = EEG.config.CNN_LEARNING_RATE
         else:
-            learning_rate = float(self.ui.textEdit_learning_rate)
+            learning_rate = float(self.ui.textEdit_learning_rate.toPlainText())
 
         if self.ui.textEdit_electrodes.toPlainText().strip() == "":
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
         else:
-            electrodes = int(self.ui.textEdit_electrodes)
+            electrodes = int(self.ui.textEdit_electrodes.toPlainText())
 
         if self.ui.textEdit_frame_size.toPlainText().strip() == "":
             frame_size = EEG.config.EEG_SIGNAL_FRAME_SIZE
         else:
-            frame_size = int(self.ui.textEdit_frame_size)
+            frame_size = int(self.ui.textEdit_frame_size.toPlainText())
 
         if self.ui.textEdit_frequency.toPlainText().strip() == "":
             frequency = EEG.config.FS
         else:
-            frequency = int(self.ui.textEdit_frequency)
+            frequency = int(self.ui.textEdit_frequency.toPlainText())
 
         EEG.config.set_cnn_epochs(epochs)
         EEG.config.set_cnn_batch_size(batch_size)
@@ -145,9 +145,8 @@ class AdminEegCnn:
         self.connect_to_db()
         file_name = os.listdir(MODEL_PATH)
         file_path = os.path.join('./EEG/temp_model_path', file_name[0])
-        print(file_name[0])
         self.db_conn.insert_data_into_models_table(
-            file_name[0], file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
+            file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
         for filename in os.listdir(MODEL_PATH):
             file_path = os.path.join(MODEL_PATH, filename)
             try:
