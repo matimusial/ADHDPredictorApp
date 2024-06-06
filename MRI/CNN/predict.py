@@ -4,7 +4,6 @@ from tensorflow.keras.models import load_model
 
 from MRI.file_io import read_pickle
 from MRI.plot_mri import plot_mri
-from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
 
 
 def print_index_ranges(y):
@@ -56,6 +55,7 @@ def predict_cnn(model_name, cnn_model, cnn_predict):
         cnn_model (str): Directory path where the model link is located.
         cnn_predict (str): Directory path where the validation data files are located.
     """
+    from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
     try:
         model_path = os.path.join(cnn_model, f'{model_name}.keras')
         model = load_model(model_path)

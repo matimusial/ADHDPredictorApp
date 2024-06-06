@@ -6,7 +6,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 from tensorflow.keras.regularizers import l2
 
-from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH_SIZE
 from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_data
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 from CONTROLLERS.file_io import read_eeg_raw
@@ -53,6 +52,7 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
         predict_path (str): Path to save validation data.
         model_path (str): Path to save the trained model.
     """
+    from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH_SIZE
     try:
         print(f"CNN TRAINING STARTED for {CNN_EPOCHS} EPOCHS...")
         print("\n")
@@ -111,6 +111,7 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
         predict_path (str): Path to save validation data.
         model_path (str): Path to save the trained model.
     """
+    from EEG.config import CNN_INPUT_SHAPE, CNN_LEARNING_RATE, CNN_EPOCHS, CNN_BATCH_SIZE
     try:
         print(f"CNN TRAINING STARTED for {CNN_EPOCHS} EPOCHS...")
         print("\n")

@@ -2,9 +2,6 @@ import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-import EEG.config
-from EEG.config import EEG_SIGNAL_FRAME_SIZE
-
 
 def read_pickle(filepath):
     """Reads data from a pickle link.
@@ -43,10 +40,10 @@ def split_into_frames(data):
     Raises:
         ValueError: If the number of samples is less than the frame size.
     """
+    from EEG.config import EEG_SIGNAL_FRAME_SIZE
     try:
         if data.shape[1] < EEG_SIGNAL_FRAME_SIZE:
             raise ValueError("The number of samples is less than the frame size.")
-
         num_frames = data.shape[1] // EEG_SIGNAL_FRAME_SIZE
         framed_data = np.zeros((num_frames, data.shape[0], EEG_SIGNAL_FRAME_SIZE))
 

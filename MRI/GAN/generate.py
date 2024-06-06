@@ -3,7 +3,6 @@ import numpy as np
 from tensorflow.keras.models import load_model
 
 from MRI.plot_mri import plot_mri
-from MRI.config import GENERATE_GAN_DISP_INTERVAL
 from MRI.file_io import save_pickle
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -19,6 +18,7 @@ def generate_images(save, im_amount, model_path):
         model_path (str): The path to the GAN model.
 
     """
+    from MRI.config import GENERATE_GAN_DISP_INTERVAL
     for data_type in ["ADHD", "CONTROL"]:
         try:
             generator = load_model(os.path.join(model_path, f'{data_type}_GAN.keras'))

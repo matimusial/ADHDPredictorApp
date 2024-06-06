@@ -2,8 +2,6 @@ import pickle
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
-
 
 def read_pickle(filepath):
     """Reads data from a pickle link.
@@ -39,6 +37,7 @@ def prepare_for_cnn(adhd_data, control_data):
     Returns:
         tuple: Split data ready for CNN (X_train, X_test, y_train, y_test).
     """
+    from MRI.config import CNN_SINGLE_INPUT_SHAPE_MRI
     y_adhd = np.ones((len(adhd_data)))
     y_control = np.zeros((len(control_data)))
     y = np.hstack((y_adhd, y_control))

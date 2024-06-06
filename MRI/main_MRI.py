@@ -7,7 +7,6 @@ from MRI.CNN.predict import predict_cnn
 from MRI.GAN.train import train_gan
 from MRI.GAN.show_generated import show_generated
 from MRI.GAN.generate import generate_images
-from MRI.config import MODEL_CNN_NAME
 
 current_dir = os.path.dirname(__file__)
 
@@ -24,6 +23,7 @@ GAN_MODEL_PATH = os.path.join(current_dir, 'GAN', 'MODELS')
 
 def MRI():
     print("MRI")
+    from MRI.config import MODEL_CNN_NAME
     while True:
         main_choice = input('Choose an option:   1-(CNN)   2-(GAN): ')
 

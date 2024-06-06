@@ -4,10 +4,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from EEG.TRAIN.train import train_cnn_eeg
 from EEG.PREDICT.predict import predict
-from EEG.config import MODEL_CNN_NAME
 
 current_dir = os.path.dirname(__file__)
-
 
 MODEL_PATH = os.path.join(current_dir, "MODELS")
 
@@ -16,6 +14,7 @@ PREDICT_PATH = os.path.join(current_dir, "PREDICT", "PREDICT_DATA")
 
 
 def EEG():
+    from EEG.config import MODEL_CNN_NAME
     print("EEG")
     while True:
         main_choice = input('Choose an option:   1-(run CNN training)   2-(run CNN prediction): ')

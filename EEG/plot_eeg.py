@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from EEG.config import FS, CUTOFFS
-
 
 def plot_frequency_band(data, channel_index, patient_index, band_number=2):
     """
@@ -15,6 +13,7 @@ def plot_frequency_band(data, channel_index, patient_index, band_number=2):
     band_number (int): Frequency band number.
 
     """
+    from EEG.config import FS, CUTOFFS
     signal = data[patient_index][channel_index]
 
     if band_number >= len(CUTOFFS):
@@ -44,7 +43,7 @@ def plot_eeg_signal(data, channel_index, patient_index=None):
     channel_index (int): Channel number.
     patient_index (int, optional): Patient number. Required if the data is three-dimensional.
     """
-
+    from EEG.config import FS
     if patient_index is not None:
         t = np.arange(0, data[patient_index][channel_index].shape[0]) / FS
         signal = data[patient_index][channel_index]

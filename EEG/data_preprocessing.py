@@ -2,8 +2,6 @@ import copy
 from scipy import signal
 import numpy as np
 
-from EEG.config import CUTOFFS, FS, CNN_INPUT_SHAPE
-
 
 def filter_eeg_data(ADHD_DATA, CONTROL_DATA=None, band_type=2):
     """
@@ -17,6 +15,7 @@ def filter_eeg_data(ADHD_DATA, CONTROL_DATA=None, band_type=2):
     Returns:
     list: Filtered EEG data or tuple of two lists if CONTROL_DATA is provided.
     """
+    from EEG.config import CUTOFFS, FS
     order = 4
     cutoff = CUTOFFS[band_type]
     low_cutoff = cutoff[0]
@@ -53,7 +52,7 @@ def normalize_eeg_data(ADHD_DATA, CONTROL_DATA=None):
     Returns:
     list: Normalized EEG data or tuple of two lists if CONTROL_DATA is provided.
     """
-
+    from EEG.config import CNN_INPUT_SHAPE
     def normalize(data):
         data_normalized = copy.deepcopy(data)
         for i in range(len(data)):
@@ -94,6 +93,7 @@ def clip_eeg_data(ADHD_DATA, CONTROL_DATA=None):
     Returns:
     list: Clipped EEG data or tuple of two lists if CONTROL_DATA is provided.
     """
+    from EEG.config import CNN_INPUT_SHAPE
     percentile = 99.8
 
     def clip_data(data):

@@ -9,7 +9,6 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
 from keras.models import load_model
-GIF_PATH = os.path.join('UI', 'loading.gif')
 
 class ModelWorker(QObject):
     """
@@ -70,6 +69,7 @@ class GenerateNew:
         self.generator = None
         self.thread = None
         self.worker = None
+        self.gif_path = os.path.join('UI', 'loading.gif')
 
     def __del__(self):
         """
@@ -272,7 +272,7 @@ class GenerateNew:
         self.ui.plotLabelMRI.setPixmap(qpm)
 
     def show_loading_animation(self):
-        self.movie = QMovie(GIF_PATH)
+        self.movie = QMovie(self.gif_path)
         self.ui.plotLabelMRI.setMovie(self.movie)
         self.movie.setScaledSize(QSize(50, 50))
         self.movie.start()
