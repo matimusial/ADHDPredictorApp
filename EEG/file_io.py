@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+import EEG.config
 from EEG.config import EEG_SIGNAL_FRAME_SIZE
 
 

@@ -1,7 +1,7 @@
 import os
 import io
 import random
-
+import ast
 import numpy as np
 import nibabel as nib
 import pyedflib
@@ -17,6 +17,8 @@ from scipy.io import loadmat
 from pandas import read_csv
 from keras.models import load_model
 
+import EEG.config
+import MRI.config
 from CONTROLLERS.DBConnector import DBConnector
 from EEG.config import FS
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
@@ -292,6 +294,8 @@ class DoctorViewController:
                 f.close()
                 dataType = "EEG"
                 model = self.modelEEG
+                modelInfo = self.chosenModelInfoEEG
+
 
             if path.endswith('.mat'):
                 print("MAT")
@@ -300,12 +304,15 @@ class DoctorViewController:
                 data = file[data_key].T
                 dataType = "EEG"
                 model = self.modelEEG
+                modelInfo = self.chosenModelInfoEEG
+
 
             if path.endswith('.csv'):
                 print("CSV")
                 data = read_csv(path).T
                 dataType = "EEG"
                 model = self.modelEEG
+                modelInfo = self.chosenModelInfoEEG
 
             if path.endswith('.nii.gz') or path.endswith('.nii'):
                 print('NII')
@@ -321,9 +328,10 @@ class DoctorViewController:
                 dataType = "MRI"
                 self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
                 model = self.modelMRI
+                modelInfo = self.chosenModelInfoMRI
                 print(data.shape)
 
-            result = self.processData(data, model, dataType=dataType)
+            result = self.processData(data, model, modelInfo, dataType=dataType)
 
             if dataType == "EEG" :
                 self.allData[dataType].append(data)
@@ -339,11 +347,13 @@ class DoctorViewController:
         if self.chosenModelInfoMRI is not None:
             self.modelMRI = self.db_conn.select_model(self.chosenModelInfoMRI[0])
 
-    def processData(self, DATA, model, dataType="EEG"):
+    def processData(self, DATA, model, modelInfo, dataType="EEG"):
         result = []
 
         if dataType == "EEG":
             try:
+                EEG.config.EEG_SIGNAL_FRAME_SIZE = ast.literal_eval(modelInfo[1])[1]
+
                 DATA_FILTERED = filter_eeg_data(DATA)
 
                 DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
@@ -351,10 +361,12 @@ class DoctorViewController:
                 DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
 
                 DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
-
+                print("CHUJWIELKIISZELKI")
                 result = model.predict(DATA_FRAMED)
+                print("Proncie")
 
             except Exception as e:
+                print(e)
                 self.show_alert(f"Error processing EEG data: {e}")
                 return
 
