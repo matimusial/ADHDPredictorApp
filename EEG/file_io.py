@@ -44,7 +44,6 @@ def split_into_frames(data):
     try:
         if data.shape[1] < EEG_SIGNAL_FRAME_SIZE:
             raise ValueError("The number of samples is less than the frame size.")
-        print(EEG_SIGNAL_FRAME_SIZE)
         num_frames = data.shape[1] // EEG_SIGNAL_FRAME_SIZE
         framed_data = np.zeros((num_frames, data.shape[0], EEG_SIGNAL_FRAME_SIZE))
 
