@@ -17,6 +17,7 @@ from scipy.io import loadmat
 from pandas import read_csv
 from keras.models import load_model
 
+import EEG.config
 from CONTROLLERS.DBConnector import DBConnector
 from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
 from EEG.file_io import split_into_frames
@@ -342,13 +343,12 @@ class DoctorViewController:
             self.modelMRI = self.db_conn.select_model(self.chosenModelInfoMRI[0])
 
     def processData(self, DATA, model, modelInfo, dataType="EEG"):
-        from EEG.config import EEG_SIGNAL_FRAME_SIZE
         from MRI.config import CNN_INPUT_SHAPE_MRI
         result = []
 
         if dataType == "EEG":
             try:
-                EEG_SIGNAL_FRAME_SIZE = ast.literal_eval(modelInfo[1])[1]
+                EEG.config.EEG_SIGNAL_FRAME_SIZE = ast.literal_eval(modelInfo[1])[1]
 
                 DATA_FILTERED = filter_eeg_data(DATA)
 
