@@ -11,45 +11,6 @@ from CONTROLLERS.DBConnector import DBConnector
 from keras.models import load_model
 GIF_PATH = os.path.join('UI', 'loading.gif')
 
-class Worker(QObject):
-    """
-    Worker class to run tasks in a separate thread.
-
-    Attributes:
-        finished (pyqtSignal): Signal emitted when the task is finished.
-        error (pyqtSignal): Signal emitted when an error occurs.
-
-    Methods:
-        run: Executes the generate method of the controller and handles exceptions.
-    """
-
-    finished = pyqtSignal()
-    error = pyqtSignal(str)
-
-    def __init__(self, controller):
-        """
-        Initializes the Worker class with a given controller.
-
-        Args:
-            controller: The controller instance that contains the generate method.
-        """
-        super().__init__()
-        self.controller = controller
-
-    def run(self):
-        """
-        Executes the generate method of the controller. Emits finished signal if successful,
-        and error signal if an exception occurs.
-
-        This method is intended to be run in a separate thread.
-        """
-        try:
-            self.controller.generate()
-            self.finished.emit()
-        except Exception as e:
-            self.error.emit(str(e))
-
-
 class ModelWorker(QObject):
     """
     Worker class to load the model in a separate thread.
@@ -102,6 +63,7 @@ class GenerateNew:
         self.db = DBConnector()
         self.chosen_model_data = None
         self.choose_model()
+
         self.ui.imgNumberBox.setRange(1, 20)
         self.generated = []
         self.currIdxMRI = 0
@@ -231,7 +193,7 @@ class GenerateNew:
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.on_finished)
+        self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.model_loaded.connect(self.on_model_loaded)
@@ -239,8 +201,8 @@ class GenerateNew:
 
         self.thread.start()
         self.show_loading_animation()
-    def on_finished(self):
-        self.movie.stop()
+
+
     def on_model_loaded(self, model):
         """
         Callback when the model is loaded. Generates images using the loaded model.
