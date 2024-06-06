@@ -21,7 +21,7 @@ UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 
 MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
-TRAIN_PATH = os.path.join(parent_dir, 'CONTROLLERS', 'INPUT_DATA', 'EEG', 'MAT')
+TRAIN_PATH = os.path.join(parent_dir, 'INPUT_DATA', 'EEG', 'MAT')
 PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 
 '''
@@ -100,12 +100,12 @@ class AdminEegCnn:
         else:
             frequency = int(self.ui.textEdit_frequency.toPlainText())
 
-        EEG.config.set_cnn_epochs(epochs)
-        EEG.config.set_cnn_batch_size(batch_size)
-        EEG.config.set_learning_rate(learning_rate)
-        EEG.config.set_electrodes(electrodes)
-        EEG.config.set_frame(frame_size)
-        EEG.config.set_fs(frequency)
+        EEG.config.CNN_EPOCHS = epochs
+        EEG.config.CNN_BATCH_SIZE = batch_size
+        EEG.config.CNN_LEARNING_RATE = learning_rate
+        EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
+        EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
+        EEG.config.FS = frequency
 
         print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
         print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
