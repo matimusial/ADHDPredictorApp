@@ -69,6 +69,7 @@ class GenerateNew:
         self.generator = None
         self.thread = None
         self.worker = None
+        self.fig = None
         self.gif_path = os.path.join('UI', 'loading.gif')
 
     def __del__(self):
@@ -109,6 +110,8 @@ class GenerateNew:
         adhd_list = self.db.select_model_info("type='gan_adhd'")
 
         for item in adhd_list:
+            item = list(item)
+            item.append('adhd')
             adhd_item = QStandardItem(item[0])
             adhd_item.setEditable(False)
             adhd_item.setData(item)
@@ -120,6 +123,8 @@ class GenerateNew:
         control_list = self.db.select_model_info("type='gan_control'")
 
         for item in control_list:
+            item = list(item)
+            item.append('healthy')
             control_item = QStandardItem(item[0])
             control_item.setEditable(False)
             control_item.setData(item)
@@ -257,10 +262,10 @@ class GenerateNew:
         Args:
             img (np.ndarray): Generated MRI image.
         """
-        fig = Figure()
-        fig.tight_layout()
-        canvas = FigureCanvas(fig)
-        ax = fig.add_subplot(111)
+        self.fig = Figure()
+        self.fig.tight_layout()
+        canvas = FigureCanvas(self.fig)
+        ax = self.fig.add_subplot(111)
 
         ax.imshow(img, cmap="gray")
         ax.set_title(f'MRI generated {self.currIdxMRI + 1}')
@@ -276,3 +281,9 @@ class GenerateNew:
         self.ui.plotLabelMRI.setMovie(self.movie)
         self.movie.setScaledSize(QSize(50, 50))
         self.movie.start()
+
+    def save_image(self):
+        if self.fig is None: return
+
+        gan_type = self.chosen_model_data[-1]
+        self.fig.savefig(f"mri_{gan_type}_{self.currIdxMRI+1}.png")

@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
         ui.genBtn.clicked.connect(gn.generate)
         ui.btnPrevPlot.clicked.connect(gn.show_prev_plot_mri)
         ui.btnNextPlot.clicked.connect(gn.show_next_plot_mri)
+        ui.saveBtn.clicked.connect(gn.save_image)
 
     def run_app(self):
         while True:
