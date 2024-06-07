@@ -35,7 +35,7 @@ TO DO:
 -W̶s̶p̶ó̶l̶n̶e̶ ̶u̶m̶i̶e̶j̶s̶c̶o̶w̶i̶e̶n̶i̶e̶ ̶p̶r̶z̶y̶c̶i̶s̶k̶ó̶w̶ ̶p̶r̶z̶e̶ł̶ą̶c̶z̶a̶n̶i̶a̶ ̶u̶ż̶y̶t̶k̶o̶w̶n̶i̶k̶a̶ ̶i̶ ̶a̶d̶m̶i̶n̶a̶
 -Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
 -dane z configa są ignorowane przez resztę kodu
--Ten graf to zadziała kiedyś?
+-Ten graf to zadziała kiedyś *(Działa)
 -!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 '''
 
@@ -202,12 +202,11 @@ class RealTimeMetrics(QThread):
 
     def run(self):
         control_counter = 0
-        while control_counter <= self.total_epochs:
-            if control_counter == self.total_epochs:
-                control_counter += 1
+        while control_counter < self.total_epochs:
+            control_counter = len(global_accuracy)
             self.plot_metrics()
             time.sleep(self.interval)
-            control_counter = len(global_accuracy)
+
 
 
 

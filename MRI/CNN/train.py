@@ -9,7 +9,7 @@ from MRI.file_io import read_pickle, save_pickle, prepare_for_cnn
 from MRI.data_validation import make_predict_data
 from MRI.config import CNN_EPOCHS_MRI, CNN_BATCH_SIZE_MRI, CNN_LEARNING_RATE_MRI, CNN_INPUT_SHAPE_MRI
 
-#from CONTROLLERS.metrics import RealTimeMetrics
+from CONTROLLERS.metrics import WorkerMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -86,13 +86,12 @@ def train_cnn(save, real_mri_path, predict_path, model_path, ui):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
-        real_time_metrics = RealTimeMetrics(total_epochs=CNN_EPOCHS_MRI, plot_label=ui.plotLabel_CNN)
 
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS_MRI,
                       batch_size=CNN_BATCH_SIZE_MRI,
-                      callbacks=[reduce_lr, real_time_metrics],
+                      callbacks=[reduce_lr],
                       verbose=1)
 
         _, test_accuracy = model.evaluate(X_test, y_test)
