@@ -572,7 +572,7 @@ class DoctorViewController:
             if self.chosenModelInfoEEG is None:
                 return
             msg = f"""
-                    Model name: {self.chosenModelInfoEEG[0]}\n
+                    Model accuracy: {self.chosenModelInfoEEG[0]}\n
                     Input shape: {self.chosenModelInfoEEG[1]}\n
                     Frequency: {self.chosenModelInfoEEG[2]}\n
                     Channels: {self.chosenModelInfoEEG[3]}\n
@@ -584,7 +584,7 @@ class DoctorViewController:
                 return
             plane = self.chosenModelInfoMRI[4]
             msg = f"""
-                Model name: {self.chosenModelInfoMRI[0]}\n
+                Model accuracy: {self.chosenModelInfoMRI[0]}\n
                 Input shape: {self.chosenModelInfoMRI[1]}\n
                 Plane: {'Axial' if plane=='A' else 'Sagittal' if plane=='S' else 'Coronal'}\n
                 Description: {self.chosenModelInfoMRI[5]}

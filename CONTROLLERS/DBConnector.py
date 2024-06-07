@@ -141,22 +141,24 @@ class DBConnector:
         else:
             print("No database connection, use establish_connection function.")
 
-    def select_data(self, table_name=""):
+    def select_data_and_columns(self, table_name="models"):
         """
-        Selects and returns all data from the specified table.
+        Selects and returns all data from the specified table along with column names.
 
         Args:
             table_name (str): The name of the table to select data from.
 
         Returns:
-            list: A list of tuples containing the data from the table, or None if an error occurs.
+            tuple: A tuple containing a list of tuples with the data and a list of column names,
+                   or None if an error occurs.
         """
         if self.connection and self.connection.is_connected():
             try:
-                query = f"SELECT * FROM {str(table_name)}"
+                query = f"SELECT * FROM {table_name}"
                 self.cursor.execute(query)
                 results = self.cursor.fetchall()
-                return results
+                column_names = [column[0] for column in self.cursor.description]  # Extract column names
+                return (results, column_names)
             except Error as e:
                 print(f"Error retrieving data: {e}")
                 return None
@@ -271,3 +273,9 @@ class DBConnector:
 
 # db = DBConnector()
 # db.establish_connection()
+#
+# db.insert_data_into_models_table(f"0.1", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test1")
+# db.insert_data_into_models_table(f"0.2", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test2")
+# db.insert_data_into_models_table(f"0.3", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test3")
+# db.insert_data_into_models_table(f"0.4", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test4")
+# db.insert_data_into_models_table(f"0.5", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test5")
