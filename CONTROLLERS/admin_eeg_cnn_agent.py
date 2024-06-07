@@ -12,6 +12,7 @@ from PyQt5.QtCore import QMutex,QMutexLocker
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from PyQt5.QtGui import QPixmap
+import numpy as np
 import io
 import time
 
@@ -37,6 +38,7 @@ TO DO:
 -Ten graf to zadziała kiedyś?
 -!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 '''
+
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
@@ -116,8 +118,8 @@ class AdminEegCnn:
 
         self.thread = QThread()
 
-        #self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
-        #self.real_time_metrics.start()
+        self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
+        self.real_time_metrics.start()
 
         # Create a worker object
         self.worker = Worker(self)
@@ -191,16 +193,23 @@ class Worker(QObject):
 class RealTimeMetrics(QThread):
     """Thread for visualizing accuracy and loss in real time during model training."""
 
-    def __init__(self, total_epochs, plot_label):
+    def __init__(self, total_epochs, plot_label, interval=1):
         super().__init__()
         self.total_epochs = total_epochs
         self.plot_label = plot_label
         self.mutex = QMutex()
+        self.interval = interval
 
     def run(self):
-        while global_epoch_count <= self.total_epochs:
+        control_counter = 0
+        while control_counter <= self.total_epochs:
+            if control_counter == self.total_epochs:
+                control_counter += 1
             self.plot_metrics()
-            time.sleep(10)
+            time.sleep(self.interval)
+            control_counter = len(global_accuracy)
+
+
 
     def plot_metrics(self):
         try:
@@ -209,19 +218,10 @@ class RealTimeMetrics(QThread):
                 fig.tight_layout()
                 canvas = FigureCanvas(fig)
 
-                print()
-                print("\nTest 2: ")
-                print("global_accuracy: ", global_accuracy)
-                print("global_val_accuracy: ", global_val_accuracy)
-                print("global_loss: ", global_loss)
-                print("global_val_loss: ", global_val_loss)
-                print("global_epoch_count: ", global_epoch_count,"\n")
-                print()
-
                 # Plot for accuracy
                 ax1 = fig.add_subplot(211)
-                ax1.plot(global_epoch_count, global_accuracy, 'r-', label='Training Accuracy')
-                ax1.plot(global_epoch_count, global_val_accuracy, 'b-', label='Validation Accuracy')
+                ax1.plot(range(1, len(global_accuracy) + 1), global_accuracy, 'r-', label='Training Accuracy')
+                ax1.plot(range(1, len(global_val_accuracy) + 1), global_val_accuracy, 'b-', label='Validation Accuracy')
                 ax1.set_xlabel('Epoch')
                 ax1.set_ylabel('Accuracy')
                 ax1.set_title('Accuracy')
@@ -232,8 +232,8 @@ class RealTimeMetrics(QThread):
 
                 # Plot for loss
                 ax2 = fig.add_subplot(212)
-                ax2.plot(global_epoch_count, global_loss, 'r-', label='Training Loss')
-                ax2.plot(global_epoch_count, global_val_loss, 'b-', label='Validation Loss')
+                ax2.plot(range(1, len(global_loss) + 1), global_loss, 'r-', label='Training Loss')
+                ax2.plot(range(1, len(global_val_loss) + 1), global_val_loss, 'b-', label='Validation Loss')
                 ax2.set_xlabel('Epoch')
                 ax2.set_ylabel('Loss')
                 ax2.set_title('Loss')
@@ -252,5 +252,3 @@ class RealTimeMetrics(QThread):
                 buf.close()
         except Exception as e:
             print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
-
-

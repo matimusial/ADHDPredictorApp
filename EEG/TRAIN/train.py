@@ -143,13 +143,13 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
-        #worker_metrics = WorkerMetrics()
+        worker_metrics = WorkerMetrics()
 
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS,
                       batch_size=CNN_BATCH_SIZE,
-                      callbacks=[reduce_lr],
+                      callbacks=[reduce_lr,worker_metrics],
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)
