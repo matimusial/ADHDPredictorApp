@@ -92,7 +92,6 @@ class WorkerMetrics(Callback):
     def on_epoch_end(self, epoch, logs=None):
         global global_accuracy, global_val_accuracy, global_loss, global_val_loss
         logs = logs or {}
-        print("\nCzemu Kurwo nie działasz:",global_accuracy,"\nCzemu")
         global_accuracy.append(logs.get('accuracy'))
         global_val_accuracy.append(logs.get('val_accuracy'))
         global_loss.append(logs.get('loss'))

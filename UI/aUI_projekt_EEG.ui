@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1315</width>
-    <height>612</height>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,10 +20,10 @@
    <widget class="QWidget" name="buttons_widget" native="true">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
+      <x>0</x>
+      <y>0</y>
       <width>131</width>
-      <height>601</height>
+      <height>611</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -111,35 +111,43 @@ QPushButton{
    <widget class="QWidget" name="main_widget" native="true">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>10</y>
-      <width>1161</width>
-      <height>601</height>
+      <x>130</x>
+      <y>0</y>
+      <width>1181</width>
+      <height>611</height>
      </rect>
     </property>
     <widget class="QWidget" name="widget" native="true">
      <property name="geometry">
       <rect>
-       <x>310</x>
+       <x>360</x>
        <y>0</y>
-       <width>851</width>
-       <height>601</height>
+       <width>821</width>
+       <height>611</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QWidget{
+	background-color: rgb(31, 149, 239);
+}</string>
      </property>
      <widget class="QLabel" name="plotLabel_CNN">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>851</width>
-        <height>601</height>
+        <x>10</x>
+        <y>10</y>
+        <width>801</width>
+        <height>591</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background-color: rgb(245, 250, 254);</string>
       </property>
       <property name="text">
-       <string>PLOT</string>
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>icons/icon_loop.png</pixmap>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
