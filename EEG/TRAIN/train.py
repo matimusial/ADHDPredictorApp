@@ -103,7 +103,7 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path):
         print(f"Error during CNN training: {e}")
         return
 
-def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
+def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
     """Trains a CNN model on EEG data.
 
     Args:
@@ -144,7 +144,7 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
-        worker_metrics = WorkerMetrics()
+        worker_metrics = WorkerMetrics(total_epochs=CNN_EPOCHS)
 
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),

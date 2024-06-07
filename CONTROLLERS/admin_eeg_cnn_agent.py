@@ -1,20 +1,16 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog
+
+import CONTROLLERS.metrics
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg, train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
-from CONTROLLERS.metrics import *
 import os
 import shutil
 
-from PyQt5.QtCore import QMutex,QMutexLocker
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvas
-from PyQt5.QtGui import QPixmap
-import numpy as np
-import io
-import time
+from CONTROLLERS.metrics import RealTimeMetrics
+
 
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
@@ -24,21 +20,6 @@ parent_directory = os.path.dirname(current_dir)
 MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
 TRAIN_PATH = os.path.join(parent_dir, 'INPUT_DATA', 'EEG', 'MAT')
 PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
-
-'''
-TO DO:
--U̶s̶t̶a̶w̶i̶ć̶ ̶t̶y̶t̶u̶ł̶ ̶o̶k̶n̶a̶ ̶n̶a̶ ̶w̶i̶d̶o̶k̶ ̶w̶ ̶k̶t̶ó̶r̶m̶ ̶s̶i̶ę̶ ̶j̶e̶s̶t̶
--D̶o̶m̶y̶ś̶l̶n̶e̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶e̶ ̶w̶ ̶p̶a̶r̶a̶m̶e̶t̶r̶a̶c̶h̶ ̶m̶o̶d̶e̶l̶u̶
--D̶o̶m̶y̶ś̶l̶n̶a̶ ̶w̶a̶r̶t̶o̶ś̶ć̶ ̶w̶y̶ś̶w̶i̶e̶t̶l̶o̶n̶a̶ ̶w̶ ̶ś̶c̶i̶e̶ż̶c̶e̶ ̶m̶o̶d̶e̶l̶u̶
--P̶o̶d̶ł̶ą̶c̶z̶y̶ć̶ ̶d̶o̶ ̶t̶r̶a̶i̶n̶'̶a̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶_̶r̶e̶a̶d̶r̶a̶w̶ ̶z̶a̶m̶i̶a̶s̶t̶ ̶t̶r̶a̶i̶n̶_̶c̶n̶n̶_̶e̶e̶g̶
--D̶e̶a̶k̶t̶y̶w̶o̶w̶a̶ć̶ ̶w̶a̶r̶t̶o̶ś̶c̶i̶ ̶d̶l̶a̶ ̶f̶r̶e̶q̶u̶e̶n̶c̶y̶ ̶i̶ ̶k̶a̶n̶a̶ł̶y̶
--W̶s̶p̶ó̶l̶n̶e̶ ̶u̶m̶i̶e̶j̶s̶c̶o̶w̶i̶e̶n̶i̶e̶ ̶p̶r̶z̶y̶c̶i̶s̶k̶ó̶w̶ ̶p̶r̶z̶e̶ł̶ą̶c̶z̶a̶n̶i̶a̶ ̶u̶ż̶y̶t̶k̶o̶w̶n̶i̶k̶a̶ ̶i̶ ̶a̶d̶m̶i̶n̶a̶
--Wyświetlenie wartości związanymi z danymi uczącymi (ilość plików, parametry itd.)
--dane z configa są ignorowane przez resztę kodu
--Ten graf to zadziała kiedyś *(Działa)
--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTOWAĆ WSZYSTKO!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-'''
-
 
 class AdminEegCnn:
     def __init__(self, mainWindow):
@@ -118,6 +99,7 @@ class AdminEegCnn:
 
         self.thread = QThread()
 
+        # Reset the plot and clear metrics before starting the training
         self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
         self.real_time_metrics.start()
 
@@ -190,64 +172,3 @@ class Worker(QObject):
     def train_cnn_eeg(self):
         self.controller.train()
 
-class RealTimeMetrics(QThread):
-    """Thread for visualizing accuracy and loss in real time during model training."""
-
-    def __init__(self, total_epochs, plot_label, interval=1):
-        super().__init__()
-        self.total_epochs = total_epochs
-        self.plot_label = plot_label
-        self.mutex = QMutex()
-        self.interval = interval
-
-    def run(self):
-        control_counter = 0
-        while control_counter < self.total_epochs:
-            control_counter = len(global_accuracy)
-            self.plot_metrics()
-            time.sleep(self.interval)
-
-
-
-
-    def plot_metrics(self):
-        try:
-            with QMutexLocker(self.mutex):
-                fig = Figure()
-                fig.tight_layout()
-                canvas = FigureCanvas(fig)
-
-                # Plot for accuracy
-                ax1 = fig.add_subplot(211)
-                ax1.plot(range(1, len(global_accuracy) + 1), global_accuracy, 'r-', label='Training Accuracy')
-                ax1.plot(range(1, len(global_val_accuracy) + 1), global_val_accuracy, 'b-', label='Validation Accuracy')
-                ax1.set_xlabel('Epoch')
-                ax1.set_ylabel('Accuracy')
-                ax1.set_title('Accuracy')
-                ax1.legend()
-                ax1.grid(True)
-                ax1.set_ylim(0, 1.0)
-                ax1.set_xlim(1, self.total_epochs)
-
-                # Plot for loss
-                ax2 = fig.add_subplot(212)
-                ax2.plot(range(1, len(global_loss) + 1), global_loss, 'r-', label='Training Loss')
-                ax2.plot(range(1, len(global_val_loss) + 1), global_val_loss, 'b-', label='Validation Loss')
-                ax2.set_xlabel('Epoch')
-                ax2.set_ylabel('Loss')
-                ax2.set_title('Loss')
-                ax2.legend()
-                ax2.grid(True)
-                ax2.set_xlim(1, self.total_epochs)
-
-                fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
-
-                buf = io.BytesIO()
-                canvas.print_png(buf)
-                qpm = QPixmap()
-                qpm.loadFromData(buf.getvalue(), 'PNG')
-                self.plot_label.setPixmap(qpm)
-
-                buf.close()
-        except Exception as e:
-            print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
