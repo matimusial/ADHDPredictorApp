@@ -50,7 +50,7 @@ def MRI():
             gan_choice = input('Choose an option:   1-(train GAN)   2-(display generated images)   3-(generate images): ')
 
             if gan_choice == '1':
-                save = input('Choose an option:   1-(overwrite model)   2-(do not save model): ')
+                save = input('Choose an option:   1-(save model)   2-(do not save model): ')
                 if save not in ['1', '2']:
                     print("Invalid choice. Enter 1 or 2.")
                     continue

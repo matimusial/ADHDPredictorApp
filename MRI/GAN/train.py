@@ -189,6 +189,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 train_data (np.ndarray): The training data containing real images.
                 val_data (np.ndarray): The validation data containing real images.
             """
+            gen_loss = np.array([])
             for epoch in range(epochs):
                 try:
                     idx = np.random.randint(0, train_data.shape[0], batch_size)
@@ -196,7 +197,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     d_loss, g_loss = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                     if d_loss is None or g_loss is None:
                         return
-
+                    if (epoch + 1) % 5000 != 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
                     if (epoch + 1) % TRAIN_GAN_PRINT_INTERVAL == 0:
                         val_idx = np.random.randint(0, val_data.shape[0], batch_size)
                         val_real_imgs = val_data[val_idx]
@@ -213,12 +214,14 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
 
             if save:
                 try:
-                    generator.save(os.path.join(gan_model_path, f'{data_type}_GAN.keras'))
+                    generator.save(os.path.join(gan_model_path, f'{round(np.mean(gen_loss), 4)}_{data_type}_GAN.keras'))
                 except Exception as e:
                     print(f"Error saving model: {e}")
                     return
+            return np.mean(gen_loss)
 
-        train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
+        gen_loss = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
+        return round(gen_loss, 4)
     except Exception as e:
         print(f"An error occurred during GAN training: {e}")
         return

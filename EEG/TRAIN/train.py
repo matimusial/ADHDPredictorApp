@@ -43,7 +43,8 @@ def build_eeg_cnn_model(input_shape):
     ])
     return model
 
-def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
+
+def train_cnn_eeg(save, pickle_path, predict_path, model_path):
     """Trains a CNN model on EEG data.
 
     Args:
@@ -97,12 +98,12 @@ def train_cnn_eeg(save, pickle_path, predict_path, model_path, ui):
             model.save(os.path.join(model_path, f'{round(final_accuracy, 4)}.keras'))
             # save_pickle(os.path.join(predict_path, f"X_pred_{round(final_accuracy, 4)}.pkl"), X_pred)
             # save_pickle(os.path.join(predict_path, f"y_pred_{round(final_accuracy, 4)}.pkl"), y_pred)
-
+        return round(final_accuracy, 4)
     except Exception as e:
         print(f"Error during CNN training: {e}")
         return
 
-def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
+def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path, ui):
     """Trains a CNN model on EEG data.
 
     Args:
@@ -159,6 +160,7 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
             model.save(os.path.join(model_path, f'{round(final_accuracy, 4)}.keras'))
             # save_pickle(os.path.join(predict_path, f"X_pred_{round(final_accuracy, 4)}.pkl"), X_pred)
             # save_pickle(os.path.join(predict_path, f"y_pred_{round(final_accuracy, 4)}.pkl"), y_pred)
+        return round(final_accuracy, 4)
 
     except Exception as e:
         print(f"Error during CNN training: {e}")
