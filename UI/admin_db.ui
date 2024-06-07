@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>822</width>
+    <width>1157</width>
     <height>547</height>
    </rect>
   </property>
@@ -17,47 +17,66 @@
    <string notr="true">QWidget{background-color: rgb(31, 149, 239);}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="tableView">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>890</x>
+      <y>510</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QSpinBox" name="spinBox">
+       <property name="styleSheet">
+        <string notr="true">background-color:white;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteBtn">
+       <property name="styleSheet">
+        <string notr="true">background-color: white;</string>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QPushButton" name="backBtn">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
       <y>20</y>
-      <width>761</width>
-      <height>471</height>
+      <width>75</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: white;</string>
     </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>510</y>
-      <width>234</width>
-      <height>29</height>
+      <x>95</x>
+      <y>21</y>
+      <width>1021</width>
+      <height>481</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="styleSheet">
-        <string notr="true">background-color:white;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="styleSheet">
-        <string notr="true">background-color: white;</string>
-       </property>
-       <property name="text">
-        <string>Send</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="styleSheet">
+     <string notr="true">background-color:white;</string>
+    </property>
    </widget>
   </widget>
  </widget>

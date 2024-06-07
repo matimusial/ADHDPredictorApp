@@ -11,7 +11,7 @@ from CONTROLLERS.admin_eeg_cnn_agent import AdminEegCnn
 from CONTROLLERS.admin_mri_cnn_agent import AdminMriCnn
 from CONTROLLERS.admin_mri_gan_agent import AdminMriGan
 from CONTROLLERS.generateNew import GenerateNew
-
+from CONTROLLERS.admin_db_view import AdminDbView
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 current_dir = os.path.dirname(__file__)
@@ -21,6 +21,8 @@ UI_PATH = os.path.join(current_dir, 'UI')
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.av = None
+        self.gn = None
         try:
             self.viewController = DoctorViewController(self)
             self.loadDoctorUI()
@@ -30,9 +32,15 @@ class MainWindow(QMainWindow):
             traceback.print_exc()
 
     def load_admin_db_view(self):
-        ui_path = os.path.join("UI", "admin_db_view.ui")
-        print("chuj")
-        #ui = uic.loadUi(ui_path, self)
+        """
+        Loads the admin database view UI and sets up event handlers for the buttons.
+        """
+        ui_path = os.path.join("UI", "admin_db.ui")
+        ui = uic.loadUi(ui_path, self)
+        self.av = AdminDbView(ui)
+
+        ui.deleteBtn.clicked.connect(self.av.show_dialog)
+        ui.backBtn.clicked.connect(self.loadAdminEegCnn)
 
 
     def load_gen_view(self):
@@ -41,15 +49,15 @@ class MainWindow(QMainWindow):
         """
         ui_path = os.path.join("UI", "genView.ui")
         ui = uic.loadUi(ui_path, self)
-        gn = GenerateNew(ui)
+        self.gn = GenerateNew(ui)
 
         ui.backBtn.clicked.connect(self.loadDoctorUI)
-        ui.adhdGenInfo.clicked.connect(lambda: gn.show_info("adhd"))
-        ui.controlGenInfo.clicked.connect(lambda: gn.show_info("control"))
-        ui.genBtn.clicked.connect(gn.generate)
-        ui.btnPrevPlot.clicked.connect(gn.show_prev_plot_mri)
-        ui.btnNextPlot.clicked.connect(gn.show_next_plot_mri)
-        ui.saveBtn.clicked.connect(gn.save_image)
+        ui.adhdGenInfo.clicked.connect(lambda: self.gn.show_info("adhd"))
+        ui.controlGenInfo.clicked.connect(lambda: self.gn.show_info("control"))
+        ui.genBtn.clicked.connect(self.gn.generate)
+        ui.btnPrevPlot.clicked.connect(self.gn.show_prev_plot_mri)
+        ui.btnNextPlot.clicked.connect(self.gn.show_next_plot_mri)
+        ui.saveBtn.clicked.connect(self.gn.save_image)
 
     def run_app(self):
         while True:
