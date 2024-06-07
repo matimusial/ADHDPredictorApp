@@ -1,6 +1,6 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QApplication
 
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg_readraw
@@ -24,7 +24,6 @@ PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 class AdminEegCnn:
     def __init__(self, mainWindow):
         self.mainWindow = mainWindow
-        self.mainWindow.setWindowTitle("ADMIN: EEG for CNN")
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
 
         _, _, initChannels, adhdcount, controlcount = read_eeg_raw(TRAIN_PATH)
@@ -52,6 +51,7 @@ class AdminEegCnn:
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
+        self.ui.exitButton.clicked.connect(self.on_exit)
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -169,6 +169,9 @@ class AdminEegCnn:
 
     def onError(self, error):
         print(f"Error: {error}")
+
+    def on_exit(self):
+        QApplication.quit()
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
