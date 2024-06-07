@@ -12,6 +12,8 @@ class DBConnector:
             print("Database connection closed.")
 
     def establish_connection(self):
+        if self.connection and self.connection.is_connected():
+            return
         try:
             host = '192.168.205.218'
             database = 'mydatabase'
@@ -162,30 +164,6 @@ class DBConnector:
             print("No database connection, use establish_connection function.")
             return None
 
-    def select_model_name(self, condition=""):
-        """
-        Selects and returns data from the 'models' table based on a condition.
-
-        Args:
-            condition (str): The condition to filter the models.
-            example: "WHERE cond1 = 'val1' AND/OR cond2 = 'val'" check insert_data_for_models for table structure.
-
-        Returns:
-            list: A list of tuples containing the data from the table, or None if an error occurs.
-        """
-        if self.connection and self.connection.is_connected():
-            try:
-                query = f"SELECT name FROM models WHERE {condition}"
-                self.cursor.execute(query)
-                results = self.cursor.fetchall()
-                return results
-            except Error as e:
-                print(f"Error retrieving data: {e}")
-                return None
-        else:
-            print("No database connection, use establish_connection function.")
-            return None
-
     def select_model_info(self, condition=""):
         """
         Selects and returns data from the 'models' table based on a condition.
@@ -199,7 +177,7 @@ class DBConnector:
         """
         if self.connection and self.connection.is_connected():
             try:
-                query = f"SELECT name, input_shape, fs, channels, plane, description FROM models WHERE {condition}"
+                query = f"SELECT name, input_shape, fs, channels, plane, description FROM models WHERE {condition} ORDER BY name DESC"
                 self.cursor.execute(query)
                 results = self.cursor.fetchall()
                 return results
