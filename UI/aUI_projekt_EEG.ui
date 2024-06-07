@@ -163,7 +163,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>150</y>
+       <y>260</y>
        <width>271</width>
        <height>285</height>
       </rect>
@@ -256,7 +256,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>30</y>
        <width>121</width>
        <height>23</height>
       </rect>
@@ -269,8 +269,8 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>20</y>
-       <width>141</width>
+       <y>30</y>
+       <width>211</width>
        <height>21</height>
       </rect>
      </property>
@@ -282,7 +282,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>70</y>
+       <y>180</y>
        <width>331</width>
        <height>71</height>
       </rect>
@@ -367,6 +367,35 @@ QPushButton{
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QLabel" name="window_name">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>271</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>EEG for CNN</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="info_dump">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>70</y>
+       <width>301</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
     </widget>
    </widget>
   </widget>
