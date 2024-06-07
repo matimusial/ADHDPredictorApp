@@ -118,7 +118,7 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
         print("\n")
 
         try:
-            ADHD_DATA, CONTROL_DATA = read_eeg_raw(folderPath)
+            ADHD_DATA, CONTROL_DATA, _, _, _ = read_eeg_raw(folderPath)
         except Exception as e:
             print(f"Error loading EEG files: {e}")
             return

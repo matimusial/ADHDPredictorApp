@@ -3,7 +3,6 @@ import pandas as pd
 import mne
 from scipy.io import loadmat, savemat
 
-# function not used in our project (one-time use)
 
 
 def read_eeg_raw(path_or_folder):
@@ -16,6 +15,10 @@ def read_eeg_raw(path_or_folder):
     Returns:
         list or tuple: Contains EEG data depending on the input type.
     """
+
+    adhd_files_count = 0
+    control_files_count = 0
+    table_structures = []
 
     if os.path.isfile(path_or_folder) and path_or_folder.endswith('.mat'):
         # Version 1: Loading a single .mat file
@@ -67,12 +70,21 @@ def read_eeg_raw(path_or_folder):
                 if file_name not in loaded_data:
                     raise KeyError(f"Key {file_name} not found in .mat file {mat_file}.")
 
+                data = loaded_data[file_name].T
+                table_structure = {
+                    'file': file_path,
+                    'shape': data.shape,
+                }
+                table_structures.append(table_structure)
+
                 if "ADHD" in subfolder:
                     ADHD_DATA.append(loaded_data[file_name].T)
+                    adhd_files_count += 1
                 elif "CONTROL" in subfolder:
                     CONTROL_DATA.append(loaded_data[file_name].T)
+                    control_files_count += 1
 
-        return ADHD_DATA, CONTROL_DATA
+        return ADHD_DATA, CONTROL_DATA, table_structures, adhd_files_count, control_files_count
 
     else:
         raise ValueError("The provided path is not a valid .mat file or folder.")

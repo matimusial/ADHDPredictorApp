@@ -1,11 +1,11 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QApplication
 
-import CONTROLLERS.metrics
 import EEG.config
-from EEG.TRAIN.train import train_cnn_eeg, train_cnn_eeg_readraw
+from EEG.TRAIN.train import train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
+from CONTROLLERS.file_io import read_eeg_raw
 import os
 import shutil
 
@@ -24,8 +24,15 @@ PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
 class AdminEegCnn:
     def __init__(self, mainWindow):
         self.mainWindow = mainWindow
-        self.mainWindow.setWindowTitle("ADMIN: EEG for CNN")
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
+
+        _, _, initChannels, adhdcount, controlcount = read_eeg_raw(TRAIN_PATH)
+
+        self.loaded_adhd_files = adhdcount
+        self.loaded_control_files = controlcount
+        self.currChannels = initChannels[0]['shape'][0]
+
+        self.updateInfoDump()
 
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
@@ -33,7 +40,7 @@ class AdminEegCnn:
         self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
         self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
         self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
-        self.ui.textEdit_electrodes.setPlainText(str(EEG.config.EEG_NUM_OF_ELECTRODES))
+        self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
         self.ui.path_label.setText(f'{TRAIN_PATH}')
@@ -44,6 +51,7 @@ class AdminEegCnn:
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
+        self.ui.exitButton.clicked.connect(self.on_exit)
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -51,6 +59,19 @@ class AdminEegCnn:
         if folder:
             self.pathTrain = folder
             self.ui.path_label.setText(f'{folder}')
+            _, _, initChannels, adhdcount, controlcount = read_eeg_raw(TRAIN_PATH)
+            self.loaded_adhd_files = adhdcount
+            self.loaded_control_files = controlcount
+            self.currChannels = initChannels[0]['shape'][0]
+            self.updateInfoDump()
+
+
+    def updateInfoDump(self):
+        self.ui.info_dump.setText(
+            f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
+            f'{self.currChannels} channels'
+        )
+        self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
         if self.ui.textEdit_epochs.toPlainText().strip() == "":
@@ -148,6 +169,9 @@ class AdminEegCnn:
 
     def onError(self, error):
         print(f"Error: {error}")
+
+    def on_exit(self):
+        QApplication.quit()
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
