@@ -197,7 +197,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     d_loss, g_loss = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                     if d_loss is None or g_loss is None:
                         return
-                    if (epoch + 1) % 5000 != 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
+                    if (epoch + 1) % 1000 == 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
                     if (epoch + 1) % TRAIN_GAN_PRINT_INTERVAL == 0:
                         val_idx = np.random.randint(0, val_data.shape[0], batch_size)
                         val_real_imgs = val_data[val_idx]
