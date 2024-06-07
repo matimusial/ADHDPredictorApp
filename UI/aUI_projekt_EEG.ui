@@ -162,94 +162,13 @@ QPushButton{
     <widget class="QWidget" name="widget_2" native="true">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>60</y>
+       <x>40</x>
+       <y>150</y>
        <width>271</width>
        <height>285</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QLabel" name="frequency">
-          <property name="text">
-           <string>Frequency</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit_frequency">
-          <property name="minimumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="electrodes">
-          <property name="text">
-           <string>Electrodes</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit_electrodes">
-          <property name="minimumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLabel" name="frame_size">
-          <property name="text">
-           <string>Frame size</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit_frame_size">
-          <property name="minimumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>181</width>
-            <height>31</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -358,6 +277,96 @@ QPushButton{
      <property name="text">
       <string>[Folder Path]</string>
      </property>
+    </widget>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>331</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="electrodes">
+        <property name="text">
+         <string>Electrodes</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="textEdit_electrodes">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="frequency">
+        <property name="text">
+         <string>Frequency</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="frame_size">
+        <property name="text">
+         <string>Frame size</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QTextEdit" name="textEdit_frame_size">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QTextEdit" name="textEdit_frequency">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>31</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
   </widget>
