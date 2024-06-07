@@ -220,8 +220,8 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     return
             return np.mean(gen_loss)
 
-        gen_loss = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
-        return round(gen_loss, 4)
+        name = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
+        return round(name, 4)
     except Exception as e:
         print(f"An error occurred during GAN training: {e}")
         return
