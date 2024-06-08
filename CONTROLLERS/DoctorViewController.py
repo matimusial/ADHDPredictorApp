@@ -97,7 +97,6 @@ class DoctorViewController:
         Opens a file selection dialog and saves the paths of the selected files.
         """
         options = QFileDialog.Options()
-        file_filter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
         default_path = 'INPUT_DATA'
         self.file_paths, _ = QFileDialog.getOpenFileNames(
             self.main_window, "Choose files", default_path, "", options=options
@@ -231,7 +230,7 @@ class DoctorViewController:
         submit_button = QPushButton('Submit')
         submit_button.clicked.connect(
             lambda: self.prepare_and_plot_data(
-                data_type, radio_adhd, radio_control, input_number, dialog
+                data_type, radio_adhd, input_number, dialog
             )
         )
         layout.addWidget(submit_button)
@@ -501,13 +500,12 @@ class DoctorViewController:
     Plotting
     """
 
-    def prepare_and_plot_data(self, data_type, radio_adhd, radio_control, input_number, dialog):
+    def prepare_and_plot_data(self, data_type, radio_adhd, input_number, dialog):
         """
         Prepares and plots MRI data based on the selected options.
 
         :param data_type: The type of data ('REAL' or 'GENERATED').
-        :param radio_adhd: Radio button for ADHD data.
-        :param radio_control: Radio button for control data.
+        :param radio_adhd: Radio button for adhd data.
         :param input_number: Line edit for the number of images.
         :param dialog: The dialog object.
         """
