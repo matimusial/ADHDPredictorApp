@@ -25,10 +25,10 @@ class MainWindow(QMainWindow):
         self.gn = None
         try:
             self.viewController = DoctorViewController(self)
-            self.loadDoctorUI()
+            self.load_doctor_ui()
             self.show()
         except Exception as e:
-            print(f"Wystąpił błąd podczas inicjalizacji MainWindow: {e}")
+            print(f"An error occurred during MainWindow initialization: {e}")
             traceback.print_exc()
 
     def load_admin_db_view(self):
@@ -41,7 +41,6 @@ class MainWindow(QMainWindow):
 
         ui.deleteBtn.clicked.connect(self.av.show_dialog)
         ui.backBtn.clicked.connect(self.loadAdminEegCnn)
-
 
     def load_gen_view(self):
         """
@@ -59,30 +58,13 @@ class MainWindow(QMainWindow):
         ui.btnNextPlot.clicked.connect(self.gn.show_next_plot_mri)
         ui.saveBtn.clicked.connect(self.gn.save_image)
 
-    def run_app(self):
-        while True:
-            try:
-                choice = input('Wybierz opcję:   1-(EEG)   2-(MRI): ')
-                if choice not in ['1', '2']:
-                    print("Niepoprawny wybór. Wprowadź 1 lub 2.")
-                    continue
-                if choice == '1':
-                    self.runEEG()
-                elif choice == '2':
-                    self.runMRI()
-                break
-            except Exception as e:
-                print(f"Wystąpił błąd: {e}")
-                traceback.print_exc()
-
-    def loadDoctorUI(self):
-        try:
-            self.viewController = DoctorViewController(self)
-            self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
-            self.viewController.ui.generateNew.clicked.connect(self.load_gen_view)
-        except Exception as e:
-            print(f"Wystąpił błąd podczas ładowania UI doktora: {e}")
-            traceback.print_exc()
+    def load_doctor_ui(self):
+        """
+        Load the doctor view UI.
+        """
+        self.viewController = DoctorViewController(self)
+        self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
+        self.viewController.ui.generateNew.clicked.connect(self.load_gen_view)
 
     def loadAdminEegCnn(self):
         try:
@@ -92,7 +74,7 @@ class MainWindow(QMainWindow):
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
             self.viewController.ui.dbButton.clicked.connect(self.load_admin_db_view)
         except Exception as e:
-            print(f"Wystąpił błąd podczas ładowania Admin EEG CNN: {e}")
+            print(f"An error occurred while loading Admin EEG CNN: {e}")
             traceback.print_exc()
 
     def loadAdminMriCnn(self):
@@ -102,7 +84,7 @@ class MainWindow(QMainWindow):
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
         except Exception as e:
-            print(f"Wystąpił błąd podczas ładowania Admin MRI CNN: {e}")
+            print(f"An error occurred while loading Admin MRI CNN: {e}")
             traceback.print_exc()
 
     def loadAdminMriGan(self):
@@ -112,29 +94,26 @@ class MainWindow(QMainWindow):
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
         except Exception as e:
-            print(f"Wystąpił błąd podczas ładowania Admin MRI GAN: {e}")
+            print(f"An error occurred while loading Admin MRI GAN: {e}")
             traceback.print_exc()
 
-    def runEEG(self):
-        try:
-            EEG()
-        except Exception as e:
-            print(f"Wystąpił błąd podczas uruchamiania EEG: {e}")
-            traceback.print_exc()
+    def run_app(self):
+        while True:
+            try:
+                choice = input('Choose an option:   1-(EEG)   2-(MRI): ')
+                if choice not in ['1', '2']:
+                    print("Invalid choice. Enter 1 or 2.")
+                    continue
+                if choice == '1':
+                    EEG()
+                elif choice == '2':
+                    MRI()
+                break
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                traceback.print_exc()
 
-    def runMRI(self):
-        try:
-            MRI()
-        except Exception as e:
-            print(f"Wystąpił błąd podczas uruchamiania MRI: {e}")
-            traceback.print_exc()
 
-
-try:
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    app.exec_()
-    # EEG()
-except Exception as e:
-    print(f"Wystąpił błąd podczas uruchamiania aplikacji: {e}")
-    traceback.print_exc()
+app = QApplication(sys.argv)
+window = MainWindow()
+app.exec_()

@@ -5,21 +5,25 @@ import ast
 import numpy as np
 import nibabel as nib
 import pyedflib
-import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal, QSize, Qt
-from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
+from PyQt5.QtCore import QModelIndex, QThread, QObject, pyqtSignal, QSize, Qt
+from PyQt5.QtWidgets import (
+    QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel,
+    QPushButton, QMessageBox
+)
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator, QMovie
-from matplotlib.backends.backend_template import FigureCanvas
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 from scipy.io import loadmat
 from pandas import read_csv
+
 from keras.models import load_model
 
 import EEG.config
 from CONTROLLERS.DBConnector import DBConnector
-from EEG.data_preprocessing import filter_eeg_data, clip_eeg_data, normalize_eeg_data
+from EEG.data_preprocessing import (
+    filter_eeg_data, clip_eeg_data, normalize_eeg_data
+)
 from EEG.file_io import split_into_frames
 from EEG.PREDICT.predict import check_result
 from MRI.file_io import read_pickle
@@ -30,56 +34,176 @@ UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
 GIF_PATH = os.path.join('UI', 'loading.gif')
-electrode_positions = ["Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4", "F7", "F8", "P3", "P4", "T5", "T6", "O1", "O2"]
+electrode_positions = [
+    "Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4",
+    "F7", "F8", "P3", "P4", "T5", "T6", "O1", "O2"]
+
 
 class DoctorViewController:
-    def __init__(self, mainWindow):
+    """
+    Initialization and Setup
+    """
 
-        self.mainWindow = mainWindow
-        self.mainWindow.setWindowTitle("DOCTOR VIEW")
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'doctorView.ui'), mainWindow)
-        self.addEvents()
+    def __init__(self, main_window):
+        """
+        Initializes the doctor view controller, loads the UI, and adds events.
+
+        :param main_window: The main window of the application.
+        """
+        self.main_window = main_window
+        self.main_window.setWindowTitle("DOCTOR VIEW")
+        self.ui = uic.loadUi(
+            os.path.join(parent_directory, 'UI', 'doctorView.ui'),
+            main_window
+        )
+        self.add_events()
 
         self.db_conn = None
-        self.filePaths = None
-        self.modelEEG = None
-        self.modelMRI = None
-        self.chosenModelInfoEEG = None
-        self.chosenModelInfoMRI = None
-        self.loadedEEGfiles = 0
-        self.loadedMRIfiles = 0
-        self.currIdxEEG = 0
-        self.currIdxMRI = 0
-        self.currIdxChannel = 0
-        self.currIdxPlane = 0
+        self.file_paths = None
+        self.model_eeg = None
+        self.model_mri = None
+        self.chosen_model_info_eeg = None
+        self.chosen_model_info_mri = None
+        self.loaded_eeg_files = 0
+        self.loaded_mri_files = 0
+        self.curr_idx_eeg = 0
+        self.curr_idx_mri = 0
+        self.curr_idx_channel = 0
+        self.curr_idx_plane = 0
         self.predictions = None
-        self.allData = {"EEG": [], "MRI": []}
+        self.all_data = {"EEG": [], "MRI": []}
 
-    def addEvents(self):
-
-        self.ui.loadDataBtn.clicked.connect(self.getFilePaths)
-
-        self.ui.btnNextPlot.clicked.connect(self.showNextPlotEEG)
-        self.ui.btnPrevPlot.clicked.connect(self.showPrevPlotEEG)
-
-        self.ui.btnNextChannel.clicked.connect(self.showNextChannel)
-        self.ui.btnPrevChannel.clicked.connect(self.showPrevChannel)
-
-        self.ui.btnNextPlot_2.clicked.connect(self.showNextPlotMRI)
-        self.ui.btnPrevPlot_2.clicked.connect(self.showPrevPlotMRI)
-
-        self.ui.btnNextPlane.clicked.connect(self.showNextPlane)
-        self.ui.btnPrevPlane.clicked.connect(self.showPrevPlane)
-
-        self.ui.modelInfoEEG.clicked.connect(lambda: self.showModelInfo("EEG"))
-        self.ui.modelInfoMRI.clicked.connect(lambda: self.showModelInfo("MRI"))
-
+    def add_events(self):
+        """
+        Adds events to the buttons and UI elements.
+        """
+        self.ui.loadDataBtn.clicked.connect(self.get_file_paths)
+        self.ui.btnNextPlot.clicked.connect(self.show_next_plot_eeg)
+        self.ui.btnPrevPlot.clicked.connect(self.show_prev_plot_eeg)
+        self.ui.btnNextChannel.clicked.connect(self.show_next_channel)
+        self.ui.btnPrevChannel.clicked.connect(self.show_prev_channel)
+        self.ui.btnNextPlot_2.clicked.connect(self.show_next_plot_mri)
+        self.ui.btnPrevPlot_2.clicked.connect(self.show_prev_plot_mri)
+        self.ui.btnNextPlane.clicked.connect(self.show_next_plane)
+        self.ui.btnPrevPlane.clicked.connect(self.show_prev_plane)
+        self.ui.modelInfoEEG.clicked.connect(lambda: self.show_model_info("EEG"))
+        self.ui.modelInfoMRI.clicked.connect(lambda: self.show_model_info("MRI"))
         self.ui.predictBtn.clicked.connect(self.predict)
+        self.ui.showReal.clicked.connect(lambda: self.show_dialog('REAL'))
+        self.ui.showGenerated.clicked.connect(lambda: self.show_dialog('GENERATED'))
 
-        self.ui.showReal.clicked.connect(lambda: self.showDialog('REAL'))
-        self.ui.showGenerated.clicked.connect(lambda: self.showDialog('GENERATED'))
+    def get_file_paths(self):
+        """
+        Opens a file selection dialog and saves the paths of the selected files.
+        """
+        options = QFileDialog.Options()
+        file_filter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
+        default_path = 'INPUT_DATA'
+        self.file_paths, _ = QFileDialog.getOpenFileNames(
+            self.main_window, "Choose files", default_path, "", options=options
+        )
 
-    def showDialog(self, data_type):
+        if len(self.file_paths) == 0:
+            self.file_paths = None
+            return
+
+        self.loaded_eeg_files = 0
+        self.loaded_mri_files = 0
+
+        for path in self.file_paths:
+            if path.endswith('.mat') or path.endswith('.edf') or path.endswith('.csv'):
+                self.loaded_eeg_files += 1
+            if path.endswith('.nii') or path.endswith('.nii.gz'):
+                self.loaded_mri_files += 1
+
+        self.ui.dataName.setText(f"{self.loaded_eeg_files} EEG and {self.loaded_mri_files} MRI files chosen")
+        self.get_model_names()
+
+    def get_model_names(self):
+        """
+        Fetches available models from the database and displays them in the UI.
+        """
+        self.chosen_model_info_eeg = None
+        self.chosen_model_info_mri = None
+        self.ui.chosenModelEEG.setText("----------")
+        self.ui.chosenModelMRI.setText("----------")
+
+        if self.db_conn is None:
+            self.db_conn = DBConnector()
+            try:
+                self.db_conn.establish_connection()
+            except ConnectionError:
+                self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
+                return
+
+        model_eeg = self.ui.modelListViewEEG.model()
+        if model_eeg:
+            model_eeg.clear()
+        else:
+            model_eeg = QStandardItemModel()
+
+        if self.loaded_eeg_files > 0:
+            def choose_model_eeg(index: QModelIndex):
+                item = model_eeg.itemFromIndex(index)
+                self.chosen_model_info_eeg = item.data()
+                self.ui.chosenModelEEG.setText(self.chosen_model_info_eeg[0])
+
+            models_list = self.db_conn.select_model_info("type='cnn_eeg'")
+
+            for model_info in models_list:
+                item = QStandardItem(model_info[0])
+                item.setEditable(False)
+                item.setData(model_info)
+                model_eeg.appendRow(item)
+
+            self.ui.modelListViewEEG.setModel(model_eeg)
+            self.ui.modelListViewEEG.doubleClicked.connect(choose_model_eeg)
+
+        model_mri = self.ui.modelListViewMRI.model()
+        if model_mri:
+            model_mri.clear()
+        else:
+            model_mri = QStandardItemModel()
+
+        if self.loaded_mri_files:
+            def choose_model_mri(index: QModelIndex):
+                item = model_mri.itemFromIndex(index)
+                self.chosen_model_info_mri = item.data()
+                self.ui.chosenModelMRI.setText(self.chosen_model_info_mri[0])
+
+            models_list = self.db_conn.select_model_info("type='cnn_mri'")
+
+            for model_info in models_list:
+                item = QStandardItem(model_info[0])
+                item.setEditable(False)
+                item.setData(model_info)
+                model_mri.appendRow(item)
+
+            self.ui.modelListViewMRI.setModel(model_mri)
+            self.ui.modelListViewMRI.doubleClicked.connect(choose_model_mri)
+
+    def load_models(self):
+        """
+        Loads the selected models from the database.
+        """
+        self.model_eeg = None
+        self.model_mri = None
+
+        if self.chosen_model_info_eeg is not None:
+            self.model_eeg = self.db_conn.select_model(self.chosen_model_info_eeg[0])
+        if self.chosen_model_info_mri is not None:
+            self.model_mri = self.db_conn.select_model(self.chosen_model_info_mri[0])
+
+    """
+    Dialogs and Alerts
+    """
+
+    def show_dialog(self, data_type):
+        """
+        Displays a dialog to choose options for generated or real MRI data.
+
+        :param data_type: The type of data ('REAL' or 'GENERATED').
+        """
         dialog = QDialog()
         dialog.setWindowTitle('Choose option')
         dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint)
@@ -88,12 +212,12 @@ class DoctorViewController:
             label_desc = QLabel('MRI pictures generated on default, build in model.')
             layout.addWidget(label_desc)
 
-        radio_healthy = QRadioButton('ADHD')
-        radio_sick = QRadioButton('CONTROL')
-        radio_healthy.setChecked(True)
+        radio_adhd = QRadioButton('ADHD')
+        radio_control = QRadioButton('CONTROL')
+        radio_adhd.setChecked(True)
 
-        layout.addWidget(radio_healthy)
-        layout.addWidget(radio_sick)
+        layout.addWidget(radio_adhd)
+        layout.addWidget(radio_control)
 
         label = QLabel('IMG amount (max 20):')
         layout.addWidget(label)
@@ -106,180 +230,109 @@ class DoctorViewController:
 
         submit_button = QPushButton('Submit')
         submit_button.clicked.connect(
-            lambda: self.prepareAndPlotData(data_type, radio_healthy, radio_sick, input_number, dialog))
+            lambda: self.prepare_and_plot_data(
+                data_type, radio_adhd, radio_control, input_number, dialog
+            )
+        )
         layout.addWidget(submit_button)
 
         dialog.setLayout(layout)
         dialog.exec_()
 
-    def prepareAndPlotData(self, data_type, radio_healthy, radio_sick, input_number, dialog):
+    def show_alert(self, msg):
+        """
+        Displays a warning message.
 
-        self.ui.btnNextPlane.setEnabled(False)
-        self.ui.btnPrevPlane.setEnabled(False)
+        :param msg: The warning message.
+        """
+        alert = QMessageBox()
+        alert.setWindowTitle("Warning")
+        alert.setText(msg)
+        alert.setIcon(QMessageBox.Warning)
+        alert.setStandardButtons(QMessageBox.Ok)
+        alert.exec_()
 
+    def show_model_info(self, model_type):
+        """
+        Displays information about the selected model.
 
-        self.currIdxEEG = 0
-        self.currIdxMRI = 0
-        self.currIdxChannel = 0
-        self.currIdxPlane = 0
-        self.allData = {"EEG": [], "MRI": []}
+        :param model_type: The type of model ('EEG' or 'MRI').
+        """
+        alert = QMessageBox()
+        alert.setWindowTitle("Info")
+        alert.setIcon(QMessageBox.Information)
+        alert.setStandardButtons(QMessageBox.Ok)
 
-        dialog.close()
+        if model_type == "EEG":
+            if self.chosen_model_info_eeg is None:
+                return
+            msg = f"""
+                Model accuracy: {self.chosen_model_info_eeg[0]}\n
+                Input shape: {self.chosen_model_info_eeg[1]}\n
+                Frequency: {self.chosen_model_info_eeg[2]}\n
+                Channels: {self.chosen_model_info_eeg[3]}\n
+                Description: {self.chosen_model_info_eeg[5]}
+                """
+        elif model_type == "MRI":
+            if self.chosen_model_info_mri is None:
+                return
+            plane = self.chosen_model_info_mri[4]
+            msg = f"""
+                Model accuracy: {self.chosen_model_info_mri[0]}\n
+                Input shape: {self.chosen_model_info_mri[1]}\n
+                Plane: {'Axial' if plane == 'A' else 'Sagittal' if plane == 'S' else 'Coronal'}\n
+                Description: {self.chosen_model_info_mri[5]}
+                """
+        alert.setText(msg)
+        alert.exec_()
 
-        file_path = os.path.join("MRI", f"{data_type}_MRI",
-                                 f"{'ADHD' if radio_healthy.isChecked() else 'CONTROL'}_{data_type}.pkl")
-        DATA = read_pickle(file_path)
-
-        input_number = min(int(input_number.text()), 20)
-        img_numbers = random.sample(range(len(DATA)), input_number)
-
-        for img_number in img_numbers:
-            try:
-                self.allData["MRI"].append(
-                    [DATA[img_number], np.zeros(DATA[img_number].shape), np.zeros(DATA[img_number].shape)])
-            except Exception as e:
-                print(f"Nie udało się wyświetlić obrazu dla indeksu {img_number}: {e}")
-
-        self.showPlot(self.allData["MRI"][0][0], "MRI", "")
-
+    """
+    Prediction and Processing
+    """
 
     def predict(self):
+        """
+        Starts the prediction process based on the loaded data and models.
+        """
         self.ui.btnNextPlane.setEnabled(True)
         self.ui.btnPrevPlane.setEnabled(True)
 
-        if self.filePaths is None or (self.chosenModelInfoEEG is None and self.chosenModelInfoMRI is None):
+        if self.file_paths is None or (self.chosen_model_info_eeg is None and self.chosen_model_info_mri is None):
             self.show_alert("No files or models chosen")
             return
 
-        self.currIdxEEG = 0
-        self.currIdxMRI = 0
-        self.currIdxChannel = 0
-        self.currIdxPlane = 0
+        self.curr_idx_eeg = 0
+        self.curr_idx_mri = 0
+        self.curr_idx_channel = 0
+        self.curr_idx_plane = 0
 
-        # Create a QThread object
         self.thread = QThread()
-
-        # Create a worker object
         self.worker = Worker(self)
-
-        # Move the worker to the thread
         self.worker.moveToThread(self.thread)
 
-        # Connect signals and slots
         self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.onFinished)
+        self.worker.finished.connect(self.on_finished)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.error.connect(self.onError)
+        self.worker.error.connect(self.on_error)
 
-        # Start the thread
         self.thread.start()
         self.show_loading_animation()
         self.change_btn_state(False)
 
-    def onFinished(self):
-        print("Processing completed")
-        self.change_btn_state(True)
-        self.movie.stop()
-        self.showResult()
-
-    def onError(self, error):
-        self.show_alert(f"Error: {error}")
-
-    def getFilePaths(self):
-        options = QFileDialog.Options()
-        fileFilter = ";;".join([f"{ext} files (*.{ext})" for ext in FILE_TYPES])
-        defaultPath = 'INPUT_DATA'
-        self.filePaths, _ = QFileDialog.getOpenFileNames(self.mainWindow, "Choose files", defaultPath, "", options=options)
-
-        if len(self.filePaths) == 0:
-            self.filePaths = None
-            return
-
-        self.loadedEEGfiles = 0
-        self.loadedMRIfiles = 0
-
-        for path in self.filePaths:
-            if path.endswith('.mat') or path.endswith('.edf') or path.endswith('.csv'):
-                self.loadedEEGfiles += 1
-            if path.endswith('.nii') or path.endswith('.nii.gz'):
-                self.loadedMRIfiles += 1
-
-        self.ui.dataName.setText(f"{self.loadedEEGfiles} EEG and {self.loadedMRIfiles} MRI files chosen")
-
-        self.getModelNames()
-
-    def getModelNames(self):
-        self.chosenModelInfoEEG = None
-        self.chosenModelInfoMRI = None
-        self.ui.chosenModelEEG.setText("----------")
-        self.ui.chosenModelMRI.setText("----------")
-
-        if self.db_conn is None:
-            self.db_conn = DBConnector()
-            try:
-                self.db_conn.establish_connection()
-            except ConnectionError:
-                self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
-                return
-
-        modelEEG = self.ui.modelListViewEEG.model()
-        if modelEEG:
-            modelEEG.clear()
-        else:
-            modelEEG = QStandardItemModel()
-
-        if self.loadedEEGfiles > 0:
-            def chooseModelEEG(index: QModelIndex):
-                item = modelEEG.itemFromIndex(index)
-                self.chosenModelInfoEEG = item.data()
-                self.ui.chosenModelEEG.setText(self.chosenModelInfoEEG[0])
-
-            modelsList = self.db_conn.select_model_info("type='cnn_eeg'")
-
-            for modelInfo in modelsList:
-                item = QStandardItem(modelInfo[0])
-                item.setEditable(False)
-                item.setData(modelInfo)
-                modelEEG.appendRow(item)
-
-            self.ui.modelListViewEEG.setModel(modelEEG)
-            self.ui.modelListViewEEG.doubleClicked.connect(chooseModelEEG)
-
-        modelMRI = self.ui.modelListViewMRI.model()
-        if modelMRI:
-            modelMRI.clear()
-        else:
-            modelMRI = QStandardItemModel()
-
-        if self.loadedMRIfiles:
-            def chooseModelMRI(index: QModelIndex):
-                item = modelMRI.itemFromIndex(index)
-                self.chosenModelInfoMRI = item.data()
-                self.ui.chosenModelMRI.setText(self.chosenModelInfoMRI[0])
-
-            modelsList = self.db_conn.select_model_info("type='cnn_mri'")
-
-            for modelInfo in modelsList:
-                item = QStandardItem(modelInfo[0])
-                item.setEditable(False)
-                item.setData(modelInfo)
-                modelMRI.appendRow(item)
-
-            self.ui.modelListViewMRI.setModel(modelMRI)
-            self.ui.modelListViewMRI.doubleClicked.connect(chooseModelMRI)
-
-    def processFiles(self):
+    def process_files(self):
+        """
+        Processes the loaded files, making predictions based on the selected models.
+        """
         self.predictions = []
-        self.allData = {"EEG": [], "MRI": []}
+        self.all_data = {"EEG": [], "MRI": []}
 
-        for path in self.filePaths:
+        for path in self.file_paths:
             data = np.array([])
-            dataType = ""
+            data_type = ""
 
             if path.endswith('.edf'):
-                print("EDF")
                 f = pyedflib.EdfReader(path)
                 n_channels = f.signals_in_file
                 n_samples = f.getNSamples()[0]
@@ -287,103 +340,133 @@ class DoctorViewController:
                 for i in range(n_channels):
                     data[i, :] = f.readSignal(i)
                 f.close()
-                dataType = "EEG"
-                model = self.modelEEG
-                modelInfo = self.chosenModelInfoEEG
+                data_type = "EEG"
+                model = self.model_eeg
+                model_info = self.chosen_model_info_eeg
 
-
-            if path.endswith('.mat'):
-                print("MAT")
+            elif path.endswith('.mat'):
                 file = loadmat(path)
                 data_key = list(file.keys())[-1]
                 data = file[data_key].T
-                dataType = "EEG"
-                model = self.modelEEG
-                modelInfo = self.chosenModelInfoEEG
+                data_type = "EEG"
+                model = self.model_eeg
+                model_info = self.chosen_model_info_eeg
 
-
-            if path.endswith('.csv'):
-                print("CSV")
+            elif path.endswith('.csv'):
                 data = read_csv(path).T
-                dataType = "EEG"
-                model = self.modelEEG
-                modelInfo = self.chosenModelInfoEEG
+                data_type = "EEG"
+                model = self.model_eeg
+                model_info = self.chosen_model_info_eeg
 
-            if path.endswith('.nii.gz') or path.endswith('.nii'):
-                print('NII')
+            elif path.endswith('.nii.gz') or path.endswith('.nii'):
                 file = nib.load(path)
-                fileData = file.get_fdata()
-                (x, y, z, t) = fileData.shape
+                file_data = file.get_fdata()
+                (x, y, z, t) = file_data.shape
 
-                frontalPlane = fileData[:, int(y/2), :, int(t/2)]       # widok mózgu z przodu
-                sagittalPlane = fileData[int(x/2), :, :, int(t/2)]      # widok mózgu z boku
-                horizontalPlane = fileData[:, :, int(z/2), int(t/2)]    # widok mózgu z góry
+                frontal_plane = file_data[:, int(y / 2), :, int(t / 2)]
+                sagittal_plane = file_data[int(x / 2), :, :, int(t / 2)]
+                horizontal_plane = file_data[:, :, int(z / 2), int(t / 2)]
 
-                data = horizontalPlane
-                dataType = "MRI"
-                self.allData[dataType].append([horizontalPlane, sagittalPlane, frontalPlane])
-                model = self.modelMRI
-                modelInfo = self.chosenModelInfoMRI
+                data = horizontal_plane
+                data_type = "MRI"
+                self.all_data[data_type].append([horizontal_plane, sagittal_plane, frontal_plane])
+                model = self.model_mri
+                model_info = self.chosen_model_info_mri
 
-            result = self.processData(data, model, modelInfo, dataType=dataType)
+            result = self.process_data(data, model, model_info, data_type=data_type)
 
-            if dataType == "EEG" :
-                self.allData[dataType].append(data)
+            if data_type == "EEG":
+                self.all_data[data_type].append(data)
 
             if result is not None:
                 self.predictions.append(result)
 
-    def loadModels(self):
-        self.modelEEG = None
-        self.modelMRI = None
+    def process_data(self, data, model, model_info, data_type="EEG"):
+        """
+        Processes EEG or MRI data and makes predictions using the model.
 
-        if self.chosenModelInfoEEG is not None:
-            self.modelEEG = self.db_conn.select_model(self.chosenModelInfoEEG[0])
-        if self.chosenModelInfoMRI is not None:
-            self.modelMRI = self.db_conn.select_model(self.chosenModelInfoMRI[0])
-
-    def processData(self, DATA, model, modelInfo, dataType="EEG"):
+        :param data: The data to process.
+        :param model: The model to use for predictions.
+        :param model_info: Information about the model.
+        :param data_type: The type of data ('EEG' or 'MRI').
+        :return: The prediction result.
+        """
         from MRI.config import CNN_INPUT_SHAPE_MRI
+
         result = []
 
-        if dataType == "EEG":
-            input_shape = ast.literal_eval(modelInfo[1])
+        if data_type == "EEG":
+            input_shape = ast.literal_eval(model_info[1])
             channels = input_shape[0]
             EEG.config.EEG_SIGNAL_FRAME_SIZE = input_shape[1]
-            print("chuj")
-            if DATA.shape[0] != channels:
-                # self.show_alert(f"Data shape incompatible with model input shape\nInput shape required for this model: {modelInfo[1]}")
+            if data.shape[0] != channels:
                 return
-            print("chuj2")
-            DATA_FILTERED = filter_eeg_data(DATA)
 
-            DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
+            data_filtered = filter_eeg_data(data)
+            data_clipped = clip_eeg_data(data_filtered)
+            data_normalized = normalize_eeg_data(data_clipped)
+            data_framed = split_into_frames(np.array(data_normalized))
 
-            DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
+            result = model.predict(data_framed)
 
-            DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
-
-            result = model.predict(DATA_FRAMED)
-
-
-
-        if dataType == "MRI":
+        elif data_type == "MRI":
             try:
-                DATA_TRIMMED = np.reshape(trim_one(DATA), CNN_INPUT_SHAPE_MRI)
-
-                DATA_NORMALIZED = normalize(DATA_TRIMMED)
-
-                img_for_predict = DATA_NORMALIZED.reshape(1, DATA_NORMALIZED.shape[0], DATA_NORMALIZED.shape[1], 1)
-
+                data_trimmed = np.reshape(trim_one(data), CNN_INPUT_SHAPE_MRI)
+                data_normalized = normalize(data_trimmed)
+                img_for_predict = data_normalized.reshape(1, data_normalized.shape[0], data_normalized.shape[1], 1)
                 result = model.predict(img_for_predict)
-
             except Exception as e:
                 self.show_alert(f"Error processing MRI data: {e}")
                 return
 
         return result
 
-    def showResult(self):
+    def on_finished(self):
+        """
+        Completes the prediction process, displays the result, and stops the loading animation.
+        """
+        self.change_btn_state(True)
+        self.movie.stop()
+        self.show_result()
+
+    def on_error(self, error):
+        """
+        Displays an error message.
+
+        :param error: The error message.
+        """
+        self.show_alert(f"Error: {error}")
+
+    """
+    UI Updates and State Changes
+    """
+
+    def show_loading_animation(self):
+        """
+        Displays a loading animation.
+        """
+        self.movie = QMovie(GIF_PATH)
+        self.ui.resultLabel.setMovie(self.movie)
+        self.movie.setScaledSize(QSize(40, 40))
+        self.movie.start()
+
+    def change_btn_state(self, state):
+        """
+        Changes the state of UI buttons.
+
+        :param state: The state (True/False) of the buttons.
+        """
+        self.ui.predictBtn.setEnabled(state)
+        self.ui.showGenerated.setEnabled(state)
+        self.ui.switchSceneBtn.setEnabled(state)
+        self.ui.loadDataBtn.setEnabled(state)
+        self.ui.generateNew.setEnabled(state)
+        self.ui.showReal.setEnabled(state)
+
+    def show_result(self):
+        """
+        Displays the prediction result in the UI.
+        """
         if self.predictions is None or len(self.predictions) == 0:
             self.ui.resultLabel.setText("-----------")
             return
@@ -393,121 +476,94 @@ class DoctorViewController:
         for prediction in self.predictions:
             predictions_means.append(np.mean(prediction))
 
-        result, prob = check_result(predictions_means)
+        result, prob = check_result(np.array(predictions_means))
 
         self.ui.resultLabel.setText(f"{result} ({prob}%)")
 
-        self.currIdxEEG = 0
-        self.currIdxMRI = 0
+        self.curr_idx_eeg = 0
+        self.curr_idx_mri = 0
         self.ui.plotLabelEEG.clear()
         self.ui.plotLabelMRI.clear()
 
-        if self.allData["EEG"]: self.showPlot(self.allData["EEG"][0], "EEG",
-                                              self.filePaths[self.currIdxEEG].split("/")[-1])
+        if self.all_data["EEG"]:
+            self.show_plot(
+                self.all_data["EEG"][0], "EEG",
+                self.file_paths[self.curr_idx_eeg].split("/")[-1]
+            )
 
-        if self.allData["MRI"]: self.showPlot(self.allData["MRI"][0][0], "MRI",
-                                              self.filePaths[self.currIdxMRI].split("/")[-1])
+        if self.all_data["MRI"]:
+            self.show_plot(
+                self.all_data["MRI"][0][0], "MRI",
+                self.file_paths[self.curr_idx_mri].split("/")[-1]
+            )
 
-    def showNextPlotEEG(self):
-        if len(self.allData["EEG"]) == 0: return
+    """
+    Plotting
+    """
 
-        self.currIdxEEG += 1
-        self.currIdxChannel = 0
+    def prepare_and_plot_data(self, data_type, radio_adhd, radio_control, input_number, dialog):
+        """
+        Prepares and plots MRI data based on the selected options.
 
-        if self.currIdxEEG > len(self.allData["EEG"])-1:
-            self.currIdxEEG = len(self.allData["EEG"])-1
+        :param data_type: The type of data ('REAL' or 'GENERATED').
+        :param radio_adhd: Radio button for ADHD data.
+        :param radio_control: Radio button for control data.
+        :param input_number: Line edit for the number of images.
+        :param dialog: The dialog object.
+        """
+        self.ui.btnNextPlane.setEnabled(False)
+        self.ui.btnPrevPlane.setEnabled(False)
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
-                      self.filePaths[self.currIdxEEG].split("/")[-1])
+        self.curr_idx_eeg = 0
+        self.curr_idx_mri = 0
+        self.curr_idx_channel = 0
+        self.curr_idx_plane = 0
+        self.all_data = {"EEG": [], "MRI": []}
 
-    def showNextChannel(self):
-        if len(self.allData["EEG"]) == 0: return
+        dialog.close()
 
-        self.currIdxChannel += 1
+        file_path = os.path.join(
+            "MRI", f"{data_type}_MRI",
+            f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
+        )
+        data = read_pickle(file_path)
 
-        if self.currIdxChannel > 19 - 1:
-            self.currIdxChannel = 19 - 1
+        input_number = min(int(input_number.text()), 20)
+        img_numbers = random.sample(range(len(data)), input_number)
 
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
-                      self.filePaths[self.currIdxEEG].split("/")[-1])
+        for img_number in img_numbers:
+            try:
+                self.all_data["MRI"].append(
+                    [data[img_number], np.zeros(data[img_number].shape), np.zeros(data[img_number].shape)]
+                )
+            except Exception as e:
+                print(f"Failed to display image for index {img_number}: {e}")
 
-    def showPrevPlotEEG(self):
-        if len(self.allData["EEG"]) == 0: return
+        self.show_plot(self.all_data["MRI"][0][0], "MRI", "")
 
-        self.currIdxEEG -= 1
-        self.currIdxChannel = 0
+    def show_plot(self, data, data_type, name=""):
+        """
+        Displays a plot for EEG or MRI data.
 
-        if self.currIdxEEG < 0:
-            self.currIdxEEG = 0
-
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
-                      self.filePaths[self.currIdxEEG].split("/")[-1])
-
-    def showPrevChannel(self):
-        if len(self.allData["EEG"]) == 0: return
-
-        self.currIdxChannel -= 1
-
-        if self.currIdxChannel < 0:
-            self.currIdxChannel = 0
-
-        self.showPlot(self.allData["EEG"][self.currIdxEEG], "EEG",
-                      self.filePaths[self.currIdxEEG].split("/")[-1])
-
-    def showNextPlotMRI(self):
-        if len(self.allData["MRI"]) == 0: return
-
-        self.currIdxMRI += 1
-        self.currIdxPlane = 0
-
-        if self.currIdxMRI > len(self.allData["MRI"])-1:
-            self.currIdxMRI = len(self.allData["MRI"])-1
-
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
-                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
-
-    def showNextPlane(self):
-        if len(self.allData["MRI"]) == 0: return
-
-        self.currIdxPlane += 1
-
-        if self.currIdxPlane > 3-1:
-            self.currIdxPlane = 3-1
-
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
-                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
-
-    def showPrevPlotMRI(self):
-        if len(self.allData["MRI"]) == 0: return
-
-        self.currIdxMRI -= 1
-        self.currIdxPlane = 0
-
-        if self.currIdxMRI < 0:
-            self.currIdxMRI = 0
-
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
-                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
-
-    def showPrevPlane(self):
-        if len(self.allData["MRI"]) == 0: return
-
-        self.currIdxPlane -= 1
-
-        if self.currIdxPlane < 0:
-            self.currIdxPlane = 0
-
-        self.showPlot(self.allData["MRI"][self.currIdxMRI][self.currIdxPlane], "MRI",
-                      self.filePaths[self.currIdxMRI].split("/")[-1] if self.filePaths is not None else "")
-
-    def showPlot(self, data, dataType, name=""):
-        if dataType == "EEG":
-            self.show_plot_eeg(data, name, self.currIdxChannel)
-        if dataType == "MRI":
+        :param data: The data to display.
+        :param data_type: The type of data ('EEG' or 'MRI').
+        :param name: The file name.
+        """
+        if data_type == "EEG":
+            self.show_plot_eeg(data, name, self.curr_idx_channel)
+        if data_type == "MRI":
             self.show_plot_mri(data, name)
 
     def show_plot_eeg(self, data, name, channel_number):
+        """
+        Displays a plot for EEG data.
+
+        :param data: The EEG data to display.
+        :param name: The file name.
+        :param channel_number: The EEG channel number.
+        """
         from EEG.config import FS
+
         fig = Figure()
         fig.tight_layout()
         canvas = FigureCanvas(fig)
@@ -516,11 +572,12 @@ class DoctorViewController:
         t = np.arange(0, data[channel_number].shape[0]) / FS
         signal = data[channel_number]
 
-        ax.plot(t, signal, label=f'Kanał {channel_number}')
-        ax.set_xlabel('Czas (s)')
-        ax.set_ylabel('Wartości próbek')
-        ax.set_title(f'Wykres sygnału {name}\nKanał: {electrode_positions[channel_number]}')
-        #ax.legend()
+        ax.plot(t, signal, label=f'Channel {channel_number}')
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Sample values')
+        ax.set_title(
+            f'Signal plot {name}\nChannel: {electrode_positions[channel_number]}'
+        )
 
         buf = io.BytesIO()
         canvas.print_png(buf)
@@ -529,13 +586,19 @@ class DoctorViewController:
         self.ui.plotLabelEEG.setPixmap(qpm)
 
     def show_plot_mri(self, img, name):
+        """
+        Displays an MRI image.
+
+        :param img: The MRI image to display.
+        :param name: The file name.
+        """
         fig = Figure()
         fig.tight_layout()
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
 
         ax.imshow(img, cmap="gray")
-        ax.set_title(f'Zdjęcie mri {name}')
+        ax.set_title(f'MRI image {name}')
 
         buf = io.BytesIO()
         canvas.print_png(buf)
@@ -543,59 +606,154 @@ class DoctorViewController:
         qpm.loadFromData(buf.getvalue(), 'PNG')
         self.ui.plotLabelMRI.setPixmap(qpm)
 
-    def show_alert(self, msg):
-        alert = QMessageBox()
-        alert.setWindowTitle("Warning")
-        alert.setText(msg)
-        alert.setIcon(QMessageBox.Warning)
-        alert.setStandardButtons(QMessageBox.Ok)
+    """
+    Navigation (Next/Previous)
+    """
 
-        alert.exec_()
+    def show_next_plot_eeg(self):
+        """
+        Displays the next EEG plot.
+        """
+        if len(self.all_data["EEG"]) == 0:
+            return
 
-    def show_loading_animation(self):
-        self.movie = QMovie(GIF_PATH)
-        self.ui.resultLabel.setMovie(self.movie)
-        self.movie.setScaledSize(QSize(40, 40))
-        self.movie.start()
+        self.curr_idx_eeg += 1
+        self.curr_idx_channel = 0
 
-    def change_btn_state(self, state):
-        self.ui.predictBtn.setEnabled(state)
-        self.ui.showGenerated.setEnabled(state)
-        self.ui.switchSceneBtn.setEnabled(state)
-        self.ui.loadDataBtn.setEnabled(state)
-        self.ui.generateNew.setEnabled(state)
-        self.ui.showReal.setEnabled(state)
+        if self.curr_idx_eeg > len(self.all_data["EEG"]) - 1:
+            self.curr_idx_eeg = len(self.all_data["EEG"]) - 1
 
-    def showModelInfo(self, type):
-        alert = QMessageBox()
-        alert.setWindowTitle("Info")
-        alert.setIcon(QMessageBox.Information)
-        alert.setStandardButtons(QMessageBox.Ok)
+        self.show_plot(
+            self.all_data["EEG"][self.curr_idx_eeg], "EEG",
+            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+        )
 
-        if type == "EEG":
-            if self.chosenModelInfoEEG is None:
-                return
-            msg = f"""
-                    Model accuracy: {self.chosenModelInfoEEG[0]}\n
-                    Input shape: {self.chosenModelInfoEEG[1]}\n
-                    Frequency: {self.chosenModelInfoEEG[2]}\n
-                    Channels: {self.chosenModelInfoEEG[3]}\n
-                    Description: {self.chosenModelInfoEEG[5]}
-                    """
+    def show_next_channel(self):
+        """
+        Displays the next EEG channel.
+        """
+        if len(self.all_data["EEG"]) == 0:
+            return
 
-        if type == "MRI":
-            if self.chosenModelInfoMRI is None:
-                return
-            plane = self.chosenModelInfoMRI[4]
-            msg = f"""
-                Model accuracy: {self.chosenModelInfoMRI[0]}\n
-                Input shape: {self.chosenModelInfoMRI[1]}\n
-                Plane: {'Axial' if plane=='A' else 'Sagittal' if plane=='S' else 'Coronal'}\n
-                Description: {self.chosenModelInfoMRI[5]}
-                """
+        self.curr_idx_channel += 1
 
-        alert.setText(msg)
-        alert.exec_()
+        if self.curr_idx_channel > 19 - 1:
+            self.curr_idx_channel = 19 - 1
+
+        self.show_plot(
+            self.all_data["EEG"][self.curr_idx_eeg], "EEG",
+            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+        )
+
+    def show_prev_plot_eeg(self):
+        """
+        Displays the previous EEG plot.
+        """
+        if len(self.all_data["EEG"]) == 0:
+            return
+
+        self.curr_idx_eeg -= 1
+        self.curr_idx_channel = 0
+
+        if self.curr_idx_eeg < 0:
+            self.curr_idx_eeg = 0
+
+        self.show_plot(
+            self.all_data["EEG"][self.curr_idx_eeg], "EEG",
+            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+        )
+
+    def show_prev_channel(self):
+        """
+        Displays the previous EEG channel.
+        """
+        if len(self.all_data["EEG"]) == 0:
+            return
+
+        self.curr_idx_channel -= 1
+
+        if self.curr_idx_channel < 0:
+            self.curr_idx_channel = 0
+
+        self.show_plot(
+            self.all_data["EEG"][self.curr_idx_eeg], "EEG",
+            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+        )
+
+    def show_next_plot_mri(self):
+        """
+        Displays the next MRI image.
+        """
+        if len(self.all_data["MRI"]) == 0:
+            return
+
+        self.curr_idx_mri += 1
+        self.curr_idx_plane = 0
+
+        if self.curr_idx_mri > len(self.all_data["MRI"]) - 1:
+            self.curr_idx_mri = len(self.all_data["MRI"]) - 1
+
+        self.show_plot(
+            self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
+        )
+
+    def show_next_plane(self):
+        """
+        Displays the next MRI plane.
+        """
+        if len(self.all_data["MRI"]) == 0:
+            return
+
+        self.curr_idx_plane += 1
+
+        if self.curr_idx_plane > 3 - 1:
+            self.curr_idx_plane = 3 - 1
+
+        self.show_plot(
+            self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
+        )
+
+    def show_prev_plot_mri(self):
+        """
+        Displays the previous MRI image.
+        """
+        if len(self.all_data["MRI"]) == 0:
+            return
+
+        self.curr_idx_mri -= 1
+        self.curr_idx_plane = 0
+
+        if self.curr_idx_mri < 0:
+            self.curr_idx_mri = 0
+
+        self.show_plot(
+            self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
+        )
+
+    def show_prev_plane(self):
+        """
+        Displays the previous MRI plane.
+        """
+        if len(self.all_data["MRI"]) == 0:
+            return
+
+        self.curr_idx_plane -= 1
+
+        if self.curr_idx_plane < 0:
+            self.curr_idx_plane = 0
+
+        self.show_plot(
+            self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
+        )
+
+
+"""
+Worker Class
+"""
 
 
 class Worker(QObject):
@@ -603,19 +761,33 @@ class Worker(QObject):
     error = pyqtSignal(str)
 
     def __init__(self, controller):
+        """
+        Initializes the worker to process files in a separate thread.
+
+        :param controller: The doctor view controller.
+        """
         super().__init__()
         self.controller = controller
 
     def run(self):
+        """
+        Starts file processing and model loading.
+        """
         try:
-            self.loadModels()
-            self.processFiles()
+            self.load_models()
+            self.process_files()
             self.finished.emit()
         except Exception as e:
             self.error.emit(str(e))
 
-    def loadModels(self):
-        self.controller.loadModels()
+    def load_models(self):
+        """
+        Loads models in the controller.
+        """
+        self.controller.load_models()
 
-    def processFiles(self):
-        self.controller.processFiles()
+    def process_files(self):
+        """
+        Processes files in the controller.
+        """
+        self.controller.process_files()
