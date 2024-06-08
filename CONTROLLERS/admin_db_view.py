@@ -49,6 +49,7 @@ class AdminDbView:
         for row_num, row_data in enumerate(data):
             for col_num, col_data in enumerate(row_data):
                 item = QTableWidgetItem(str(col_data))
+                item.setTextAlignment(Qt.AlignCenter)
                 item.setFlags(Qt.ItemIsEnabled)
                 self.ui.tableWidget.setItem(row_num, col_num, item)
 
