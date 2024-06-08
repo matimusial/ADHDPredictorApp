@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>760</height>
+    <height>781</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -448,7 +448,7 @@ QPushButton{
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_6">
                      <item>
-                      <widget class="QPushButton" name="pushButton">
+                      <widget class="QPushButton" name="save_db">
                        <property name="text">
                         <string>Save model to db</string>
                        </property>
@@ -462,7 +462,7 @@ QPushButton{
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pushButton_2">
+                      <widget class="QPushButton" name="del_model">
                        <property name="text">
                         <string>Delete model</string>
                        </property>

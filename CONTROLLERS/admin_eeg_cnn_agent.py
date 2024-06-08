@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import EEG.config
-from EEG.TRAIN.train import train_cnn_eeg_readraw, modelStopFlag
+from EEG.TRAIN.train import train_cnn_eeg_readraw
 from CONTROLLERS.DBConnector import DBConnector
 from CONTROLLERS.file_io import read_eeg_raw
 import os
@@ -39,6 +39,7 @@ class AdminEegCnn:
 
         self.model_description = ""
         self.ui.status_label.setText("STATUS: Await")
+        self.ui.db_status.setText("STATUS: Await")
 
         self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
         self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
@@ -55,6 +56,8 @@ class AdminEegCnn:
         self.ui.startButton.clicked.connect(self.train_cnn)
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
+        self.ui.save_db.clicked.connect(self.sendToDb)
+        self.ui.del_model.clicked.connect(self.delModel)
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
@@ -69,7 +72,6 @@ class AdminEegCnn:
             self.loaded_control_files = controlcount
             self.currChannels = initChannels[0]['shape'][0]
             self.updateInfoDump()
-
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(
@@ -148,17 +150,26 @@ class AdminEegCnn:
             self.ui.status_label.setText("STATUS: Await")
 
     def onFinished(self):
-        if not EEG.TRAIN.train.modelStopFlag:
-            self.ui.status_label.setText("STATUS: Connecting to database")
+        file_name = os.listdir(MODEL_PATH)
+        acc = file_name[0].replace(".keras", "")
+        self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
+        self.ui.status_label.setText("STATUS: Model done")
+    def sendToDb(self):
+        file_name = os.listdir(MODEL_PATH)
+        if file_name:
+            self.ui.db_status.setText("STATUS: Connecting...")
             self.connect_to_db()
-            file_name = os.listdir(MODEL_PATH)
+            self.ui.db_status.setText("STATUS: Sending...")
             file_path = os.path.join('./EEG/temp_model_path', file_name[0])
             self.ui.status_label.setText("STATUS: Uploading model")
             self.db_conn.insert_data_into_models_table(
-                file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
+                file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES,
+                EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
                 f"learning rate: {EEG.config.CNN_LEARNING_RATE}; batch size: {EEG.config.CNN_BATCH_SIZE}; epochs: {EEG.config.CNN_EPOCHS}; {self.model_description}"
             )
             self.ui.status_label.setText("STATUS: Await")
+            self.ui.db_status.setText("STATUS: Await")
+            self.upload_done_msgbox()
             for filename in os.listdir(MODEL_PATH):
                 file_path = os.path.join(MODEL_PATH, filename)
                 try:
@@ -174,7 +185,29 @@ class AdminEegCnn:
             except Exception as e:
                 print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
         else:
-            EEG.TRAIN.train.modelStopFlag = False
+            print("No model to upload")
+
+    def delModel(self):
+        if os.path.exists(MODEL_PATH):
+            file_list = os.listdir(MODEL_PATH)
+            if file_list:
+                file_name = file_list[0]
+                file_path = os.path.join(MODEL_PATH, file_name)
+                if os.path.isfile(file_path):
+                    try:
+                        os.remove(file_path)
+                        self.ui.status_label.setText("STATUS: Await")
+                        self.delete_done_msgbox()
+                        print(f"Plik {file_name} został usunięty.")
+                    except Exception as e:
+                        print(f"Nie można usunąć pliku {file_name}: {e}")
+                else:
+                    print(f"{file_name} nie jest plikiem.")
+            else:
+                print("Katalog jest pusty, nie ma plików do usunięcia.")
+
+        else:
+            print("Nie ma ścieżki MODEL_PATH")
 
     def onError(self, error):
         print(f"Error: {error}")
@@ -189,6 +222,7 @@ class AdminEegCnn:
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
+        self.db_conn.establish_connection()
         print(self.db_conn.connection)
         if self.db_conn.connection is None: return
 
@@ -253,6 +287,7 @@ class AdminEegCnn:
                 return False
             else:
                 return value
+
     def invalid_input_msgbox(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
@@ -260,6 +295,23 @@ class AdminEegCnn:
         msg.setWindowTitle("Error")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
+
+    def upload_done_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Data successfully sent to database.")
+        msg.setWindowTitle("Operation successfully")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
+    def delete_done_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Data successfully deleted.")
+        msg.setWindowTitle("Operation successfully")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
 
 class Worker(QObject):
     finished = pyqtSignal()
