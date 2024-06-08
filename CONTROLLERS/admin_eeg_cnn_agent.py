@@ -217,6 +217,7 @@ class AdminEegCnn:
 
     def stopModel(self):
         EEG.TRAIN.train.modelStopFlag = True
+        self.real_time_metrics.stop()
         self.ui.status_label.setText("STATUS: Stopping...")
 
 

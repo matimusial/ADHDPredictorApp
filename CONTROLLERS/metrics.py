@@ -26,16 +26,21 @@ class RealTimeMetrics(QThread):
         self.interval = interval
         self.progressBar = progressBar
         self.progressBar.setRange(0, total_epochs)
+        self.running = True
 
     def run(self):
         self.clear_metrics()
         control_counter = 0
         while control_counter < self.total_epochs:
+            if not self.running:
+                break
             control_counter = len(global_accuracy)
             self.plot_metrics()
             time.sleep(self.interval)
             self.progressBar.setValue(control_counter)
 
+    def stop(self):
+        self.running = False
 
     def plot_metrics(self):
         try:
