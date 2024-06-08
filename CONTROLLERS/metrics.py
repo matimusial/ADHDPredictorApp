@@ -3,8 +3,11 @@ from PyQt5.QtCore import QMutex, QMutexLocker, QThread
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QProgressBar
+
 import io
 import time
+
 
 # Global variables for metrics
 global_accuracy = []
@@ -14,21 +17,25 @@ global_val_loss = []
 
 class RealTimeMetrics(QThread):
     """Thread for visualizing accuracy and loss in real time during model training."""
-    def __init__(self, total_epochs, plot_label, interval=1):
+    def __init__(self, total_epochs, progressBar, plot_label, interval=1):
         super().__init__()
 
         self.total_epochs = total_epochs
         self.plot_label = plot_label
         self.mutex = QMutex()
         self.interval = interval
+        self.progressBar = progressBar
+
+
 
     def run(self):
+        self.clear_metrics()
         control_counter = 0
         while control_counter < self.total_epochs:
             control_counter = len(global_accuracy)
             self.plot_metrics()
             time.sleep(self.interval)
-        self.clear_metrics()
+            self.progressBar.setValue(control_counter)
 
 
     def plot_metrics(self):
@@ -71,7 +78,7 @@ class RealTimeMetrics(QThread):
 
                 buf.close()
         except Exception as e:
-            print(f"Wystąpił błąd podczas tworzenia wykresu: {e}")
+            print(f"An error occurred while creating the plot: {e}")
 
     def clear_metrics(self):
         global global_accuracy, global_val_accuracy, global_loss, global_val_loss
@@ -79,7 +86,6 @@ class RealTimeMetrics(QThread):
         global_val_accuracy = []
         global_loss = []
         global_val_loss = []
-
 
 
 class WorkerMetrics(Callback):

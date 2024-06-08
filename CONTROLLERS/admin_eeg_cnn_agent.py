@@ -1,6 +1,6 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg_readraw, modelStopFlag
@@ -56,6 +56,9 @@ class AdminEegCnn:
         self.ui.startButton.clicked.connect(self.train_cnn)
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
+
+        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
+        self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -118,10 +121,12 @@ class AdminEegCnn:
             print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
             print("FS:", EEG.config.FS)
 
+            self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
+
             self.thread = QThread()
 
             # Reset the plot and clear metrics before starting the training
-            self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
+            self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN)
             self.real_time_metrics.start()
 
             # Create a worker object
