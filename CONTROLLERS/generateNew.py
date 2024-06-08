@@ -152,7 +152,7 @@ class GenerateNew:
 
         plane = self.chosen_model_data[4]
         msg = f"""
-        Model accuracy: {self.chosen_model_data[0]}\n
+        Generator loss: {self.chosen_model_data[0]}\n
         Image size: {self.chosen_model_data[1]}\n
         Plane: {'Axial' if plane == 'A' else 'Sagittal' if plane == 'S' else 'Coronal'}\n
         Description: {self.chosen_model_data[5]}
