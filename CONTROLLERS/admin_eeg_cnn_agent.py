@@ -1,6 +1,6 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
 
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg_readraw
@@ -74,20 +74,9 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
-        if self.ui.textEdit_epochs.toPlainText().strip() == "":
-            epochs = EEG.config.CNN_EPOCHS
-        else:
-            epochs = int(self.ui.textEdit_epochs.toPlainText())
-
-        if self.ui.textEdit_batch_size.toPlainText().strip() == "":
-            batch_size = EEG.config.CNN_BATCH_SIZE
-        else:
-            batch_size = int(self.ui.textEdit_batch_size.toPlainText())
-
-        if self.ui.textEdit_learning_rate.toPlainText().strip() == "":
-            learning_rate = EEG.config.CNN_LEARNING_RATE
-        else:
-            learning_rate = float(self.ui.textEdit_learning_rate.toPlainText())
+        epochs = self.validate_epochs()
+        batch_size = self.validate_batch_size()
+        learning_rate = self.validate_learning_rate()
 
         if self.ui.textEdit_electrodes.toPlainText().strip() == "":
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
@@ -177,6 +166,55 @@ class AdminEegCnn:
         self.db_conn = DBConnector()
         print(self.db_conn.connection)
         if self.db_conn.connection is None: return
+
+    def validate_input(self, text):
+        try:
+            num = float(text)
+            if num.is_integer():
+                return int(num)
+            else:
+                return num
+        except ValueError:
+            return None
+
+    def validate_epochs(self):
+        text = self.ui.textEdit_epochs.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_EPOCHS}")
+            return EEG.config.CNN_EPOCHS
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_EPOCHS}")
+                return EEG.config.CNN_EPOCHS
+            else:
+                return value
+
+    def validate_batch_size(self):
+        text = self.ui.textEdit_batch_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
+            return EEG.config.CNN_BATCH_SIZE
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
+                return EEG.config.CNN_BATCH_SIZE
+            else:
+                return value
+
+    def validate_learning_rate(self):
+        text = self.ui.textEdit_learning_rate.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
+            return EEG.config.CNN_LEARNING_RATE
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
+                return EEG.config.CNN_LEARNING_RATE
+            else:
+                return value
 
 class Worker(QObject):
     finished = pyqtSignal()
