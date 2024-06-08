@@ -57,7 +57,6 @@ class AdminEegCnn:
         self.ui.exitButton.clicked.connect(self.on_exit)
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
-        self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -116,11 +115,10 @@ class AdminEegCnn:
             print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
             print("FS:", EEG.config.FS)
 
-            self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
-
             self.thread = QThread()
 
             # Reset the plot and clear metrics before starting the training
+            self.progressBar.setValue(0)
             self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN)
             self.real_time_metrics.start()
 
