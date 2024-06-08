@@ -57,7 +57,7 @@ class AdminDbView:
         self.ui.tableWidget.resizeRowsToContents()
 
         header = self.ui.tableWidget.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Interactive)
+        header.setSectionResizeMode(QHeaderView.Fixed)
         header.setSectionResizeMode(column_names.index('description'), QHeaderView.Stretch)
 
         vertical_header = self.ui.tableWidget.verticalHeader()
