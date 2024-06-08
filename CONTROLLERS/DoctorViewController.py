@@ -230,9 +230,7 @@ class DoctorViewController:
         submit_button = QPushButton('Submit')
         submit_button.clicked.connect(
             lambda: self.prepare_and_plot_data(
-                data_type, radio_adhd, input_number, dialog
-            )
-        )
+                data_type, radio_adhd, input_number, dialog))
         layout.addWidget(submit_button)
 
         dialog.setLayout(layout)
@@ -675,8 +673,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["EEG"][self.curr_idx_eeg], "EEG",
-            self.file_paths[self.curr_idx_eeg].split("/")[-1]
-        )
+            self.file_paths[self.curr_idx_eeg].split("/")[-1])
 
     def show_next_plot_mri(self):
         """
@@ -693,8 +690,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
-        )
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_next_plane(self):
         """
@@ -710,8 +706,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
-        )
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_prev_plot_mri(self):
         """
@@ -728,8 +723,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
-        )
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_prev_plane(self):
         """
@@ -745,8 +739,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else ""
-        )
+            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
 
 """

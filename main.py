@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         ui = uic.loadUi(ui_path, self)
         self.gn = GenerateNew(ui)
 
-        ui.backBtn.clicked.connect(self.loadDoctorUI)
+        ui.backBtn.clicked.connect(self.load_doctor_ui)
         ui.adhdGenInfo.clicked.connect(lambda: self.gn.show_info("adhd"))
         ui.controlGenInfo.clicked.connect(lambda: self.gn.show_info("control"))
         ui.genBtn.clicked.connect(self.gn.generate)
@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
     def loadAdminEegCnn(self):
         try:
             self.viewController = AdminEegCnn(self)
-            self.viewController.ui.switchSceneBtn.clicked.connect(self.loadDoctorUI)
+            self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
             self.viewController.ui.dbButton.clicked.connect(self.load_admin_db_view)
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
     def loadAdminMriCnn(self):
         try:
             self.viewController = AdminMriCnn(self)
-            self.viewController.ui.switchSceneBtn.clicked.connect(self.loadDoctorUI)
+            self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
         except Exception as e:
@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
     def loadAdminMriGan(self):
         try:
             self.viewController = AdminMriGan(self)
-            self.viewController.ui.switchSceneBtn.clicked.connect(self.loadDoctorUI)
+            self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
         except Exception as e:
