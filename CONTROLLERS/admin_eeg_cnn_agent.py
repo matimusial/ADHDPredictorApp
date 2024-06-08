@@ -186,6 +186,7 @@ class AdminEegCnn:
         EEG.TRAIN.train.modelStopFlag = True
         self.ui.status_label.setText("STATUS: Stopping...")
 
+
     def connect_to_db(self):
         self.db_conn = DBConnector()
         print(self.db_conn.connection)
