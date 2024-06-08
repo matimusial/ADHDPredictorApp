@@ -25,8 +25,7 @@ class RealTimeMetrics(QThread):
         self.mutex = QMutex()
         self.interval = interval
         self.progressBar = progressBar
-
-
+        self.progressBar.setRange(0, total_epochs)
 
     def run(self):
         self.clear_metrics()
