@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1135</width>
-    <height>787</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,9 @@
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
+        <property name="maximum">
+         <number>999999</number>
+        </property>
        </widget>
       </item>
       <item>
@@ -36,7 +39,7 @@
          <string notr="true">background-color: white;</string>
         </property>
         <property name="text">
-         <string>Delete</string>
+         <string>Delete model by ID</string>
         </property>
        </widget>
       </item>
@@ -45,7 +48,7 @@
     <item row="0" column="0">
      <widget class="QPushButton" name="backBtn">
       <property name="styleSheet">
-       <string notr="true">background-color: white;</string>
+       <string notr="true">color: white;</string>
       </property>
       <property name="text">
        <string>Back</string>
