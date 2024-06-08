@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,31 +17,72 @@
    <string notr="true">background-color: rgb(245, 250, 254);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="buttons_widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>131</width>
-      <height>701</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QWidget{
+   <layout class="QHBoxLayout" name="horizontalLayout_17">
+    <item>
+     <widget class="QWidget" name="buttons_widget" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>106</width>
+        <height>700</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget{
 	background-color: rgb(31, 149, 239);
 }
 QPushButton{
 	color:white;
 	text-align:center;
 }</string>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QPushButton" name="GAN_MRI_Button">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QPushButton" name="GAN_MRI_Button">
+           <property name="text">
+            <string>GAN for MRI</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="CNN_EEG_Button">
+           <property name="text">
+            <string>CNN for EEG</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>382</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="switchSceneBtn">
          <property name="text">
-          <string>GAN for MRI</string>
+          <string>USER View</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -52,463 +93,416 @@ QPushButton{
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="CNN_EEG_Button">
+        <widget class="QPushButton" name="exitButton">
          <property name="text">
-          <string>CNN for EEG</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
+          <string>Exit</string>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>382</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="switchSceneBtn">
-       <property name="text">
-        <string>USER View</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="exitButton">
-       <property name="text">
-        <string>Exit</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>0</y>
-      <width>1051</width>
-      <height>722</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
-     <item>
-      <widget class="QWidget" name="main_widget_2" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>360</width>
-         <height>720</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>360</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="window_name_2">
-          <property name="text">
-           <string>MRI for CNN</string>
-          </property>
-          <property name="scaledContents">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QPushButton" name="folder_explore_2">
-              <property name="text">
-               <string>Chose folder with data</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="path_label_2">
-              <property name="text">
-               <string>[Folder Path]</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QLabel" name="info_dump_2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <item>
-             <spacer name="verticalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QGridLayout" name="gridLayout_5">
-              <item row="1" column="0">
-               <widget class="QLabel" name="electrodes_2">
-                <property name="text">
-                 <string>Electrodes</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QTextEdit" name="textEdit_electrodes_2">
-                <property name="minimumSize">
-                 <size>
-                  <width>90</width>
-                  <height>31</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>90</width>
-                  <height>31</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLabel" name="frequency_2">
-                <property name="text">
-                 <string>Frequency</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QTextEdit" name="textEdit_frequency_2">
-                <property name="minimumSize">
-                 <size>
-                  <width>90</width>
-                  <height>31</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>90</width>
-                  <height>31</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QWidget" name="widget_3" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
-                 <item>
-                  <widget class="QLabel" name="frame_size_2">
-                   <property name="text">
-                    <string>Frame size</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QTextEdit" name="textEdit_frame_size_2">
-                   <property name="minimumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QWidget" name="main_widget_2" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>360</width>
+          <height>720</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>360</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="window_name_2">
+           <property name="text">
+            <string>MRI for CNN</string>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QPushButton" name="folder_explore_2">
+               <property name="text">
+                <string>Chose folder with data</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="path_label_2">
+               <property name="text">
+                <string>[Folder Path]</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="info_dump_2">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="1" column="0">
+                <widget class="QLabel" name="electrodes_2">
+                 <property name="text">
+                  <string>Electrodes</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
                </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_12">
-                 <item>
-                  <widget class="QLabel" name="epochs_2">
-                   <property name="text">
-                    <string>Epochs</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QTextEdit" name="textEdit_epochs_2">
-                   <property name="minimumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+               <item row="2" column="0">
+                <widget class="QTextEdit" name="textEdit_electrodes_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>90</width>
+                   <height>31</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>90</width>
+                   <height>31</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13">
-                 <item>
-                  <widget class="QLabel" name="batch_size_2">
-                   <property name="text">
-                    <string>Batch size</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QTextEdit" name="textEdit_batch_size_2">
-                   <property name="minimumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+               <item row="1" column="2">
+                <widget class="QLabel" name="frequency_2">
+                 <property name="text">
+                  <string>Frequency</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
                </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
-                 <item>
-                  <widget class="QLabel" name="learning_rate_2">
-                   <property name="text">
-                    <string>Learning rate</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QTextEdit" name="textEdit_learning_rate_2">
-                   <property name="minimumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>181</width>
-                     <height>31</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+               <item row="2" column="2">
+                <widget class="QTextEdit" name="textEdit_frequency_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>90</width>
+                   <height>31</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>90</width>
+                   <height>31</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
               </layout>
-             </widget>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
-              <item>
-               <widget class="QLabel" name="desc_label_2">
-                <property name="text">
-                 <string>Description</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTextEdit" name="model_description_2"/>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_12">
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_3" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_10">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_15">
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
                   <item>
-                   <widget class="QPushButton" name="startButton_2">
+                   <widget class="QLabel" name="frame_size_2">
                     <property name="text">
-                     <string>Start</string>
+                     <string>Frame size</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="status_label_2">
-                    <property name="text">
-                     <string>STATUS:</string>
+                   <widget class="QTextEdit" name="textEdit_frame_size_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
                     </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="stopButton_2">
-                    <property name="text">
-                     <string>Stop</string>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QLabel" name="more_info_dump_2">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <item>
+                   <widget class="QLabel" name="epochs_2">
+                    <property name="text">
+                     <string>Epochs</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextEdit" name="textEdit_epochs_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_16">
+                 <layout class="QHBoxLayout" name="horizontalLayout_13">
                   <item>
-                   <widget class="QPushButton" name="save_db_2">
+                   <widget class="QLabel" name="batch_size_2">
                     <property name="text">
-                     <string>Save model to db</string>
+                     <string>Batch size</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="db_status_2">
+                   <widget class="QTextEdit" name="textEdit_batch_size_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_14">
+                  <item>
+                   <widget class="QLabel" name="learning_rate_2">
                     <property name="text">
-                     <string>STATUS:</string>
+                     <string>Learning rate</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="del_model_2">
-                    <property name="text">
-                     <string>Delete model</string>
+                   <widget class="QTextEdit" name="textEdit_learning_rate_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
                </layout>
-              </item>
-              <item>
-               <widget class="QProgressBar" name="progressBar_2">
-                <property name="value">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QWidget" name="widget_4" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>640</width>
-         <height>640</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QWidget{
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <item>
+                <widget class="QLabel" name="desc_label_2">
+                 <property name="text">
+                  <string>Description</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTextEdit" name="model_description_2"/>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_12">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_15">
+                   <item>
+                    <widget class="QPushButton" name="startButton_2">
+                     <property name="text">
+                      <string>Start</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="status_label_2">
+                     <property name="text">
+                      <string>STATUS:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="stopButton_2">
+                     <property name="text">
+                      <string>Stop</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="more_info_dump_2">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_16">
+                   <item>
+                    <widget class="QPushButton" name="save_db_2">
+                     <property name="text">
+                      <string>Save model to db</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="db_status_2">
+                     <property name="text">
+                      <string>STATUS:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="del_model_2">
+                     <property name="text">
+                      <string>Delete model</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QProgressBar" name="progressBar_2">
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>640</width>
+          <height>640</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget{
 	background-color: rgb(31, 149, 239);
 }</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QLabel" name="plotLabel_CNN_2">
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(245, 250, 254);</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap>icons/icon_loop.png</pixmap>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="plotLabel_CNN_2">
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(245, 250, 254);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>icons/icon_loop.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
