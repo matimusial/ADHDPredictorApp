@@ -158,7 +158,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>670</y>
+       <y>560</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -171,9 +171,9 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>270</y>
+       <y>220</y>
        <width>271</width>
-       <height>251</height>
+       <height>211</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -294,7 +294,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
+       <y>40</y>
        <width>121</width>
        <height>23</height>
       </rect>
@@ -307,7 +307,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>60</y>
+       <y>40</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -320,7 +320,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>190</y>
+       <y>140</y>
        <width>251</width>
        <height>71</height>
       </rect>
@@ -399,9 +399,9 @@ QPushButton{
     <widget class="QLabel" name="info_dump">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>110</y>
-       <width>301</width>
+       <x>20</x>
+       <y>70</y>
+       <width>291</width>
        <height>61</height>
       </rect>
      </property>
@@ -412,8 +412,8 @@ QPushButton{
     <widget class="QTextEdit" name="model_description">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>570</y>
+       <x>30</x>
+       <y>470</y>
        <width>271</width>
        <height>71</height>
       </rect>
@@ -422,8 +422,8 @@ QPushButton{
     <widget class="QLabel" name="desc_label">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>540</y>
+       <x>30</x>
+       <y>440</y>
        <width>91</width>
        <height>16</height>
       </rect>
@@ -436,7 +436,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>260</x>
-       <y>670</y>
+       <y>560</y>
        <width>80</width>
        <height>24</height>
       </rect>
@@ -449,8 +449,63 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>670</y>
+       <y>560</y>
        <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>STATUS:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="more_info_dump">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>590</y>
+       <width>321</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>680</y>
+       <width>111</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save model to db</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>680</y>
+       <width>80</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Delete model</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="db_status">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>680</y>
+       <width>111</width>
        <height>21</height>
       </rect>
      </property>

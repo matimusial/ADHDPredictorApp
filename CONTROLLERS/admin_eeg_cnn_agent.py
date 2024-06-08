@@ -101,42 +101,45 @@ class AdminEegCnn:
         else:
             frequency = int(self.ui.textEdit_frequency.toPlainText())
 
-        EEG.config.CNN_EPOCHS = epochs
-        EEG.config.CNN_BATCH_SIZE = batch_size
-        EEG.config.CNN_LEARNING_RATE = learning_rate
-        EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
-        EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
-        EEG.config.FS = frequency
+        if epochs is False or batch_size is False or learning_rate is False:
+            self.invalid_input_msgbox()
+        else:
+            EEG.config.CNN_EPOCHS = epochs
+            EEG.config.CNN_BATCH_SIZE = batch_size
+            EEG.config.CNN_LEARNING_RATE = learning_rate
+            EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
+            EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
+            EEG.config.FS = frequency
 
-        print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
-        print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
-        print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
-        print("EEG_NUM_OF_ELECTRODES:", EEG.config.EEG_NUM_OF_ELECTRODES)
-        print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
-        print("FS:", EEG.config.FS)
+            print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
+            print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
+            print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
+            print("EEG_NUM_OF_ELECTRODES:", EEG.config.EEG_NUM_OF_ELECTRODES)
+            print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
+            print("FS:", EEG.config.FS)
 
-        self.thread = QThread()
+            self.thread = QThread()
 
-        # Reset the plot and clear metrics before starting the training
-        self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
-        self.real_time_metrics.start()
+            # Reset the plot and clear metrics before starting the training
+            self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
+            self.real_time_metrics.start()
 
-        # Create a worker object
-        self.worker = Worker(self)
+            # Create a worker object
+            self.worker = Worker(self)
 
-        # Move the worker to the thread
-        self.worker.moveToThread(self.thread)
+            # Move the worker to the thread
+            self.worker.moveToThread(self.thread)
 
-        # Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.onFinished)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.error.connect(self.onError)
+            # Connect signals and slots
+            self.thread.started.connect(self.worker.run)
+            self.worker.finished.connect(self.onFinished)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.error.connect(self.onError)
 
-        # Start the thread
-        self.thread.start()
+            # Start the thread
+            self.thread.start()
 
     def train(self):
         if not os.path.exists(MODEL_PATH):
@@ -203,41 +206,48 @@ class AdminEegCnn:
     def validate_epochs(self):
         text = self.ui.textEdit_epochs.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_EPOCHS}")
-            return EEG.config.CNN_EPOCHS
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_EPOCHS}")
-                return EEG.config.CNN_EPOCHS
+                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\n")
+                return False
             else:
                 return value
 
     def validate_batch_size(self):
         text = self.ui.textEdit_batch_size.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
-            return EEG.config.CNN_BATCH_SIZE
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
-                return EEG.config.CNN_BATCH_SIZE
+                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
+                return False
             else:
                 return value
 
     def validate_learning_rate(self):
         text = self.ui.textEdit_learning_rate.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
-            return EEG.config.CNN_LEARNING_RATE
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
-                return EEG.config.CNN_LEARNING_RATE
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                return False
             else:
                 return value
+    def invalid_input_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Invalid input.")
+        msg.setWindowTitle("Error")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
 class Worker(QObject):
     finished = pyqtSignal()
