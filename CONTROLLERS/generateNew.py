@@ -4,7 +4,7 @@ import os
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap, QMovie
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
@@ -266,10 +266,10 @@ class GenerateNew:
         self.fig = Figure()
         self.fig.tight_layout()
         canvas = FigureCanvas(self.fig)
-        ax = self.fig.add_subplot(111)
+        self.ax = self.fig.add_subplot(111)
 
-        ax.imshow(img, cmap="gray")
-        ax.set_title(f'MRI generated {self.currIdxMRI + 1}')
+        self.ax.imshow(img, cmap="gray")
+        self.ax.set_title(f'MRI generated {self.currIdxMRI + 1}')
 
         buf = io.BytesIO()
         canvas.print_png(buf)
@@ -286,5 +286,9 @@ class GenerateNew:
     def save_image(self):
         if self.fig is None: return
 
-        gan_type = self.chosen_model_data[-1]
-        self.fig.savefig(f"mri_{gan_type}_{self.currIdxMRI+1}.png")
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getSaveFileName(self.ui.centralwidget, "Save Figure", "", "PNG Files (*.png);;All Files (*)", options=options)
+
+        if file_path:
+            extent = self.ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+            self.fig.savefig(file_path, bbox_inches=extent)
