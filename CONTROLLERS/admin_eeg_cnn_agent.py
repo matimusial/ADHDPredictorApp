@@ -50,7 +50,6 @@ class AdminEegCnn:
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
-        self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -85,6 +84,7 @@ class AdminEegCnn:
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
+        frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
 
         self.model_description = self.ui.model_description.toPlainText()
@@ -93,11 +93,6 @@ class AdminEegCnn:
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
         else:
             electrodes = int(self.ui.textEdit_electrodes.toPlainText())
-
-        if self.ui.textEdit_frame_size.toPlainText().strip() == "":
-            frame_size = EEG.config.EEG_SIGNAL_FRAME_SIZE
-        else:
-            frame_size = int(self.ui.textEdit_frame_size.toPlainText())
 
         if self.ui.textEdit_frequency.toPlainText().strip() == "":
             frequency = EEG.config.FS
@@ -230,6 +225,19 @@ class AdminEegCnn:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
                 print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
+                return False
+            else:
+                return value
+
+    def validate_frame_size(self):
+        text = self.ui.textEdit_frame_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nFrame size value must be an integer greater than 1.\n")
                 return False
             else:
                 return value
