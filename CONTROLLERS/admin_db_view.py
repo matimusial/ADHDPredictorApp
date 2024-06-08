@@ -52,23 +52,17 @@ class AdminDbView:
                 item.setFlags(Qt.ItemIsEnabled)
                 self.ui.tableWidget.setItem(row_num, col_num, item)
 
-        # Resize columns and rows to fit the contents
         self.ui.tableWidget.resizeColumnsToContents()
         self.ui.tableWidget.resizeRowsToContents()
 
-        # Make columns stretch to fit the available space
         header = self.ui.tableWidget.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
 
-        # Optional: Make rows stretch to fit the available space
-        # This can be adjusted if you want a different resizing behavior
         vertical_header = self.ui.tableWidget.verticalHeader()
-        vertical_header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        vertical_header.setSectionResizeMode(QHeaderView.Stretch)
 
-        # Make the table widget resize with the window
         self.ui.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
 
-        # Optionally, adjust the size policy to ensure proper resizing
         self.ui.tableWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
     def delete_row(self, id_table):
