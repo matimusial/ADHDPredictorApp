@@ -1,9 +1,9 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import EEG.config
-from EEG.TRAIN.train import train_cnn_eeg_readraw
+from EEG.TRAIN.train import train_cnn_eeg_readraw, modelStopFlag
 from CONTROLLERS.DBConnector import DBConnector
 from CONTROLLERS.file_io import read_eeg_raw
 import os
@@ -37,6 +37,9 @@ class AdminEegCnn:
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
 
+        self.model_description = ""
+        self.ui.status_label.setText("STATUS: Await")
+
         self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
         self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
         self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
@@ -47,11 +50,14 @@ class AdminEegCnn:
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
-        self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
+        self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
+
+        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
+        self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -74,93 +80,113 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
+        self.ui.status_label.setText("STATUS: Starting")
+
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
+        frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
+
+        self.model_description = self.ui.model_description.toPlainText()
 
         if self.ui.textEdit_electrodes.toPlainText().strip() == "":
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
         else:
             electrodes = int(self.ui.textEdit_electrodes.toPlainText())
 
-        if self.ui.textEdit_frame_size.toPlainText().strip() == "":
-            frame_size = EEG.config.EEG_SIGNAL_FRAME_SIZE
-        else:
-            frame_size = int(self.ui.textEdit_frame_size.toPlainText())
-
         if self.ui.textEdit_frequency.toPlainText().strip() == "":
             frequency = EEG.config.FS
         else:
             frequency = int(self.ui.textEdit_frequency.toPlainText())
 
-        EEG.config.CNN_EPOCHS = epochs
-        EEG.config.CNN_BATCH_SIZE = batch_size
-        EEG.config.CNN_LEARNING_RATE = learning_rate
-        EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
-        EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
-        EEG.config.FS = frequency
+        if epochs is False or batch_size is False or learning_rate is False:
+            self.invalid_input_msgbox()
+        else:
+            EEG.config.CNN_EPOCHS = epochs
+            EEG.config.CNN_BATCH_SIZE = batch_size
+            EEG.config.CNN_LEARNING_RATE = learning_rate
+            EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
+            EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
+            EEG.config.FS = frequency
 
-        print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
-        print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
-        print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
-        print("EEG_NUM_OF_ELECTRODES:", EEG.config.EEG_NUM_OF_ELECTRODES)
-        print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
-        print("FS:", EEG.config.FS)
+            print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
+            print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
+            print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
+            print("EEG_NUM_OF_ELECTRODES:", EEG.config.EEG_NUM_OF_ELECTRODES)
+            print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
+            print("FS:", EEG.config.FS)
 
-        self.thread = QThread()
+            self.progressBar.setRange(0, EEG.config.CNN_EPOCHS)
 
-        # Reset the plot and clear metrics before starting the training
-        self.real_time_metrics = RealTimeMetrics(epochs, self.ui.plotLabel_CNN)
-        self.real_time_metrics.start()
+            self.thread = QThread()
 
-        # Create a worker object
-        self.worker = Worker(self)
+            # Reset the plot and clear metrics before starting the training
+            self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN)
+            self.real_time_metrics.start()
 
-        # Move the worker to the thread
-        self.worker.moveToThread(self.thread)
+            # Create a worker object
+            self.worker = Worker(self)
 
-        # Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.onFinished)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.error.connect(self.onError)
+            # Move the worker to the thread
+            self.worker.moveToThread(self.thread)
 
-        # Start the thread
-        self.thread.start()
+            # Connect signals and slots
+            self.thread.started.connect(self.worker.run)
+            self.worker.finished.connect(self.onFinished)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.error.connect(self.onError)
+
+            # Start the thread
+            self.thread.start()
 
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        self.ui.status_label.setText("STATUS: Running")
+        out = train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        if out == "STOP":
+            self.ui.status_label.setText("STATUS: Await")
 
     def onFinished(self):
-        self.connect_to_db()
-        file_name = os.listdir(MODEL_PATH)
-        file_path = os.path.join('./EEG/temp_model_path', file_name[0])
-        self.db_conn.insert_data_into_models_table(
-            file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
-        for filename in os.listdir(MODEL_PATH):
-            file_path = os.path.join(MODEL_PATH, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
+        if not EEG.TRAIN.train.modelStopFlag:
+            self.ui.status_label.setText("STATUS: Connecting to database")
+            self.connect_to_db()
+            file_name = os.listdir(MODEL_PATH)
+            file_path = os.path.join('./EEG/temp_model_path', file_name[0])
+            self.ui.status_label.setText("STATUS: Uploading model")
+            self.db_conn.insert_data_into_models_table(
+                file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
+                f"learning rate: {EEG.config.CNN_LEARNING_RATE}; batch size: {EEG.config.CNN_BATCH_SIZE}; epochs: {EEG.config.CNN_EPOCHS}; {self.model_description}"
+            )
+            self.ui.status_label.setText("STATUS: Await")
+            for filename in os.listdir(MODEL_PATH):
+                file_path = os.path.join(MODEL_PATH, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {e}')
 
-        try:
-            os.rmdir(MODEL_PATH)
-        except Exception as e:
-            print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+            try:
+                os.rmdir(MODEL_PATH)
+            except Exception as e:
+                print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+        else:
+            EEG.TRAIN.train.modelStopFlag = False
 
     def onError(self, error):
         print(f"Error: {error}")
 
     def on_exit(self):
         QApplication.quit()
+
+    def stopModel(self):
+        EEG.TRAIN.train.modelStopFlag = True
+        self.ui.status_label.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
@@ -180,41 +206,61 @@ class AdminEegCnn:
     def validate_epochs(self):
         text = self.ui.textEdit_epochs.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_EPOCHS}")
-            return EEG.config.CNN_EPOCHS
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_EPOCHS}")
-                return EEG.config.CNN_EPOCHS
+                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\n")
+                return False
             else:
                 return value
 
     def validate_batch_size(self):
         text = self.ui.textEdit_batch_size.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
-            return EEG.config.CNN_BATCH_SIZE
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\nSetting value to: {EEG.config.CNN_BATCH_SIZE}")
-                return EEG.config.CNN_BATCH_SIZE
+                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
+                return False
+            else:
+                return value
+
+    def validate_frame_size(self):
+        text = self.ui.textEdit_frame_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nFrame size value must be an integer greater than 1.\n")
+                return False
             else:
                 return value
 
     def validate_learning_rate(self):
         text = self.ui.textEdit_learning_rate.toPlainText().strip()
         if text == "":
-            print(f"WARNING: Field is empty.\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
-            return EEG.config.CNN_LEARNING_RATE
+            print(f"WARNING: Field is empty.\n")
+            return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\nSetting value to: {EEG.config.CNN_LEARNING_RATE}")
-                return EEG.config.CNN_LEARNING_RATE
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                return False
             else:
                 return value
+    def invalid_input_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Invalid input.")
+        msg.setWindowTitle("Error")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
 class Worker(QObject):
     finished = pyqtSignal()
