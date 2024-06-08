@@ -40,7 +40,6 @@ class AdminDbView:
         for record in data:
             self.id_table.append(record[0])
         self.ui.spinBox.setRange(min_id, max_id)
-        self.ui.spinBox.setValue(max_id)
 
         self.ui.tableWidget.setRowCount(len(data))
         self.ui.tableWidget.setColumnCount(len(column_names))
