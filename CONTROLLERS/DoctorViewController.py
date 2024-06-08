@@ -7,7 +7,7 @@ import nibabel as nib
 import pyedflib
 import concurrent.futures
 from PyQt5 import uic
-from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal, QSize
+from PyQt5.QtCore import QStringListModel, QModelIndex, QThread, QObject, pyqtSignal, QSize, Qt
 from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel, QPushButton, QMessageBox
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator, QMovie
 from matplotlib.backends.backend_template import FigureCanvas
@@ -80,10 +80,13 @@ class DoctorViewController:
         self.ui.showGenerated.clicked.connect(lambda: self.showDialog('GENERATED'))
 
     def showDialog(self, data_type):
-        dialog = QDialog(self.ui)
+        dialog = QDialog()
         dialog.setWindowTitle('Choose option')
-
+        dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         layout = QVBoxLayout()
+        if data_type == 'GENERATED':
+            label_desc = QLabel('MRI pictures generated on default, build in model.')
+            layout.addWidget(label_desc)
 
         radio_healthy = QRadioButton('ADHD')
         radio_sick = QRadioButton('CONTROL')
@@ -91,24 +94,19 @@ class DoctorViewController:
 
         layout.addWidget(radio_healthy)
         layout.addWidget(radio_sick)
-        radio_healthy.setChecked(True)
 
         label = QLabel('IMG amount (max 20):')
+        layout.addWidget(label)
 
         input_number = QLineEdit()
-
         validator = QIntValidator(0, 20, input_number)
         input_number.setValidator(validator)
-
         input_number.setText("3")
-
-        layout.addWidget(label)
         layout.addWidget(input_number)
 
         submit_button = QPushButton('Submit')
         submit_button.clicked.connect(
             lambda: self.prepareAndPlotData(data_type, radio_healthy, radio_sick, input_number, dialog))
-
         layout.addWidget(submit_button)
 
         dialog.setLayout(layout)
