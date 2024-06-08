@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
 
 import EEG.config
-from EEG.TRAIN.train import train_cnn_eeg_readraw
+from EEG.TRAIN.train import train_cnn_eeg_readraw, modelStopFlag
 from CONTROLLERS.DBConnector import DBConnector
 from CONTROLLERS.file_io import read_eeg_raw
 import os
@@ -37,6 +37,9 @@ class AdminEegCnn:
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
 
+        self.model_description = ""
+        self.ui.status_label.setText("STATUS: Await")
+
         self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
         self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
         self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
@@ -51,6 +54,7 @@ class AdminEegCnn:
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
+        self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
 
     def showDialog(self):
@@ -74,9 +78,13 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
+        self.ui.status_label.setText("STATUS: Starting")
+
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         learning_rate = self.validate_learning_rate()
+
+        self.model_description = self.ui.model_description.toPlainText()
 
         if self.ui.textEdit_electrodes.toPlainText().strip() == "":
             electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
@@ -133,34 +141,49 @@ class AdminEegCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        self.ui.status_label.setText("STATUS: Running")
+        out = train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        if out == "STOP":
+            self.ui.status_label.setText("STATUS: Await")
 
     def onFinished(self):
-        self.connect_to_db()
-        file_name = os.listdir(MODEL_PATH)
-        file_path = os.path.join('./EEG/temp_model_path', file_name[0])
-        self.db_conn.insert_data_into_models_table(
-            file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None, "eeg_cnn_model")
-        for filename in os.listdir(MODEL_PATH):
-            file_path = os.path.join(MODEL_PATH, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
+        if not EEG.TRAIN.train.modelStopFlag:
+            self.ui.status_label.setText("STATUS: Connecting to database")
+            self.connect_to_db()
+            file_name = os.listdir(MODEL_PATH)
+            file_path = os.path.join('./EEG/temp_model_path', file_name[0])
+            self.ui.status_label.setText("STATUS: Uploading model")
+            self.db_conn.insert_data_into_models_table(
+                file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES, EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
+                f"learning rate: {EEG.config.CNN_LEARNING_RATE}; batch size: {EEG.config.CNN_BATCH_SIZE}; epochs: {EEG.config.CNN_EPOCHS}; {self.model_description}"
+            )
+            self.ui.status_label.setText("STATUS: Await")
+            for filename in os.listdir(MODEL_PATH):
+                file_path = os.path.join(MODEL_PATH, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {e}')
 
-        try:
-            os.rmdir(MODEL_PATH)
-        except Exception as e:
-            print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+            try:
+                os.rmdir(MODEL_PATH)
+            except Exception as e:
+                print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+        else:
+            EEG.TRAIN.train.modelStopFlag = False
 
     def onError(self, error):
         print(f"Error: {error}")
 
     def on_exit(self):
         QApplication.quit()
+
+    def stopModel(self):
+        EEG.TRAIN.train.modelStopFlag = True
+        self.ui.status_label.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
         self.db_conn = DBConnector()

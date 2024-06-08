@@ -23,7 +23,7 @@
       <x>0</x>
       <y>0</y>
       <width>131</width>
-      <height>611</height>
+      <height>721</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -80,6 +80,13 @@ QPushButton{
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="exitButton">
+       <property name="text">
+        <string>Exit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="dbButton">
        <property name="text">
         <string>Database Admin</string>
@@ -99,13 +106,6 @@ QPushButton{
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="exitButton">
-       <property name="text">
-        <string>Exit</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="main_widget" native="true">
@@ -114,7 +114,7 @@ QPushButton{
       <x>130</x>
       <y>0</y>
       <width>1181</width>
-      <height>611</height>
+      <height>721</height>
      </rect>
     </property>
     <widget class="QWidget" name="widget" native="true">
@@ -123,7 +123,7 @@ QPushButton{
        <x>360</x>
        <y>0</y>
        <width>821</width>
-       <height>611</height>
+       <height>721</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -136,8 +136,8 @@ QPushButton{
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>801</width>
-        <height>591</height>
+        <width>771</width>
+        <height>701</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -158,7 +158,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>570</y>
+       <y>670</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -170,13 +170,43 @@ QPushButton{
     <widget class="QWidget" name="widget_2" native="true">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>260</y>
+       <x>30</x>
+       <y>270</y>
        <width>271</width>
-       <height>285</height>
+       <height>251</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="frame_size">
+          <property name="text">
+           <string>Frame size</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="textEdit_frame_size">
+          <property name="minimumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>181</width>
+            <height>31</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -264,7 +294,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>30</y>
+       <y>60</y>
        <width>121</width>
        <height>23</height>
       </rect>
@@ -277,7 +307,7 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>30</y>
+       <y>60</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -289,9 +319,9 @@ QPushButton{
     <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>180</y>
-       <width>331</width>
+       <x>40</x>
+       <y>190</y>
+       <width>251</width>
        <height>71</height>
       </rect>
      </property>
@@ -329,32 +359,6 @@ QPushButton{
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="frame_size">
-        <property name="text">
-         <string>Frame size</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QTextEdit" name="textEdit_frame_size">
-        <property name="minimumSize">
-         <size>
-          <width>90</width>
-          <height>31</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>31</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -396,13 +400,62 @@ QPushButton{
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>70</y>
+       <y>110</y>
        <width>301</width>
-       <height>91</height>
+       <height>61</height>
       </rect>
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="model_description">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>570</y>
+       <width>271</width>
+       <height>71</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="desc_label">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>540</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Description</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="stopButton">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>670</y>
+       <width>80</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stop</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="status_label">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>670</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>STATUS:</string>
      </property>
     </widget>
    </widget>

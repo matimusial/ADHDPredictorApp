@@ -3,7 +3,7 @@ import os
 from tensorflow.keras.layers import Conv2D, BatchNormalization, AveragePooling2D, Flatten, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.callbacks import ReduceLROnPlateau, Callback
 from tensorflow.keras.regularizers import l2
 
 from EEG.file_io import read_pickle, save_pickle, prepare_for_cnn, make_pred_data
@@ -14,6 +14,13 @@ from CONTROLLERS.metrics import WorkerMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+modelStopFlag = False
+
+class StopTrainingCallback(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        if modelStopFlag:
+            print("Stopped on epoch:", epoch)
+            self.model.stop_training = True
 
 def build_eeg_cnn_model(input_shape):
     """Builds a CNN model for EEG data.
@@ -146,15 +153,20 @@ def train_cnn_eeg_readraw(save, folderPath, predict_path, model_path):
 
         worker_metrics = WorkerMetrics(total_epochs=CNN_EPOCHS)
 
+        stop_training_callback = StopTrainingCallback()
+
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS,
                       batch_size=CNN_BATCH_SIZE,
-                      callbacks=[reduce_lr,worker_metrics],
+                      callbacks=[reduce_lr,worker_metrics, stop_training_callback],
                       verbose=1)
 
         _, final_accuracy = model.evaluate(X_test, y_test, verbose=0)
         print(f"Test accuracy: {round(final_accuracy, 4)}")
+
+        if modelStopFlag:
+            return "STOP"
 
         if save:
             model.save(os.path.join(model_path, f'{round(final_accuracy, 4)}.keras'))
