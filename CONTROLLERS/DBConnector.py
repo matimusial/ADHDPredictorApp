@@ -23,17 +23,18 @@ class DBConnector:
                 host=host,
                 database=database,
                 user=user,
-                password=password
+                password=password,
+                connection_timeout=3
             )
             if self.connection.is_connected():
                 self.cursor = self.connection.cursor()
                 print("Database connection established.")
             else:
-                raise Error("Failed to establish database connection.")
-        except Error as e:
+                raise ConnectionError("Failed to establish database connection, remember to enable ZUT VPN.")
+        except Exception as e:
             print(f"Connection error: {e}")
             print("Remember to enable ZUT VPN.")
-            raise Error("Failed to establish database connection, remember to enable ZUT VPN.")
+            raise ConnectionError("Failed to establish database connection, remember to enable ZUT VPN.")
 
     def validate_and_convert_input_models(self, name, file_data, channels, input_shape, type_value, fs, plane,
                                           description):
@@ -269,13 +270,3 @@ class DBConnector:
                 print(f"Error deleting data: {e}")
         else:
             print("No database connection, use establish_connection function.")
-
-
-# db = DBConnector()
-# db.establish_connection()
-#
-# db.insert_data_into_models_table(f"0.1", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test1")
-# db.insert_data_into_models_table(f"0.2", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test2")
-# db.insert_data_into_models_table(f"0.3", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test3")
-# db.insert_data_into_models_table(f"0.4", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test4")
-# db.insert_data_into_models_table(f"0.5", f"../MRI/CNN/MODELS/0.8836.keras", None, (120,120,1), f"cnn_eeg", None, "A", "test5")

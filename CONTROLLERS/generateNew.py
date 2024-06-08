@@ -101,8 +101,9 @@ class GenerateNew:
             self.ui.adhdGenList.clearSelection()
             self.ui.adhdGenName.setText("---------------------------")
 
-        self.db.establish_connection()
-        if self.db.connection is None:
+        try:
+            self.db.establish_connection()
+        except ConnectionError:
             self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
             return
 
