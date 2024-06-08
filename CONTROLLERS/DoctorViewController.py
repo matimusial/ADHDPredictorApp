@@ -332,7 +332,8 @@ class DoctorViewController:
             if dataType == "EEG" :
                 self.allData[dataType].append(data)
 
-            self.predictions.append(result)
+            if result is not None:
+                self.predictions.append(result)
 
     def loadModels(self):
         self.modelEEG = None
@@ -348,22 +349,25 @@ class DoctorViewController:
         result = []
 
         if dataType == "EEG":
-            try:
-                EEG.config.EEG_SIGNAL_FRAME_SIZE = ast.literal_eval(modelInfo[1])[1]
-
-                DATA_FILTERED = filter_eeg_data(DATA)
-
-                DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
-
-                DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
-
-                DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
-
-                result = model.predict(DATA_FRAMED)
-
-            except Exception as e:
-                self.show_alert(f"Error processing EEG data: {e}")
+            input_shape = ast.literal_eval(modelInfo[1])
+            channels = input_shape[0]
+            EEG.config.EEG_SIGNAL_FRAME_SIZE = input_shape[1]
+            print("chuj")
+            if DATA.shape[0] != channels:
+                # self.show_alert(f"Data shape incompatible with model input shape\nInput shape required for this model: {modelInfo[1]}")
                 return
+            print("chuj2")
+            DATA_FILTERED = filter_eeg_data(DATA)
+
+            DATA_CLIPPED = clip_eeg_data(DATA_FILTERED)
+
+            DATA_NORMALIZED = normalize_eeg_data(DATA_CLIPPED)
+
+            DATA_FRAMED = split_into_frames(np.array(DATA_NORMALIZED))
+
+            result = model.predict(DATA_FRAMED)
+
+
 
         if dataType == "MRI":
             try:
@@ -382,7 +386,9 @@ class DoctorViewController:
         return result
 
     def showResult(self):
-        if self.predictions is None: return
+        if self.predictions is None or len(self.predictions) == 0:
+            self.ui.resultLabel.setText("-----------")
+            return
 
         predictions_means = []
 
