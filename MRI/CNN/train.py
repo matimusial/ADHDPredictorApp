@@ -119,3 +119,19 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
         print(f"Error during CNN training: {e}")
         return
 
+
+def readPickleForUI(real_mri_path):
+    try:
+        ADHD_DATA = read_pickle(os.path.join(real_mri_path, "ADHD_REAL.pkl"))
+        CONTROL_DATA = read_pickle(os.path.join(real_mri_path, "CONTROL_REAL.pkl"))
+
+        print(len(ADHD_DATA))
+        print(len(ADHD_DATA[0]))
+        print(len(ADHD_DATA[0][0]))
+
+        return ADHD_DATA, CONTROL_DATA
+
+    except Exception as e:
+        print(f"Error loading original files: {e}")
+        return
+

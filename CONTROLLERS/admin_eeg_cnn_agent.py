@@ -51,6 +51,7 @@ class AdminEegCnn:
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
+        self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -157,8 +158,8 @@ class AdminEegCnn:
         self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
         self.ui.status_label.setText("STATUS: Model done")
     def sendToDb(self):
-        file_name = os.listdir(MODEL_PATH)
-        if file_name:
+        if os.path.exists(MODEL_PATH):
+            file_name = os.listdir(MODEL_PATH)
             self.ui.db_status.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status.setText("STATUS: Sending...")

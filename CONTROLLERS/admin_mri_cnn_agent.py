@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import MRI.config
-from MRI.CNN.train import train_cnn
+from MRI.CNN.train import train_cnn, readPickleForUI
 from CONTROLLERS.DBConnector import DBConnector
 import os
 import shutil
@@ -26,9 +26,11 @@ class AdminMriCnn:
         self.mainWindow = mainWindow
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_MRI.ui'), mainWindow)
 
-        self.loaded_adhd_files = 0
-        self.loaded_control_files = 0
-        self.currChannels = 0
+        adhd_data, control_data = readPickleForUI(TRAIN_PATH)
+
+        self.loaded_adhd_files = len(adhd_data)
+        self.loaded_control_files = len(control_data)
+        self.currChannels = len(adhd_data[0])
 
         self.updateInfoDump()
 
@@ -44,9 +46,12 @@ class AdminMriCnn:
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
         self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size_2.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
+        self.ui.textEdit_frequency_2.setPlainText(str(MRI.config.FS_MRI))
         self.ui.path_label_2.setText(f'{TRAIN_PATH}')
 
         self.ui.textEdit_electrodes_2.setReadOnly(True)
+        self.ui.textEdit_frequency_2.setReadOnly(True)
+        self.ui.textEdit_frame_size_2.setReadOnly(True)
 
         self.ui.folder_explore_2.clicked.connect(self.showDialog)
         self.ui.startButton_2.clicked.connect(self.train_mri)
@@ -63,9 +68,12 @@ class AdminMriCnn:
         if folder:
             self.pathTrain = folder
             self.ui.path_label.setText(f'{folder}')
-            self.loaded_adhd_files = 0
-            self.loaded_control_files = 0
-            self.currChannels = 0
+
+            adhd_data, control_data = readPickleForUI(folder)
+
+            self.loaded_adhd_files = len(adhd_data)
+            self.loaded_control_files = len(control_data)
+            self.currChannels = len(adhd_data[0])
             self.updateInfoDump()
 
     def updateInfoDump(self):
@@ -149,8 +157,8 @@ class AdminMriCnn:
         self.ui.status_label_2.setText("STATUS: Model done")
 
     def sendToDb(self):
-        file_name = os.listdir(MODEL_PATH)
-        if file_name:
+        if os.path.exists(MODEL_PATH):
+            file_name = os.listdir(MODEL_PATH)
             self.ui.db_status_2.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status_2.setText("STATUS: Sending...")
