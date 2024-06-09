@@ -24,9 +24,9 @@ def get_base_path():
         return os.path.dirname(os.path.abspath(__file__))
 
 
-current_dir = get_base_path()
-parent_dir = os.path.dirname(current_dir)
-UI_PATH = os.path.join(current_dir, 'UI')
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(get_base_path())
+UI_PATH = os.path.join(get_base_path(), 'UI')
 parent_directory = os.path.dirname(current_dir)
 
 MODEL_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'temp_model_path')
