@@ -43,8 +43,8 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
-        self.ui.path_label.setText(f'{self.TRAIN_PATH}')
-        self.ui.path_label.setTextElideMode(Qt.ElideRight)
+        #self.ui.path_label.setText(f'{self.TRAIN_PATH}')
+        #self.ui.path_label.setTextElideMode(Qt.ElideRight)
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -69,16 +69,13 @@ class AdminEegCnn:
             control_path = os.path.join(folder, 'CONTROL')
 
             if os.path.isdir(adhd_path) and os.path.isdir(control_path):
-                if not self.contains_files(adhd_path) and not self.contains_files(control_path):
-                    self.pathTrain = folder
-                    self.ui.path_label.setText(f'{folder}')
-                    _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
-                    self.loaded_adhd_files = adhdcount
-                    self.loaded_control_files = controlcount
-                    self.currChannels = initChannels[0]['shape'][0]
-                    self.updateInfoDump()
-                else:
-                    self.invalid_folder_msgbox()
+                self.pathTrain = folder
+                self.ui.path_label.setText(f'{folder}')
+                _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
+                self.loaded_adhd_files = adhdcount
+                self.loaded_control_files = controlcount
+                self.currChannels = initChannels[0]['shape'][0]
+                self.updateInfoDump()
             else:
                 self.invalid_folder_msgbox()
 
