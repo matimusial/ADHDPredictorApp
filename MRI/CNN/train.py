@@ -1,7 +1,7 @@
 import os
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.callbacks import ReduceLROnPlateau, Callback
 from tensorflow.keras.optimizers import Adam
 
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
@@ -12,6 +12,14 @@ from MRI.config import CNN_EPOCHS_MRI, CNN_BATCH_SIZE_MRI, CNN_LEARNING_RATE_MRI
 from CONTROLLERS.metrics import WorkerMetrics
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+modelStopFlag = False
+
+class StopTrainingCallback(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        if modelStopFlag:
+            print("Stopped on epoch:", epoch)
+            self.model.stop_training = True
 
 
 def build_cnn_model(input_shape):
@@ -86,12 +94,15 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.0001, verbose=1)
 
+        worker_metrics = WorkerMetrics(total_epochs=CNN_EPOCHS_MRI)
+
+        stop_training_callback = StopTrainingCallback()
 
         _ = model.fit(X_train, y_train,
                       validation_data=(X_test, y_test),
                       epochs=CNN_EPOCHS_MRI,
                       batch_size=CNN_BATCH_SIZE_MRI,
-                      callbacks=[reduce_lr],
+                      callbacks=[reduce_lr,worker_metrics, stop_training_callback],
                       verbose=1)
 
         _, test_accuracy = model.evaluate(X_test, y_test)

@@ -110,6 +110,11 @@ class AdminMriCnn:
 
             self.thread = QThread()
 
+            # Reset the plot and clear metrics before starting the training
+            self.progressBar.setValue(0)
+            self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN_2)
+            self.real_time_metrics.start()
+
             # Create a worker object
             self.worker = Worker(self)
 
@@ -204,6 +209,7 @@ class AdminMriCnn:
 
     def stopModel(self):
         MRI.CNN.train.modelStopFlag = True
+        self.real_time_metrics.stop()
         self.ui.status_label_2.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
