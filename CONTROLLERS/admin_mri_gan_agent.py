@@ -334,7 +334,7 @@ class AdminMriGan():
     def gan_generation_warning_msgbox(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText("Generating images using GAN takes considerable amount of hardware resources and time. You have been warned.")
+        msg.setText("Generating images using GAN takes considerable amount of hardware resources and time.\nYOU CANNOT STOP THE PROCESS ONCE STARTED!\nYou have been warned.")
         msg.setWindowTitle("Warning.")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
