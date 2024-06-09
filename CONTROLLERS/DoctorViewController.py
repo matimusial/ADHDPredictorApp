@@ -441,6 +441,9 @@ class DoctorViewController:
 
         :param error: The error message.
         """
+        self.change_btn_state(True)
+        self.movie.stop()
+        self.show_result()
         self.show_alert(f"Error: {error}")
 
     """
@@ -451,7 +454,7 @@ class DoctorViewController:
         """
         Displays a loading animation.
         """
-        self.movie = QMovie(GIF_PATH)
+        self.movie = QMovie(os.path.join(self.MAIN_PATH, 'UI', 'loading.gif'))
         self.ui.resultLabel.setMovie(self.movie)
         self.movie.setScaledSize(QSize(40, 40))
         self.movie.start()
