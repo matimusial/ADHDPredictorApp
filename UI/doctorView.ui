@@ -345,7 +345,10 @@ QPushButton{
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>PLOT</string>
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap>icons/icon_loop.png</pixmap>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -417,7 +420,10 @@ color: black;</string>
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>IMG</string>
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap>icons/icon_loop_brain.png</pixmap>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>

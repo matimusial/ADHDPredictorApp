@@ -150,7 +150,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 discriminator_optimizer (tf.keras.optimizers.Optimizer): The optimizer for the discriminator.
 
             Returns:
-                tuple: A tuple containing the discriminator loss and the generator loss.
+                tuple: A tuple containing the discriminator loss, the generator loss, and the discriminator accuracy.
             """
             try:
                 noise = tf.random.normal([batch_size, 100])
@@ -172,10 +172,11 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 gradients_of_generator = gen_tape.gradient(g_loss, generator.trainable_variables)
                 generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 
-                return d_loss, g_loss
+                accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.round(real_output), tf.ones_like(real_output)), tf.float32))
+                return d_loss, g_loss, accuracy
             except Exception as e:
                 print(f"Error during training step: {e}")
-                return None, None
+                return None, None, None
 
         def train_gan(generator, discriminator, epochs, batch_size, train_data, val_data):
             """
@@ -194,17 +195,17 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 try:
                     idx = np.random.randint(0, train_data.shape[0], batch_size)
                     real_imgs = train_data[idx]
-                    d_loss, g_loss = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
+                    d_loss, g_loss, accuracy = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                     if d_loss is None or g_loss is None:
                         return
                     if (epoch + 1) % 1000 == 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
                     if (epoch + 1) % TRAIN_GAN_PRINT_INTERVAL == 0:
                         val_idx = np.random.randint(0, val_data.shape[0], batch_size)
                         val_real_imgs = val_data[val_idx]
-                        val_d_loss, val_g_loss = train_step(generator, discriminator, val_real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
+                        val_d_loss, val_g_loss, val_accuracy = train_step(generator, discriminator, val_real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                         if val_d_loss is None or val_g_loss is None:
                             return
-                        print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()}]")
+                        print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()} | Val D accuracy: {val_accuracy.numpy().mean()}]")
 
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
                         generate_image(generator, epoch + 1)
