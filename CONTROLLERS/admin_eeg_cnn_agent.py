@@ -62,13 +62,28 @@ class AdminEegCnn:
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
 
         if folder:
-            self.pathTrain = folder
-            self.ui.path_label.setText(f'{folder}')
-            _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
-            self.loaded_adhd_files = adhdcount
-            self.loaded_control_files = controlcount
-            self.currChannels = initChannels[0]['shape'][0]
-            self.updateInfoDump()
+            adhd_path = os.path.join(folder, 'ADHD')
+            control_path = os.path.join(folder, 'CONTROL')
+
+            if os.path.isdir(adhd_path) and os.path.isdir(control_path):
+                if not self.contains_files(adhd_path) and not self.contains_files(control_path):
+                    self.pathTrain = folder
+                    self.ui.path_label.setText(f'{folder}')
+                    _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
+                    self.loaded_adhd_files = adhdcount
+                    self.loaded_control_files = controlcount
+                    self.currChannels = initChannels[0]['shape'][0]
+                    self.updateInfoDump()
+                else:
+                    self.invalid_folder_msgbox()
+            else:
+                self.invalid_folder_msgbox()
+
+    def contains_files(self, folder_path):
+        for file in os.listdir(folder_path):
+            if file.endswith('.mat') or file.endswith('.csv') or file.endswith('.edf'):
+                return True
+        return False
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(

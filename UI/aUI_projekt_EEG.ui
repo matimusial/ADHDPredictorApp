@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>760</height>
+    <height>781</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -234,13 +234,19 @@ QPushButton{
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="electrodes">
-                   <property name="text">
-                    <string>Electrodes</string>
+                 <item row="2" column="2">
+                  <widget class="QTextEdit" name="textEdit_frequency">
+                   <property name="minimumSize">
+                    <size>
+                     <width>90</width>
+                     <height>31</height>
+                    </size>
                    </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
+                   <property name="maximumSize">
+                    <size>
+                     <width>90</width>
+                     <height>31</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -270,8 +276,18 @@ QPushButton{
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="2">
-                  <widget class="QTextEdit" name="textEdit_frequency">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="electrodes">
+                   <property name="text">
+                    <string>Electrodes</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="3">
+                  <widget class="QTextEdit" name="textEdit_frame_size">
                    <property name="minimumSize">
                     <size>
                      <width>90</width>
@@ -283,6 +299,16 @@ QPushButton{
                      <width>90</width>
                      <height>31</height>
                     </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QLabel" name="frame_size">
+                   <property name="text">
+                    <string>Frame size</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -304,36 +330,6 @@ QPushButton{
                <item>
                 <widget class="QWidget" name="widget_2" native="true">
                  <layout class="QVBoxLayout" name="verticalLayout_4">
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_4">
-                    <item>
-                     <widget class="QLabel" name="frame_size">
-                      <property name="text">
-                       <string>Frame size</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QTextEdit" name="textEdit_frame_size">
-                      <property name="minimumSize">
-                       <size>
-                        <width>181</width>
-                        <height>31</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>181</width>
-                        <height>31</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout">
                     <item>

@@ -48,7 +48,6 @@ class AdminMriGan():
 
         self.ui.path_label.setText(f'{self.TRAIN_PATH}')
 
-        self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
@@ -58,20 +57,6 @@ class AdminMriGan():
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
         self.gan_generation_warning_msgbox()
-
-    def showDialog(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        if folder:
-            self.pathTrain = folder
-            self.ui.path_label.setText(f'{folder}')
-
-            adhd_data, control_data = readPickleForUI(folder)
-
-            self.loaded_adhd_files = len(adhd_data)
-            self.loaded_control_files = len(control_data)
-            self.currChannels = len(adhd_data[0])
-            self.updateInfoDump()
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(

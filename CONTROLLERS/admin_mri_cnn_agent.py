@@ -39,16 +39,11 @@ class AdminMriCnn:
         self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
         self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size_2.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
-        self.ui.textEdit_frequency_2.setPlainText(str(MRI.config.FS_MRI))
         self.ui.path_label_2.setText(f'{self.TRAIN_PATH}')
 
-        self.ui.textEdit_electrodes_2.setReadOnly(True)
-        self.ui.textEdit_frequency_2.setReadOnly(True)
         self.ui.textEdit_frame_size_2.setReadOnly(True)
 
-        self.ui.folder_explore_2.clicked.connect(self.showDialog)
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
@@ -57,26 +52,11 @@ class AdminMriCnn:
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
-    def showDialog(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        if folder:
-            self.pathTrain = folder
-            self.ui.path_label.setText(f'{folder}')
-
-            adhd_data, control_data = readPickleForUI(folder)
-
-            self.loaded_adhd_files = len(adhd_data)
-            self.loaded_control_files = len(control_data)
-            self.currChannels = len(adhd_data[0])
-            self.updateInfoDump()
-
     def updateInfoDump(self):
         self.ui.info_dump_2.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
             f'{self.currChannels} channels'
         )
-        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
 
     def train_mri(self):
         self.ui.status_label_2.setText("STATUS: Starting")
@@ -88,11 +68,6 @@ class AdminMriCnn:
         learning_rate = self.validate_learning_rate()
 
         self.model_description = self.ui.model_description_2.toPlainText()
-
-        if self.ui.textEdit_electrodes_2.toPlainText().strip() == "":
-            electrodes = 120
-        else:
-            electrodes = int(self.ui.textEdit_electrodes_2.toPlainText())
 
         if self.ui.textEdit_frame_size_2.toPlainText().strip() == "":
             input_shape = MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI
