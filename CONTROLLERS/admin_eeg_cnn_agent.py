@@ -56,6 +56,8 @@ class AdminEegCnn:
         self.ui.save_db.clicked.connect(self.sendToDb)
         self.ui.del_model.clicked.connect(self.delModel)
 
+        self.run_stop_controller = False
+
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
     def showDialog(self):
@@ -95,6 +97,7 @@ class AdminEegCnn:
     def train_cnn(self):
         self.ui.status_label.setText("STATUS: Starting")
         EEG.TRAIN.train.modelStopFlag = False
+        self.run_stop_controller = True
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
@@ -230,9 +233,10 @@ class AdminEegCnn:
         QApplication.quit()
 
     def stopModel(self):
-        EEG.TRAIN.train.modelStopFlag = True
-        self.real_time_metrics.stop()
-        self.ui.status_label.setText("STATUS: Stopping...")
+        if self.run_stop_controller:
+            EEG.TRAIN.train.modelStopFlag = True
+            self.real_time_metrics.stop()
+            self.ui.status_label.setText("STATUS: Stopping...")
 
 
     def connect_to_db(self):

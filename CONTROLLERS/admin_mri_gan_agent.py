@@ -11,7 +11,7 @@ from CONTROLLERS.DBConnector import DBConnector
 import os
 import shutil
 
-from CONTROLLERS.metrics import RealTimeMetrics
+from CONTROLLERS.metrics import RealTimeMetrics_GEN
 
 class AdminMriGan():
     def __init__(self, mainWindow, ui_path, main_path):
@@ -96,6 +96,11 @@ class AdminMriGan():
             print("TRAIN_GAN_DISP_INTERVAL:", MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
             self.thread = QThread()
+
+            # Reset the plot and clear metrics before starting the training
+            self.progressBar.setValue(0)
+            self.real_time_metrics = RealTimeMetrics_GEN(epochs, self.progressBar, self.ui.plotLabel_GAN_plot)
+            self.real_time_metrics.start()
 
             # Create a worker object
             self.worker = Worker(self)

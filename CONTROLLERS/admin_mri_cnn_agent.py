@@ -47,6 +47,8 @@ class AdminMriCnn:
         self.ui.save_db_2.clicked.connect(self.sendToDb)
         self.ui.del_model_2.clicked.connect(self.delModel)
 
+        self.run_stop_controller = False
+
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
     def updateInfoDump(self):
@@ -58,6 +60,7 @@ class AdminMriCnn:
     def train_mri(self):
         self.ui.status_label_2.setText("STATUS: Starting")
         MRI.CNN.train.modelStopFlag = False
+        self.run_stop_controller = True
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
@@ -177,9 +180,10 @@ class AdminMriCnn:
         QApplication.quit()
 
     def stopModel(self):
-        MRI.CNN.train.modelStopFlag = True
-        self.real_time_metrics.stop()
-        self.ui.status_label_2.setText("STATUS: Stopping...")
+        if self.run_stop_controller:
+            MRI.CNN.train.modelStopFlag = True
+            self.real_time_metrics.stop()
+            self.ui.status_label_2.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
