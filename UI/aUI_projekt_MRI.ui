@@ -202,36 +202,6 @@ QPushButton{
                 <widget class="QWidget" name="widget_3" native="true">
                  <layout class="QVBoxLayout" name="verticalLayout_10">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_11">
-                    <item>
-                     <widget class="QLabel" name="frame_size_2">
-                      <property name="text">
-                       <string>Frame size</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QTextEdit" name="textEdit_frame_size_2">
-                      <property name="minimumSize">
-                       <size>
-                        <width>181</width>
-                        <height>31</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>181</width>
-                        <height>31</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_12">
                     <item>
                      <widget class="QLabel" name="epochs_2">
