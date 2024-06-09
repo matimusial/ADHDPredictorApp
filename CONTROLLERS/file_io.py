@@ -4,7 +4,6 @@ import mne
 from scipy.io import loadmat, savemat
 
 
-
 def read_eeg_raw(path_or_folder):
     """
     Loads raw EEG data for correction and analysis.

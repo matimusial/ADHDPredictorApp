@@ -13,8 +13,19 @@ from CONTROLLERS.admin_mri_gan_agent import AdminMriGan
 from CONTROLLERS.generateNew import GenerateNew
 from CONTROLLERS.admin_db_view import AdminDbView
 
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-current_dir = os.path.dirname(__file__)
+current_dir = get_base_path()
 UI_PATH = os.path.join(current_dir, 'UI')
 
 
@@ -35,7 +46,7 @@ class MainWindow(QMainWindow):
         """
         Loads the admin database view UI and sets up event handlers for the buttons.
         """
-        ui_path = os.path.join("UI", "admin_db.ui")
+        ui_path = os.path.join(current_dir ,"UI", "admin_db.ui")
         ui = uic.loadUi(ui_path, self)
         self.av = AdminDbView(ui)
 
@@ -46,7 +57,7 @@ class MainWindow(QMainWindow):
         """
         Load the generator view UI and connect signals to slots.
         """
-        ui_path = os.path.join("UI", "genView.ui")
+        ui_path = os.path.join(current_dir, "UI", "genView.ui")
         ui = uic.loadUi(ui_path, self)
         self.gn = GenerateNew(ui)
 

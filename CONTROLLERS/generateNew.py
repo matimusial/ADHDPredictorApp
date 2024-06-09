@@ -1,5 +1,6 @@
 import io
 import os
+import sys
 
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
@@ -50,6 +51,16 @@ class ModelWorker(QObject):
             self.error.emit(str(e))
 
 
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+
 class GenerateNew:
     def __init__(self, ui):
         """
@@ -70,7 +81,7 @@ class GenerateNew:
         self.thread = None
         self.worker = None
         self.fig = None
-        self.gif_path = os.path.join('UI', 'loading.gif')
+        self.gif_path = os.path.join(get_base_path() ,'UI', 'loading.gif')
 
     def __del__(self):
         """

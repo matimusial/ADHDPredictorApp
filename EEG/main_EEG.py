@@ -1,11 +1,24 @@
 import os
+import sys
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from EEG.TRAIN.train import train_cnn_eeg
 from EEG.PREDICT.predict import predict
 
-current_dir = os.path.dirname(__file__)
+
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+
+
+current_dir = get_base_path()
 
 MODEL_PATH = os.path.join(current_dir, "MODELS")
 
