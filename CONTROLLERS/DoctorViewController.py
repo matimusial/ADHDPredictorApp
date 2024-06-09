@@ -62,7 +62,7 @@ class DoctorViewController:
         self.main_window = main_window
         self.main_window.setWindowTitle("DOCTOR VIEW")
         self.ui = uic.loadUi(
-            os.path.join(parent_directory, 'UI', 'doctorView.ui'),
+            os.path.join(UI_PATH, 'doctorView.ui'),
             main_window
         )
         self.add_events()
