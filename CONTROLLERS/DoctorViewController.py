@@ -527,7 +527,7 @@ class DoctorViewController:
 
         dialog.close()
 
-        file_path = os.path.join(parent_directory,
+        file_path = os.path.join(get_base_path(),
             "MRI", f"{data_type}_MRI",
             f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
         )
