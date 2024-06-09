@@ -327,6 +327,13 @@ class AdminEegCnn:
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
+    def invalid_folder_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText("Invalid input folder")
+        msg.setWindowTitle("Error")
+        msg.exec_()
+
 
 class Worker(QObject):
     finished = pyqtSignal()
