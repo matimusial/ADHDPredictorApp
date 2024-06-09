@@ -39,16 +39,15 @@ class AdminMriCnn:
         self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
         self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.textEdit_frame_size_2.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
         self.ui.path_label_2.setText(f'{self.TRAIN_PATH}')
-
-        self.ui.textEdit_frame_size_2.setReadOnly(True)
 
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db_2.clicked.connect(self.sendToDb)
         self.ui.del_model_2.clicked.connect(self.delModel)
+
+        self.run_stop_controller = False
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
@@ -61,18 +60,13 @@ class AdminMriCnn:
     def train_mri(self):
         self.ui.status_label_2.setText("STATUS: Starting")
         MRI.CNN.train.modelStopFlag = False
+        self.run_stop_controller = True
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
-        frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
 
         self.model_description = self.ui.model_description_2.toPlainText()
-
-        if self.ui.textEdit_frame_size_2.toPlainText().strip() == "":
-            input_shape = MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI
-        else:
-            input_shape = int(self.ui.textEdit_frame_size_2.toPlainText())
 
         if epochs is False or batch_size is False or learning_rate is False:
             self.invalid_input_msgbox()
@@ -80,12 +74,10 @@ class AdminMriCnn:
             MRI.config.CNN_EPOCHS_MRI = epochs
             MRI.config.CNN_BATCH_SIZE_MRI = batch_size
             MRI.config.CNN_LEARNING_RATE_MRI = learning_rate
-            MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI = input_shape
 
             print("MRI_EPOCHS:", MRI.config.CNN_EPOCHS_MRI)
             print("MRI_BATCH_SIZE:", MRI.config.CNN_BATCH_SIZE_MRI)
             print("MRI_LEARNING_RATE:", MRI.config.CNN_LEARNING_RATE_MRI)
-            print("MRI_FRAME_SIZE:", MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI)
 
             self.thread = QThread()
 
@@ -188,9 +180,10 @@ class AdminMriCnn:
         QApplication.quit()
 
     def stopModel(self):
-        MRI.CNN.train.modelStopFlag = True
-        self.real_time_metrics.stop()
-        self.ui.status_label_2.setText("STATUS: Stopping...")
+        if self.run_stop_controller:
+            MRI.CNN.train.modelStopFlag = True
+            self.real_time_metrics.stop()
+            self.ui.status_label_2.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
@@ -229,19 +222,6 @@ class AdminMriCnn:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
                 print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
-                return False
-            else:
-                return value
-
-    def validate_frame_size(self):
-        text = self.ui.textEdit_frame_size_2.toPlainText().strip()
-        if text == "":
-            print(f"WARNING: Field is empty.\n")
-            return False
-        else:
-            value = self.validate_input(text)
-            if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nFrame size value must be an integer greater than 1.\n")
                 return False
             else:
                 return value
