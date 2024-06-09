@@ -1,3 +1,5 @@
+import sys
+
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
@@ -11,8 +13,18 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
-current_dir = os.path.dirname(__file__)
+
+current_dir = get_base_path()
 parent_dir = os.path.dirname(current_dir)
 UI_PATH = os.path.join(current_dir, 'UI')
 parent_directory = os.path.dirname(current_dir)
@@ -163,7 +175,7 @@ class AdminEegCnn:
             self.ui.db_status.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status.setText("STATUS: Sending...")
-            file_path = os.path.join('./EEG/temp_model_path', file_name[0])
+            file_path = os.path.join(parent_dir, 'EEG', 'temp_model_path', file_name[0])
             self.ui.status_label.setText("STATUS: Uploading model")
             self.db_conn.insert_data_into_models_table(
                 file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES,
