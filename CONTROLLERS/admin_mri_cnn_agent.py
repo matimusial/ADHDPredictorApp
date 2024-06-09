@@ -77,6 +77,7 @@ class AdminMriCnn:
 
     def train_mri(self):
         self.ui.status_label_2.setText("STATUS: Starting")
+        MRI.CNN.train.modelStopFlag = False
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
@@ -139,6 +140,7 @@ class AdminMriCnn:
         out = train_cnn(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
         if out == "STOP":
             self.ui.status_label_2.setText("STATUS: Await")
+            MRI.CNN.train.modelStopFlag = False
 
     def onFinished(self):
         file_name = os.listdir(MODEL_PATH)

@@ -82,6 +82,7 @@ class AdminEegCnn:
 
     def train_cnn(self):
         self.ui.status_label.setText("STATUS: Starting")
+        EEG.TRAIN.train.modelStopFlag = False
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
@@ -148,6 +149,7 @@ class AdminEegCnn:
         out = train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
         if out == "STOP":
             self.ui.status_label.setText("STATUS: Await")
+            EEG.TRAIN.train.modelStopFlag = False
 
     def onFinished(self):
         file_name = os.listdir(MODEL_PATH)

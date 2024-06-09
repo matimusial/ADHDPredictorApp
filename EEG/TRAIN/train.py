@@ -21,6 +21,8 @@ class StopTrainingCallback(Callback):
         if modelStopFlag:
             print("Stopped on epoch:", epoch)
             self.model.stop_training = True
+        else:
+            self.model.stop_training = False
 
 def build_eeg_cnn_model(input_shape):
     """Builds a CNN model for EEG data.
