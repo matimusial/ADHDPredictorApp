@@ -59,7 +59,8 @@ def get_base_path():
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
     else:
-        return os.path.dirname(os.path.abspath(__file__))
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        return os.path.dirname(current_directory)
 
 class GenerateNew:
     def __init__(self, ui):
