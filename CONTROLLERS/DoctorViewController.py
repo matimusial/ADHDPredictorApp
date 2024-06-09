@@ -53,7 +53,8 @@ class DoctorViewController:
     Initialization and Setup
     """
 
-    def __init__(self, main_window, ui_path):
+    def __init__(self, main_window, ui_path, main_path):
+        self.MAIN_PATH = main_path
         """
         Initializes the doctor view controller, loads the UI, and adds events.
 
@@ -106,9 +107,8 @@ class DoctorViewController:
         Opens a file selection dialog and saves the paths of the selected files.
         """
         options = QFileDialog.Options()
-        default_path = 'INPUT_DATA'
         self.file_paths, _ = QFileDialog.getOpenFileNames(
-            self.main_window, "Choose files", default_path, "", options=options
+            self.main_window, "Choose files", "", "", options=options
         )
 
         if len(self.file_paths) == 0:
@@ -527,10 +527,11 @@ class DoctorViewController:
 
         dialog.close()
 
-        file_path = os.path.join(
+        file_path = os.path.join(self.MAIN_PATH,
             "MRI", f"{data_type}_MRI",
             f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
         )
+        print(file_path)
         data = read_pickle(file_path)
 
         input_number = min(int(input_number.text()), 20)

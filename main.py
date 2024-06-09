@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.av = None
         self.gn = None
         try:
-            self.viewController = DoctorViewController(self, UI_PATH)
+            self.viewController = DoctorViewController(self, UI_PATH, current_dir)
             self.load_doctor_ui()
             self.show()
         except Exception as e:
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         """
         Load the doctor view UI.
         """
-        self.viewController = DoctorViewController(self, UI_PATH)
+        self.viewController = DoctorViewController(self, UI_PATH, current_dir)
         self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
         self.viewController.ui.generateNew.clicked.connect(self.load_gen_view)
 
