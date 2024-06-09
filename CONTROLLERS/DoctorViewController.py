@@ -28,16 +28,25 @@ from EEG.file_io import split_into_frames
 from EEG.PREDICT.predict import check_result
 from MRI.file_io import read_pickle
 from MRI.image_preprocessing import trim_one, normalize
+import sys
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
 current_dir = os.path.dirname(__file__)
-UI_PATH = os.path.join(current_dir, 'UI')
-parent_directory = os.path.dirname(current_dir)
+UI_PATH = os.path.join(get_base_path(), 'UI')
+parent_directory = os.path.dirname(get_base_path())
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
-GIF_PATH = os.path.join('UI', 'loading.gif')
+GIF_PATH = os.path.join(UI_PATH, 'loading.gif')
 electrode_positions = [
     "Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4",
     "F7", "F8", "P3", "P4", "T5", "T6", "O1", "O2"]
-
 
 class DoctorViewController:
     """
@@ -518,7 +527,7 @@ class DoctorViewController:
 
         dialog.close()
 
-        file_path = os.path.join(
+        file_path = os.path.join(parent_directory,
             "MRI", f"{data_type}_MRI",
             f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
         )
