@@ -17,7 +17,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 modelStopFlag = False
 
 class StopTrainingCallback(Callback):
-    def on_epoch_end(self, epoch):
+    def on_epoch_end(self, epoch, logs=None):
         if modelStopFlag:
             print("Stopped on epoch:", epoch)
             self.model.stop_training = True
