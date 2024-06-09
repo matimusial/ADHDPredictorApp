@@ -40,8 +40,8 @@ def get_base_path():
         return os.path.dirname(os.path.abspath(__file__))
 
 current_dir = os.path.dirname(__file__)
-UI_PATH = os.path.join(get_base_path(), 'UI')
 parent_directory = os.path.dirname(get_base_path())
+UI_PATH = os.path.join(get_base_path(), 'UI')
 FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
 GIF_PATH = os.path.join(UI_PATH, 'loading.gif')
 electrode_positions = [
@@ -53,7 +53,7 @@ class DoctorViewController:
     Initialization and Setup
     """
 
-    def __init__(self, main_window):
+    def __init__(self, main_window, ui_path):
         """
         Initializes the doctor view controller, loads the UI, and adds events.
 
@@ -62,7 +62,7 @@ class DoctorViewController:
         self.main_window = main_window
         self.main_window.setWindowTitle("DOCTOR VIEW")
         self.ui = uic.loadUi(
-            os.path.join(UI_PATH, 'doctorView.ui'),
+            os.path.join(ui_path, 'doctorView.ui'),
             main_window
         )
         self.add_events()
@@ -527,7 +527,7 @@ class DoctorViewController:
 
         dialog.close()
 
-        file_path = os.path.join(get_base_path(),
+        file_path = os.path.join(
             "MRI", f"{data_type}_MRI",
             f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
         )
