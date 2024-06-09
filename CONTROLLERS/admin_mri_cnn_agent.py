@@ -36,26 +36,26 @@ class AdminMriCnn:
         self.db_conn = None
 
         self.model_description = ""
-        self.ui.status_label.setText("STATUS: Await")
-        self.ui.db_status.setText("STATUS: Await")
+        self.ui.status_label_2.setText("STATUS: Await")
+        self.ui.db_status_2.setText("STATUS: Await")
 
-        self.ui.textEdit_epochs.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
-        self.ui.textEdit_batch_size.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
-        self.ui.textEdit_learning_rate.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
-        self.ui.textEdit_frame_size.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
-        self.ui.path_label.setText(f'{TRAIN_PATH}')
+        self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
+        self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
+        self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
+        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
+        self.ui.textEdit_frame_size_2.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
+        self.ui.path_label_2.setText(f'{TRAIN_PATH}')
 
-        self.ui.textEdit_electrodes.setReadOnly(True)
+        self.ui.textEdit_electrodes_2.setReadOnly(True)
 
-        self.ui.folder_explore.clicked.connect(self.showDialog)
-        self.ui.startButton.clicked.connect(self.train_mri)
-        self.ui.stopButton.clicked.connect(self.stopModel)
+        self.ui.folder_explore_2.clicked.connect(self.showDialog)
+        self.ui.startButton_2.clicked.connect(self.train_mri)
+        self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
-        self.ui.save_db.clicked.connect(self.sendToDb)
-        self.ui.del_model.clicked.connect(self.delModel)
+        self.ui.save_db_2.clicked.connect(self.sendToDb)
+        self.ui.del_model_2.clicked.connect(self.delModel)
 
-        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
+        self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -69,31 +69,31 @@ class AdminMriCnn:
             self.updateInfoDump()
 
     def updateInfoDump(self):
-        self.ui.info_dump.setText(
+        self.ui.info_dump_2.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
             f'{self.currChannels} channels'
         )
-        self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
+        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
 
     def train_mri(self):
-        self.ui.status_label.setText("STATUS: Starting")
+        self.ui.status_label_2.setText("STATUS: Starting")
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
 
-        self.model_description = self.ui.model_description.toPlainText()
+        self.model_description = self.ui.model_description_2.toPlainText()
 
-        if self.ui.textEdit_electrodes.toPlainText().strip() == "":
+        if self.ui.textEdit_electrodes_2.toPlainText().strip() == "":
             electrodes = 120
         else:
-            electrodes = int(self.ui.textEdit_electrodes.toPlainText())
+            electrodes = int(self.ui.textEdit_electrodes_2.toPlainText())
 
-        if self.ui.textEdit_frame_size.toPlainText().strip() == "":
+        if self.ui.textEdit_frame_size_2.toPlainText().strip() == "":
             input_shape = MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI
         else:
-            input_shape = int(self.ui.textEdit_frame_size.toPlainText())
+            input_shape = int(self.ui.textEdit_frame_size_2.toPlainText())
 
         if epochs is False or batch_size is False or learning_rate is False:
             self.invalid_input_msgbox()
@@ -130,32 +130,32 @@ class AdminMriCnn:
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        self.ui.status_label.setText("STATUS: Running")
+        self.ui.status_label_2.setText("STATUS: Running")
         out = train_cnn(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
         if out == "STOP":
-            self.ui.status_label.setText("STATUS: Await")
+            self.ui.status_label_2.setText("STATUS: Await")
 
     def onFinished(self):
         file_name = os.listdir(MODEL_PATH)
         acc = file_name[0].replace(".keras", "")
-        self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
-        self.ui.status_label.setText("STATUS: Model done")
+        self.ui.more_info_dump_2.setText(f"Final model accuracy: {acc}")
+        self.ui.status_label_2.setText("STATUS: Model done")
 
     def sendToDb(self):
         file_name = os.listdir(MODEL_PATH)
         if file_name:
-            self.ui.db_status.setText("STATUS: Connecting...")
+            self.ui.db_status_2.setText("STATUS: Connecting...")
             self.connect_to_db()
-            self.ui.db_status.setText("STATUS: Sending...")
+            self.ui.db_status_2.setText("STATUS: Sending...")
             file_path = os.path.join('./MRI/CNN/temp_model_path', file_name[0])
-            self.ui.status_label.setText("STATUS: Uploading model")
+            self.ui.status_label_2.setText("STATUS: Uploading model")
             self.db_conn.insert_data_into_models_table(
                 file_name[0].replace(".keras", ""), file_path, None,
                 MRI.config.CNN_INPUT_SHAPE_MRI, 'cnn_mri', None, None,
                 f"learning rate: {MRI.config.CNN_LEARNING_RATE_MRI}; batch size: {MRI.config.CNN_BATCH_SIZE_MRI}; epochs: {MRI.config.CNN_EPOCHS_MRI}; {self.model_description}"
             )
-            self.ui.status_label.setText("STATUS: Await")
-            self.ui.db_status.setText("STATUS: Await")
+            self.ui.status_label_2.setText("STATUS: Await")
+            self.ui.db_status_2.setText("STATUS: Await")
             self.upload_done_msgbox()
             for filename in os.listdir(MODEL_PATH):
                 file_path = os.path.join(MODEL_PATH, filename)
@@ -204,7 +204,7 @@ class AdminMriCnn:
 
     def stopModel(self):
         MRI.CNN.train.modelStopFlag = True
-        self.ui.status_label.setText("STATUS: Stopping...")
+        self.ui.status_label_2.setText("STATUS: Stopping...")
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
@@ -213,7 +213,7 @@ class AdminMriCnn:
         if self.db_conn.connection is None: return
 
     def validate_epochs(self):
-        text = self.ui.textEdit_epochs.toPlainText().strip()
+        text = self.ui.textEdit_epochs_2.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -235,7 +235,7 @@ class AdminMriCnn:
             return None
 
     def validate_batch_size(self):
-        text = self.ui.textEdit_batch_size.toPlainText().strip()
+        text = self.ui.textEdit_batch_size_2.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -248,7 +248,7 @@ class AdminMriCnn:
                 return value
 
     def validate_frame_size(self):
-        text = self.ui.textEdit_frame_size.toPlainText().strip()
+        text = self.ui.textEdit_frame_size_2.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -261,7 +261,7 @@ class AdminMriCnn:
                 return value
 
     def validate_learning_rate(self):
-        text = self.ui.textEdit_learning_rate.toPlainText().strip()
+        text = self.ui.textEdit_learning_rate_2.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False

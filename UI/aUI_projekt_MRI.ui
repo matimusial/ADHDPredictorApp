@@ -80,6 +80,20 @@ QPushButton{
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="exitButton">
+         <property name="text">
+          <string>Exit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="dbButton_2">
+         <property name="text">
+          <string>Database Admin</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="switchSceneBtn">
          <property name="text">
           <string>USER View</string>
@@ -89,13 +103,6 @@ QPushButton{
          </property>
          <property name="autoExclusive">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="exitButton">
-         <property name="text">
-          <string>Exit</string>
          </property>
         </widget>
        </item>
