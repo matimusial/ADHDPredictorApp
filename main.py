@@ -105,6 +105,7 @@ class MainWindow(QMainWindow):
             self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
+            self.viewController.ui.dbButton.clicked.connect(self.load_admin_db_view)
         except Exception as e:
             print(f"An error occurred while loading Admin MRI GAN: {e}")
             traceback.print_exc()
