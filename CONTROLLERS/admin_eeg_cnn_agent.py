@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import EEG.config
@@ -44,6 +44,7 @@ class AdminEegCnn:
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
         self.ui.path_label.setText(f'{self.TRAIN_PATH}')
+        self.ui.path_label.setTextElideMode(Qt.ElideRight)
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -158,6 +159,9 @@ class AdminEegCnn:
             self.thread.start()
 
     def train(self):
+        if os.path.exists(self.MODEL_PATH):
+            os.rmdir(self.MODEL_PATH)
+
         if not os.path.exists(self.MODEL_PATH):
             os.makedirs(self.MODEL_PATH)
         self.ui.status_label.setText("STATUS: Running")

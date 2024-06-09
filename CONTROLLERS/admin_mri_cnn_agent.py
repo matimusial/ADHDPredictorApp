@@ -104,6 +104,8 @@ class AdminMriCnn:
             self.thread.start()
 
     def train(self):
+        if os.path.exists(self.MODEL_PATH):
+            os.rmdir(self.MODEL_PATH)
         if not os.path.exists(self.MODEL_PATH):
             os.makedirs(self.MODEL_PATH)
         self.ui.status_label_2.setText("STATUS: Running")
