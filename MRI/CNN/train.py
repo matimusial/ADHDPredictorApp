@@ -7,7 +7,6 @@ from tensorflow.keras.optimizers import Adam
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle, save_pickle, prepare_for_cnn
 from MRI.data_validation import make_predict_data
-from MRI.config import CNN_EPOCHS_MRI, CNN_BATCH_SIZE_MRI, CNN_LEARNING_RATE_MRI, CNN_INPUT_SHAPE_MRI
 
 from CONTROLLERS.metrics import WorkerMetrics
 
@@ -62,6 +61,7 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
         predict_path (str): Path to save the prediction data.
         model_path (str): Path to save the trained model.
     """
+    from MRI.config import CNN_EPOCHS_MRI, CNN_BATCH_SIZE_MRI, CNN_LEARNING_RATE_MRI, CNN_INPUT_SHAPE_MRI
     try:
         print(f"CNN TRAINING STARTED for {CNN_EPOCHS_MRI} EPOCHS...")
         print("\n")
