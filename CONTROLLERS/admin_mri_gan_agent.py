@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 
 import MRI.config
 from MRI.GAN.train import train_gan
+from MRI.CNN.train import readPickleForUI
 from CONTROLLERS.DBConnector import DBConnector
 import os
 import shutil
@@ -27,9 +28,11 @@ class AdminMriGan():
         self.mainWindow = mainWindow
         self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_GAN.ui'), mainWindow)
 
-        self.loaded_adhd_files = 0
-        self.loaded_control_files = 0
-        self.currChannels = 0
+        adhd_data, control_data = readPickleForUI(TRAIN_PATH)
+
+        self.loaded_adhd_files = len(adhd_data)
+        self.loaded_control_files = len(control_data)
+        self.currChannels = len(adhd_data[0])
 
         self.updateInfoDump()
 
@@ -61,6 +64,8 @@ class AdminMriGan():
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
+        self.gan_generation_warning_msgbox()
+
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
 
@@ -68,9 +73,11 @@ class AdminMriGan():
             self.pathTrain = folder
             self.ui.path_label.setText(f'{folder}')
 
-            self.loaded_adhd_files = 0
-            self.loaded_control_files = 0
-            self.currChannels = 0
+            adhd_data, control_data = readPickleForUI(folder)
+
+            self.loaded_adhd_files = len(adhd_data)
+            self.loaded_control_files = len(control_data)
+            self.currChannels = len(adhd_data[0])
             self.updateInfoDump()
 
     def updateInfoDump(self):
@@ -338,6 +345,14 @@ class AdminMriGan():
         msg.setIcon(QMessageBox.Information)
         msg.setText("Data successfully deleted.")
         msg.setWindowTitle("Operation successfully")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
+    def gan_generation_warning_msgbox(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Generating images using GAN takes considerable amount of hardware resources and time. You have been warned.")
+        msg.setWindowTitle("Warning.")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
