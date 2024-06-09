@@ -22,11 +22,11 @@ class AdminEegCnn:
         self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'EEG', 'PREDICT', 'PREDICT_DATA')
         self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_EEG.ui'), mainWindow)
 
-        _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
+        #_, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
 
-        self.loaded_adhd_files = adhdcount
-        self.loaded_control_files = controlcount
-        self.currChannels = initChannels[0]['shape'][0]
+        self.loaded_adhd_files = 0
+        self.loaded_control_files = 0
+        self.currChannels = 0
 
         self.updateInfoDump()
 
