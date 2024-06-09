@@ -359,7 +359,7 @@ class DoctorViewController:
                 model_info = self.chosen_model_info_eeg
 
             elif path.endswith('.csv'):
-                data = read_csv(path).T
+                data = read_csv(path).values.T
                 data_type = "EEG"
                 model = self.model_eeg
                 model_info = self.chosen_model_info_eeg
