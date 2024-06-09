@@ -1,4 +1,5 @@
 import os
+import sys
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -8,17 +9,27 @@ from MRI.GAN.train import train_gan
 from MRI.GAN.show_generated import show_generated
 from MRI.GAN.generate import generate_images
 
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+
 current_dir = os.path.dirname(__file__)
 
-REAL_MRI_PATH = os.path.join(current_dir, 'REAL_MRI')
+REAL_MRI_PATH = os.path.join(get_base_path(), 'REAL_MRI')
 
-ADHD_GEN_PATH = os.path.join(current_dir, 'GENERATED_MRI', 'ADHD_GENERATED')
-CONTROL_GEN_PATH = os.path.join(current_dir, 'GENERATED_MRI', 'CONTROL_GENERATED')
+ADHD_GEN_PATH = os.path.join(get_base_path(), 'GENERATED_MRI', 'ADHD_GENERATED')
+CONTROL_GEN_PATH = os.path.join(get_base_path(), 'GENERATED_MRI', 'CONTROL_GENERATED')
 
-CNN_PREDICT_PATH = os.path.join(current_dir, 'CNN', 'PREDICT_DATA')
-CNN_MODEL_PATH = os.path.join(current_dir, 'CNN', 'MODELS')
+CNN_PREDICT_PATH = os.path.join(get_base_path(), 'CNN', 'PREDICT_DATA')
+CNN_MODEL_PATH = os.path.join(get_base_path(), 'CNN', 'MODELS')
 
-GAN_MODEL_PATH = os.path.join(current_dir, 'GAN', 'MODELS')
+GAN_MODEL_PATH = os.path.join(get_base_path(), 'GAN', 'MODELS')
 
 
 def MRI():

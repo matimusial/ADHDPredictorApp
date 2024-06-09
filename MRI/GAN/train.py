@@ -13,6 +13,13 @@ from MRI.plot_mri import plot_mri
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle
 
+# Global variables to store training and validation accuracy and loss
+global_train_d_loss = []
+global_train_g_loss = []
+global_train_d_accuracy = []
+global_val_d_loss = []
+global_val_g_loss = []
+global_val_d_accuracy = []
 
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
     """
@@ -190,6 +197,8 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 train_data (np.ndarray): The training data containing real images.
                 val_data (np.ndarray): The validation data containing real images.
             """
+            global global_train_d_loss, global_train_g_loss, global_train_d_accuracy
+            global global_val_d_loss, global_val_g_loss, global_val_d_accuracy
             gen_loss = np.array([])
             for epoch in range(epochs):
                 try:
@@ -198,6 +207,9 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     d_loss, g_loss, accuracy = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                     if d_loss is None or g_loss is None:
                         return
+                    global_train_d_loss.append(d_loss.numpy().mean())
+                    global_train_g_loss.append(g_loss.numpy().mean())
+                    global_train_d_accuracy.append(accuracy.numpy().mean())
                     if (epoch + 1) % 1000 == 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
                     if (epoch + 1) % TRAIN_GAN_PRINT_INTERVAL == 0:
                         val_idx = np.random.randint(0, val_data.shape[0], batch_size)
@@ -205,6 +217,9 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                         val_d_loss, val_g_loss, val_accuracy = train_step(generator, discriminator, val_real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                         if val_d_loss is None or val_g_loss is None:
                             return
+                        global_val_d_loss.append(val_d_loss.numpy().mean())
+                        global_val_g_loss.append(val_g_loss.numpy().mean())
+                        global_val_d_accuracy.append(val_accuracy.numpy().mean())
                         print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()} | Val D accuracy: {val_accuracy.numpy().mean()}]")
 
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
@@ -226,4 +241,3 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
     except Exception as e:
         print(f"An error occurred during GAN training: {e}")
         return
-

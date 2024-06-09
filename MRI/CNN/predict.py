@@ -1,9 +1,21 @@
 import os
+import sys
+
 import numpy as np
 from tensorflow.keras.models import load_model
 
 from MRI.file_io import read_pickle
 from MRI.plot_mri import plot_mri
+
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
 
 def print_index_ranges(y):
@@ -47,6 +59,7 @@ def check_result(predictions, threshold=0.5):
 
 
 def predict_cnn(model_name, cnn_model, cnn_predict):
+
     """
     Predict using a pre-trained CNN model and evaluate the performance on a validation set.
 
