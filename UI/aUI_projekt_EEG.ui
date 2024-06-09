@@ -65,14 +65,20 @@ QPushButton{
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QPushButton" name="GAN_MRI_Button">
+            <widget class="QPushButton" name="CNN_EEG_Button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
-              <string>GAN for MRI</string>
+              <string>CNN for EEG</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
              </property>
              <property name="autoExclusive">
+              <bool>true</bool>
+             </property>
+             <property name="flat">
               <bool>true</bool>
              </property>
             </widget>
@@ -81,6 +87,22 @@ QPushButton{
             <widget class="QPushButton" name="CNN_MRI_Button">
              <property name="text">
               <string>CNN for MRI</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="autoExclusive">
+              <bool>true</bool>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="GAN_MRI_Button">
+             <property name="text">
+              <string>GAN for MRI</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
