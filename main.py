@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
 
     def loadAdminEegCnn(self):
         try:
-            self.viewController = AdminEegCnn(self)
+            self.viewController = AdminEegCnn(self, UI_PATH, current_dir)
             self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
 
     def loadAdminMriCnn(self):
         try:
-            self.viewController = AdminMriCnn(self)
+            self.viewController = AdminMriCnn(self, UI_PATH, current_dir)
             self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.GAN_MRI_Button.clicked.connect(self.loadAdminMriGan)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)
@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
 
     def loadAdminMriGan(self):
         try:
-            self.viewController = AdminMriGan(self)
+            self.viewController = AdminMriGan(self, UI_PATH, current_dir)
             self.viewController.ui.switchSceneBtn.clicked.connect(self.load_doctor_ui)
             self.viewController.ui.CNN_MRI_Button.clicked.connect(self.loadAdminMriCnn)
             self.viewController.ui.CNN_EEG_Button.clicked.connect(self.loadAdminEegCnn)

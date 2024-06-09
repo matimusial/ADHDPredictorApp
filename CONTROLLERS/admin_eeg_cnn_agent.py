@@ -13,32 +13,16 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
-def get_base_path():
-    """
-    Returns:
-        str: The base path of the application.
-    """
-    if getattr(sys, 'frozen', False):
-        return sys._MEIPASS
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-
-
-current_dir = get_base_path()
-parent_dir = os.path.dirname(current_dir)
-UI_PATH = os.path.join(current_dir, 'UI')
-parent_directory = os.path.dirname(current_dir)
-
-MODEL_PATH = os.path.join(parent_dir, 'EEG', 'temp_model_path')
-TRAIN_PATH = os.path.join(parent_dir, 'INPUT_DATA', 'EEG', 'MAT')
-PREDICT_PATH = os.path.join(parent_dir, 'EEG', 'PREDICT', 'PREDICT_DATA')
-
 class AdminEegCnn:
-    def __init__(self, mainWindow):
+    def __init__(self, mainWindow, ui_path, main_path):
+        self.MAIN_PATH = main_path
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_EEG.ui'), mainWindow)
+        self.MODEL_PATH = os.path.join(self.MAIN_PATH, 'EEG', 'temp_model_path')
+        self.TRAIN_PATH = os.path.join(self.MAIN_PATH, 'INPUT_DATA', 'EEG', 'MAT')
+        self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'EEG', 'PREDICT', 'PREDICT_DATA')
+        self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_EEG.ui'), mainWindow)
 
-        _, _, initChannels, adhdcount, controlcount = read_eeg_raw(TRAIN_PATH)
+        _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
 
         self.loaded_adhd_files = adhdcount
         self.loaded_control_files = controlcount
@@ -46,7 +30,7 @@ class AdminEegCnn:
 
         self.updateInfoDump()
 
-        self.pathTrain = TRAIN_PATH
+        self.pathTrain = self.TRAIN_PATH
         self.db_conn = None
 
         self.model_description = ""
@@ -59,7 +43,7 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
-        self.ui.path_label.setText(f'{TRAIN_PATH}')
+        self.ui.path_label.setText(f'{self.TRAIN_PATH}')
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -80,7 +64,7 @@ class AdminEegCnn:
         if folder:
             self.pathTrain = folder
             self.ui.path_label.setText(f'{folder}')
-            _, _, initChannels, adhdcount, controlcount = read_eeg_raw(TRAIN_PATH)
+            _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
             self.loaded_adhd_files = adhdcount
             self.loaded_control_files = controlcount
             self.currChannels = initChannels[0]['shape'][0]
@@ -156,26 +140,26 @@ class AdminEegCnn:
             self.thread.start()
 
     def train(self):
-        if not os.path.exists(MODEL_PATH):
-            os.makedirs(MODEL_PATH)
+        if not os.path.exists(self.MODEL_PATH):
+            os.makedirs(self.MODEL_PATH)
         self.ui.status_label.setText("STATUS: Running")
-        out = train_cnn_eeg_readraw(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        out = train_cnn_eeg_readraw(True, self.pathTrain, self.PREDICT_PATH, self.MODEL_PATH)
         if out == "STOP":
             self.ui.status_label.setText("STATUS: Await")
             EEG.TRAIN.train.modelStopFlag = False
 
     def onFinished(self):
-        file_name = os.listdir(MODEL_PATH)
+        file_name = os.listdir(self.MODEL_PATH)
         acc = file_name[0].replace(".keras", "")
         self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
         self.ui.status_label.setText("STATUS: Model done")
     def sendToDb(self):
-        if os.path.exists(MODEL_PATH):
-            file_name = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_name = os.listdir(self.MODEL_PATH)
             self.ui.db_status.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status.setText("STATUS: Sending...")
-            file_path = os.path.join(parent_dir, 'EEG', 'temp_model_path', file_name[0])
+            file_path = os.path.join(self.MAIN_PATH, 'EEG', 'temp_model_path', file_name[0])
             self.ui.status_label.setText("STATUS: Uploading model")
             self.db_conn.insert_data_into_models_table(
                 file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES,
@@ -185,8 +169,8 @@ class AdminEegCnn:
             self.ui.status_label.setText("STATUS: Await")
             self.ui.db_status.setText("STATUS: Await")
             self.upload_done_msgbox()
-            for filename in os.listdir(MODEL_PATH):
-                file_path = os.path.join(MODEL_PATH, filename)
+            for filename in os.listdir(self.MODEL_PATH):
+                file_path = os.path.join(self.MODEL_PATH, filename)
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
                         os.unlink(file_path)
@@ -196,18 +180,18 @@ class AdminEegCnn:
                     print(f'Failed to delete {file_path}. Reason: {e}')
 
             try:
-                os.rmdir(MODEL_PATH)
+                os.rmdir(self.MODEL_PATH)
             except Exception as e:
-                print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+                print(f'Failed to delete the directory {self.MODEL_PATH}. Reason: {e}')
         else:
             print("No model to upload")
 
     def delModel(self):
-        if os.path.exists(MODEL_PATH):
-            file_list = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_list = os.listdir(self.MODEL_PATH)
             if file_list:
                 file_name = file_list[0]
-                file_path = os.path.join(MODEL_PATH, file_name)
+                file_path = os.path.join(self.MODEL_PATH, file_name)
                 if os.path.isfile(file_path):
                     try:
                         os.remove(file_path)
