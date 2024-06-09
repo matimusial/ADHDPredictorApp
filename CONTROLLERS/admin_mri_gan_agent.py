@@ -19,7 +19,7 @@ parent_directory = os.path.dirname(current_dir)
 
 MODEL_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'temp_model_path')
 TRAIN_PATH = os.path.join(parent_dir, 'MRI', 'REAL_MRI')
-PREDICT_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'PREDICT_DATA')
+PREDICT_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'MODELS')
 
 
 class AdminMriGan():
@@ -36,6 +36,8 @@ class AdminMriGan():
         self.pathTrain = TRAIN_PATH
         self.db_conn = None
 
+        self.checked = "ADHD"
+
         self.model_description = ""
         self.ui.status_label.setText("STATUS: Await")
         self.ui.db_status.setText("STATUS: Await")
@@ -43,13 +45,17 @@ class AdminMriGan():
         self.ui.textEdit_epochs.setPlainText(str(MRI.config.GAN_EPOCHS_MRI))
         self.ui.textEdit_batch_size.setPlainText(str(MRI.config.GAN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate.setPlainText(str(MRI.config.GAN_LEARNING_RATE))
-        self.ui.textEdit_frame_size.setPlainText(str(MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI))
+        self.ui.textEdit_input_size.setPlainText(str(MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI))
+
+        self.ui.textEdit_print_interval.setPlainText(str(MRI.config.TRAIN_GAN_PRINT_INTERVAL))
+        self.ui.textEdit_disp_interval.setPlainText(str(MRI.config.TRAIN_GAN_DISP_INTERVAL))
+
         self.ui.path_label.setText(f'{TRAIN_PATH}')
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.stopButton.clicked.connect(self.stopModel)
-        self.ui.exitButton.clicked.connect(self.on_exit)
+        self.ui.exitButton_2.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)
         self.ui.del_model.clicked.connect(self.delModel)
 
@@ -74,28 +80,35 @@ class AdminMriGan():
         )
 
     def train_gan(self):
-        self.ui.status_label_2.setText("STATUS: Starting")
+        self.ui.status_label.setText("STATUS: Starting")
         MRI.GAN.train.modelStopFlag = False
-
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
 
+        print_interval = self.validate_print_interval()
+        disp_interval = self.validate_disp_interval()
+
         self.model_description = self.ui.model_description.toPlainText()
+
 
         if epochs is False or batch_size is False or learning_rate is False:
             self.invalid_input_msgbox()
         else:
-            MRI.config.set_gan_epochs(epochs)
-            MRI.config.set_gan_batch_size(batch_size)
-            MRI.config.set_gan_learning_rate(learning_rate)
-            MRI.config.set_gan_input_shape(frame_size)
+            MRI.config.GAN_EPOCHS_MRI = epochs
+            MRI.config.GAN_BATCH_SIZE_MRI = batch_size
+            MRI.config.GAN_LEARNING_RATE = learning_rate
+            MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI = frame_size
+            MRI.config.TRAIN_GAN_PRINT_INTERVAL = print_interval
+            MRI.config.TRAIN_GAN_DISP_INTERVAL = disp_interval
 
             print("GAN_EPOCHS:", MRI.config.GAN_EPOCHS_MRI)
             print("GAN_BATCH_SIZE:", MRI.config.GAN_BATCH_SIZE_MRI)
             print("GAN_LEARNING_RATE:", MRI.config.GAN_LEARNING_RATE)
             print("GAN_TEST_SIZE:", MRI.config.GAN_INPUT_SHAPE_MRI)
+            print("TRAIN_GAN_PRINT_INTERVAL:", MRI.config.TRAIN_GAN_PRINT_INTERVAL)
+            print("TRAIN_GAN_DISP_INTERVAL:", MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
             self.thread = QThread()
 
@@ -119,7 +132,13 @@ class AdminMriGan():
     def train(self):
         if not os.path.exists(MODEL_PATH):
             os.makedirs(MODEL_PATH)
-        train_gan(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        if self.ui.radioButton_Control.isChecked():
+            train_gan(True, "CONTROL", self.pathTrain, PREDICT_PATH)
+        elif self.ui.radioButton_ADHD.isChecked():
+            train_gan(True, "ADHD", self.pathTrain, PREDICT_PATH)
+        else:
+            self.invalid_input_msgbox()
+
 
     def onFinished(self):
         file_name = os.listdir(MODEL_PATH)
@@ -135,11 +154,18 @@ class AdminMriGan():
             self.ui.db_status.setText("STATUS: Sending...")
             file_path = os.path.join('./MRI/GAN/temp_model_path', file_name[0])
             self.ui.status_label.setText("STATUS: Uploading model")
-            self.db_conn.insert_data_into_models_table(
-                file_name[0].replace(".keras", ""), file_path, None,
-                MRI.config.GAN_INPUT_SHAPE_MRI, 'cnn_mri', None, None,
-                f"learning rate: {MRI.config.GAN_LEARNING_RATE}; batch size: {MRI.config.GAN_BATCH_SIZE_MRI}; epochs: {MRI.config.GAN_EPOCHS_MRI}; {self.model_description}"
-            )
+            if self.checked == "ADHD":
+                self.db_conn.insert_data_into_models_table(
+                    file_name[0].replace(".keras", ""), file_path, None,
+                    MRI.config.GAN_INPUT_SHAPE_MRI, 'gan_adhd', None, "A",
+                    f"learning rate: {MRI.config.GAN_LEARNING_RATE}; batch size: {MRI.config.GAN_BATCH_SIZE_MRI}; epochs: {MRI.config.GAN_EPOCHS_MRI}; {self.model_description}"
+                )
+            else:
+                self.db_conn.insert_data_into_models_table(
+                    file_name[0].replace(".keras", ""), file_path, None,
+                    MRI.config.GAN_INPUT_SHAPE_MRI, 'gan_control', None, "A",
+                    f"learning rate: {MRI.config.GAN_LEARNING_RATE}; batch size: {MRI.config.GAN_BATCH_SIZE_MRI}; epochs: {MRI.config.GAN_EPOCHS_MRI}; {self.model_description}"
+                )
             self.ui.status_label.setText("STATUS: Await")
             self.ui.db_status.setText("STATUS: Await")
             self.upload_done_msgbox()
@@ -205,7 +231,7 @@ class AdminMriGan():
         if self.db_conn.connection is None: return
 
     def validate_epochs(self):
-        text = self.ui.textEdit_epochs_2.toPlainText().strip()
+        text = self.ui.textEdit_epochs.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -227,7 +253,7 @@ class AdminMriGan():
             return None
 
     def validate_batch_size(self):
-        text = self.ui.textEdit_batch_size_2.toPlainText().strip()
+        text = self.ui.textEdit_batch_size.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -240,20 +266,20 @@ class AdminMriGan():
                 return value
 
     def validate_frame_size(self):
-        text = self.ui.textEdit_frame_size_2.toPlainText().strip()
+        text = self.ui.textEdit_input_size.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
         else:
             value = self.validate_input(text)
             if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nFrame size value must be an integer greater than 1.\n")
+                print(f"WARNING: '{text}' is invalid.\nInput shape value must be an integer greater than 1.\n")
                 return False
             else:
                 return value
 
     def validate_learning_rate(self):
-        text = self.ui.textEdit_learning_rate_2.toPlainText().strip()
+        text = self.ui.textEdit_learning_rate.toPlainText().strip()
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False
@@ -261,6 +287,32 @@ class AdminMriGan():
             value = self.validate_input(text)
             if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
                 print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                return False
+            else:
+                return value
+
+    def validate_print_interval(self):
+        text = self.ui.textEdit_print_interval.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nPrint interval value must be an integer greater than 1.\n")
+                return False
+            else:
+                return value
+
+    def validate_disp_interval(self):
+        text = self.ui.textEdit_disp_interval.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nDisp interval value must be an integer greater than 1.\n")
                 return False
             else:
                 return value

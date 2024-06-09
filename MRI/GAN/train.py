@@ -7,11 +7,14 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, Reshape, Flatten, LeakyReLU, Input, BatchNormalization, Dropout
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import Callback
 
 from MRI.plot_mri import plot_mri
 
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle
+
+modelStopFlag = False
 
 # Global variables to store training and validation accuracy and loss
 global_train_d_loss = []
@@ -20,6 +23,14 @@ global_train_d_accuracy = []
 global_val_d_loss = []
 global_val_g_loss = []
 global_val_d_accuracy = []
+
+class StopTrainingCallback(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        if modelStopFlag:
+            print("Stopped on epoch:", epoch)
+            self.model.stop_training = True
+        else:
+            self.model.stop_training = False
 
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
     """
