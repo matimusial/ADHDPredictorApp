@@ -12,31 +12,16 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
-def get_base_path():
-    """
-    Returns:
-        str: The base path of the application.
-    """
-    if getattr(sys, 'frozen', False):
-        return sys._MEIPASS
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-
-current_dir = get_base_path()
-parent_dir = os.path.dirname(current_dir)
-UI_PATH = os.path.join(current_dir, 'UI')
-parent_directory = os.path.dirname(current_dir)
-
-MODEL_PATH = os.path.join(parent_dir, 'MRI', 'CNN', 'temp_model_path')
-TRAIN_PATH = os.path.join(parent_dir, 'MRI', 'REAL_MRI')
-PREDICT_PATH = os.path.join(parent_dir, 'MRI', 'CNN', 'PREDICT_DATA')
-
 class AdminMriCnn:
-    def __init__(self, mainWindow):
+    def __init__(self, mainWindow, ui_path, main_path):
+        self.MAIN_PATH = main_path
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_MRI.ui'), mainWindow)
+        self.MODEL_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'CNN', 'temp_model_path')
+        self.TRAIN_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'REAL_MRI')
+        self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'CNN', 'PREDICT_DATA')
+        self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_MRI.ui'), mainWindow)
 
-        adhd_data, control_data = readPickleForUI(TRAIN_PATH)
+        adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
 
         self.loaded_adhd_files = len(adhd_data)
         self.loaded_control_files = len(control_data)
@@ -44,7 +29,7 @@ class AdminMriCnn:
 
         self.updateInfoDump()
 
-        self.pathTrain = TRAIN_PATH
+        self.pathTrain = self.TRAIN_PATH
         self.db_conn = None
 
         self.model_description = ""
@@ -54,16 +39,11 @@ class AdminMriCnn:
         self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
         self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size_2.setPlainText(str(MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI))
-        self.ui.textEdit_frequency_2.setPlainText(str(MRI.config.FS_MRI))
-        self.ui.path_label_2.setText(f'{TRAIN_PATH}')
+        self.ui.path_label_2.setText(f'{self.TRAIN_PATH}')
 
-        self.ui.textEdit_electrodes_2.setReadOnly(True)
-        self.ui.textEdit_frequency_2.setReadOnly(True)
         self.ui.textEdit_frame_size_2.setReadOnly(True)
 
-        self.ui.folder_explore_2.clicked.connect(self.showDialog)
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
@@ -72,26 +52,11 @@ class AdminMriCnn:
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
-    def showDialog(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        if folder:
-            self.pathTrain = folder
-            self.ui.path_label.setText(f'{folder}')
-
-            adhd_data, control_data = readPickleForUI(folder)
-
-            self.loaded_adhd_files = len(adhd_data)
-            self.loaded_control_files = len(control_data)
-            self.currChannels = len(adhd_data[0])
-            self.updateInfoDump()
-
     def updateInfoDump(self):
         self.ui.info_dump_2.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
             f'{self.currChannels} channels'
         )
-        self.ui.textEdit_electrodes_2.setPlainText(str(self.currChannels))
 
     def train_mri(self):
         self.ui.status_label_2.setText("STATUS: Starting")
@@ -103,11 +68,6 @@ class AdminMriCnn:
         learning_rate = self.validate_learning_rate()
 
         self.model_description = self.ui.model_description_2.toPlainText()
-
-        if self.ui.textEdit_electrodes_2.toPlainText().strip() == "":
-            electrodes = 120
-        else:
-            electrodes = int(self.ui.textEdit_electrodes_2.toPlainText())
 
         if self.ui.textEdit_frame_size_2.toPlainText().strip() == "":
             input_shape = MRI.config.CNN_SINGLE_INPUT_SHAPE_MRI
@@ -152,27 +112,27 @@ class AdminMriCnn:
             self.thread.start()
 
     def train(self):
-        if not os.path.exists(MODEL_PATH):
-            os.makedirs(MODEL_PATH)
+        if not os.path.exists(self.MODEL_PATH):
+            os.makedirs(self.MODEL_PATH)
         self.ui.status_label_2.setText("STATUS: Running")
-        out = train_cnn(True, self.pathTrain, PREDICT_PATH, MODEL_PATH)
+        out = train_cnn(True, self.pathTrain, self.PREDICT_PATH, self.MODEL_PATH)
         if out == "STOP":
             self.ui.status_label_2.setText("STATUS: Await")
             MRI.CNN.train.modelStopFlag = False
 
     def onFinished(self):
-        file_name = os.listdir(MODEL_PATH)
+        file_name = os.listdir(self.MODEL_PATH)
         acc = file_name[0].replace(".keras", "")
         self.ui.more_info_dump_2.setText(f"Final model accuracy: {acc}")
         self.ui.status_label_2.setText("STATUS: Model done")
 
     def sendToDb(self):
-        if os.path.exists(MODEL_PATH):
-            file_name = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_name = os.listdir(self.MODEL_PATH)
             self.ui.db_status_2.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status_2.setText("STATUS: Sending...")
-            file_path = os.path.join(parent_dir, 'MRI', 'CNN', 'temp_model_path', file_name[0])
+            file_path = os.path.join(self.MAIN_PATH, 'MRI', 'CNN', 'temp_model_path', file_name[0])
             self.ui.status_label_2.setText("STATUS: Uploading model")
             self.db_conn.insert_data_into_models_table(
                 file_name[0].replace(".keras", ""), file_path, None,
@@ -182,8 +142,8 @@ class AdminMriCnn:
             self.ui.status_label_2.setText("STATUS: Await")
             self.ui.db_status_2.setText("STATUS: Await")
             self.upload_done_msgbox()
-            for filename in os.listdir(MODEL_PATH):
-                file_path = os.path.join(MODEL_PATH, filename)
+            for filename in os.listdir(self.MODEL_PATH):
+                file_path = os.path.join(self.MODEL_PATH, filename)
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
                         os.unlink(file_path)
@@ -193,18 +153,18 @@ class AdminMriCnn:
                     print(f'Failed to delete {file_path}. Reason: {e}')
 
             try:
-                os.rmdir(MODEL_PATH)
+                os.rmdir(self.MODEL_PATH)
             except Exception as e:
-                print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+                print(f'Failed to delete the directory {self.MODEL_PATH}. Reason: {e}')
         else:
             print("No model to upload")
 
     def delModel(self):
-        if os.path.exists(MODEL_PATH):
-            file_list = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_list = os.listdir(self.MODEL_PATH)
             if file_list:
                 file_name = file_list[0]
-                file_path = os.path.join(MODEL_PATH, file_name)
+                file_path = os.path.join(self.MODEL_PATH, file_name)
                 if os.path.isfile(file_path):
                     try:
                         os.remove(file_path)

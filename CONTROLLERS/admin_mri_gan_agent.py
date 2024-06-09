@@ -13,33 +13,15 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
-def get_base_path():
-    """
-    Returns:
-        str: The base path of the application.
-    """
-    if getattr(sys, 'frozen', False):
-        return sys._MEIPASS
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-
-
-current_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(get_base_path())
-UI_PATH = os.path.join(get_base_path(), 'UI')
-parent_directory = os.path.dirname(current_dir)
-
-MODEL_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'temp_model_path')
-TRAIN_PATH = os.path.join(parent_dir, 'MRI', 'REAL_MRI')
-PREDICT_PATH = os.path.join(parent_dir, 'MRI', 'GAN', 'MODELS')
-
-
 class AdminMriGan():
-    def __init__(self, mainWindow):
+    def __init__(self, mainWindow, ui_path, main_path):
+        self.MAIN_PATH = main_path
         self.mainWindow = mainWindow
-        self.ui = uic.loadUi(os.path.join(parent_directory, 'UI', 'aUI_projekt_GAN.ui'), mainWindow)
-
-        adhd_data, control_data = readPickleForUI(TRAIN_PATH)
+        self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_GAN.ui'), mainWindow)
+        self.MODEL_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'GAN', 'temp_model_path')
+        self.TRAIN_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'REAL_MRI')
+        self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'GAN', 'MODELS')
+        adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
 
         self.loaded_adhd_files = len(adhd_data)
         self.loaded_control_files = len(control_data)
@@ -47,7 +29,7 @@ class AdminMriGan():
 
         self.updateInfoDump()
 
-        self.pathTrain = TRAIN_PATH
+        self.pathTrain = self.TRAIN_PATH
         self.db_conn = None
 
         self.checked = "ADHD"
@@ -64,9 +46,8 @@ class AdminMriGan():
         self.ui.textEdit_print_interval.setPlainText(str(MRI.config.TRAIN_GAN_PRINT_INTERVAL))
         self.ui.textEdit_disp_interval.setPlainText(str(MRI.config.TRAIN_GAN_DISP_INTERVAL))
 
-        self.ui.path_label.setText(f'{TRAIN_PATH}')
+        self.ui.path_label.setText(f'{self.TRAIN_PATH}')
 
-        self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
@@ -76,20 +57,6 @@ class AdminMriGan():
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
         self.gan_generation_warning_msgbox()
-
-    def showDialog(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        if folder:
-            self.pathTrain = folder
-            self.ui.path_label.setText(f'{folder}')
-
-            adhd_data, control_data = readPickleForUI(folder)
-
-            self.loaded_adhd_files = len(adhd_data)
-            self.loaded_control_files = len(control_data)
-            self.currChannels = len(adhd_data[0])
-            self.updateInfoDump()
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(
@@ -148,29 +115,29 @@ class AdminMriGan():
             self.thread.start()
 
     def train(self):
-        if not os.path.exists(MODEL_PATH):
-            os.makedirs(MODEL_PATH)
+        if not os.path.exists(self.MODEL_PATH):
+            os.makedirs(self.MODEL_PATH)
         if self.ui.radioButton_Control.isChecked():
-            train_gan(True, "CONTROL", self.pathTrain, PREDICT_PATH)
+            train_gan(True, "CONTROL", self.pathTrain, self.PREDICT_PATH)
         elif self.ui.radioButton_ADHD.isChecked():
-            train_gan(True, "ADHD", self.pathTrain, PREDICT_PATH)
+            train_gan(True, "ADHD", self.pathTrain, self.PREDICT_PATH)
         else:
             self.invalid_input_msgbox()
 
 
     def onFinished(self):
-        file_name = os.listdir(MODEL_PATH)
+        file_name = os.listdir(self.MODEL_PATH)
         acc = file_name[0].replace(".keras", "")
         self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
         self.ui.status_label.setText("STATUS: Model done")
 
     def sendToDb(self):
-        if os.path.exists(MODEL_PATH):
-            file_name = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_name = os.listdir(self.MODEL_PATH)
             self.ui.db_status.setText("STATUS: Connecting...")
             self.connect_to_db()
             self.ui.db_status.setText("STATUS: Sending...")
-            file_path = os.path.join(parent_dir, 'MRI', 'GAN', 'temp_model_path', file_name[0])
+            file_path = os.path.join(self.MAIN_PATH, 'MRI', 'GAN', 'temp_model_path', file_name[0])
             self.ui.status_label.setText("STATUS: Uploading model")
             if self.checked == "ADHD":
                 self.db_conn.insert_data_into_models_table(
@@ -187,8 +154,8 @@ class AdminMriGan():
             self.ui.status_label.setText("STATUS: Await")
             self.ui.db_status.setText("STATUS: Await")
             self.upload_done_msgbox()
-            for filename in os.listdir(MODEL_PATH):
-                file_path = os.path.join(MODEL_PATH, filename)
+            for filename in os.listdir(self.MODEL_PATH):
+                file_path = os.path.join(self.MODEL_PATH, filename)
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
                         os.unlink(file_path)
@@ -198,18 +165,18 @@ class AdminMriGan():
                     print(f'Failed to delete {file_path}. Reason: {e}')
 
             try:
-                os.rmdir(MODEL_PATH)
+                os.rmdir(self.MODEL_PATH)
             except Exception as e:
-                print(f'Failed to delete the directory {MODEL_PATH}. Reason: {e}')
+                print(f'Failed to delete the directory {self.MODEL_PATH}. Reason: {e}')
         else:
             print("No model to upload")
 
     def delModel(self):
-        if os.path.exists(MODEL_PATH):
-            file_list = os.listdir(MODEL_PATH)
+        if os.path.exists(self.MODEL_PATH):
+            file_list = os.listdir(self.MODEL_PATH)
             if file_list:
                 file_name = file_list[0]
-                file_path = os.path.join(MODEL_PATH, file_name)
+                file_path = os.path.join(self.MODEL_PATH, file_name)
                 if os.path.isfile(file_path):
                     try:
                         os.remove(file_path)
