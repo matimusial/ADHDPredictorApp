@@ -7,41 +7,15 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, Reshape, Flatten, LeakyReLU, Input, BatchNormalization, Dropout
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.callbacks import Callback
 
 from MRI.plot_mri import plot_mri
 
 from MRI.image_preprocessing import trim_rows, normalize, check_dimensions
 from MRI.file_io import read_pickle
 
-modelStopFlag = False
-
-# Global variables to store training and validation accuracy and loss
-global_train_d_loss = []
-global_train_g_loss = []
-global_train_d_accuracy = []
-global_val_d_loss = []
-global_val_g_loss = []
-global_val_d_accuracy = []
-
-class StopTrainingCallback(Callback):
-    def on_epoch_end(self, epoch, logs=None):
-        if modelStopFlag:
-            print("Stopped on epoch:", epoch)
-            self.model.stop_training = True
-        else:
-            self.model.stop_training = False
+from CONTROLLERS.metrics import WorkerMetrics_GAN
 
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
-    """
-    Trains a GAN using MRI data.
-
-    Args:
-        save (bool): Whether to save the model after training.
-        data_type (str): The type of data (ADHD or CONTROL).
-        pickle_path (str): The path to the pickle files with the data.
-        gan_model_path (str): The path to save the trained model.
-    """
     from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
                             TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
     try:
@@ -208,29 +182,30 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 train_data (np.ndarray): The training data containing real images.
                 val_data (np.ndarray): The validation data containing real images.
             """
-            global global_train_d_loss, global_train_g_loss, global_train_d_accuracy
-            global global_val_d_loss, global_val_g_loss, global_val_d_accuracy
+            metrics = WorkerMetrics_GAN()  # Initialize WorkerMetrics_GAN
+
             gen_loss = np.array([])
             for epoch in range(epochs):
                 try:
                     idx = np.random.randint(0, train_data.shape[0], batch_size)
                     real_imgs = train_data[idx]
                     d_loss, g_loss, accuracy = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
-                    if d_loss is None or g_loss is None:
+
+                    if d_loss is None or g_loss is None or accuracy is None:
                         return
-                    global_train_d_loss.append(d_loss.numpy().mean())
-                    global_train_g_loss.append(g_loss.numpy().mean())
-                    global_train_d_accuracy.append(accuracy.numpy().mean())
-                    if (epoch + 1) % 1000 == 0: gen_loss = np.append(gen_loss, g_loss.numpy().mean())
+
+                    metrics.update_train_metrics(d_loss.numpy().mean(), g_loss.numpy().mean(), accuracy.numpy().mean())
+                    if (epoch + 1) % 1000 == 0:
+                        gen_loss = np.append(gen_loss, g_loss.numpy().mean())
+
                     if (epoch + 1) % TRAIN_GAN_PRINT_INTERVAL == 0:
                         val_idx = np.random.randint(0, val_data.shape[0], batch_size)
                         val_real_imgs = val_data[val_idx]
                         val_d_loss, val_g_loss, val_accuracy = train_step(generator, discriminator, val_real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
-                        if val_d_loss is None or val_g_loss is None:
+                        if val_d_loss is None or val_g_loss is None or val_accuracy is None:
                             return
-                        global_val_d_loss.append(val_d_loss.numpy().mean())
-                        global_val_g_loss.append(val_g_loss.numpy().mean())
-                        global_val_d_accuracy.append(val_accuracy.numpy().mean())
+                        metrics.update_val_metrics(val_d_loss.numpy().mean(), val_g_loss.numpy().mean(), val_accuracy.numpy().mean())
+                        print(f"Epoch {epoch + 1} [Train D loss: {d_loss.numpy().mean()} | Train G loss: {g_loss.numpy().mean()} | Train D accuracy: {accuracy.numpy().mean()}]")
                         print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()} | Val D accuracy: {val_accuracy.numpy().mean()}]")
 
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
@@ -245,10 +220,13 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 except Exception as e:
                     print(f"Error saving model: {e}")
                     return
-            return np.mean(gen_loss)
+            return metrics.get_metrics()
 
-        name = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
-        return round(name, 4)
+        metrics = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
+        print("Training complete. Final metrics:")
+        print(metrics)
+        return metrics
     except Exception as e:
         print(f"An error occurred during GAN training: {e}")
         return
+

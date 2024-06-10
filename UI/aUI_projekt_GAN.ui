@@ -170,9 +170,9 @@ QPushButton{
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
-                <widget class="QLabel" name="label">
+                <widget class="QPushButton" name="folder_explore">
                  <property name="text">
-                  <string>Built in file:</string>
+                  <string>Chose folder with data</string>
                  </property>
                 </widget>
                </item>
@@ -435,13 +435,6 @@ QPushButton{
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="stopButton">
-                 <property name="text">
-                  <string>Stop</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
              <item>
@@ -523,7 +516,7 @@ QPushButton{
 }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabImage_2">
        <property name="sizePolicy">

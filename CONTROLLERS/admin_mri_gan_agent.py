@@ -13,6 +13,14 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics_GEN
 
+# Global variables to store training and validation accuracy and loss
+global_train_d_loss = []
+global_train_g_loss = []
+global_train_d_accuracy = []
+global_val_d_loss = []
+global_val_g_loss = []
+global_val_d_accuracy = []
+
 class AdminMriGan():
     def __init__(self, mainWindow, ui_path, main_path):
         self.MAIN_PATH = main_path
@@ -96,12 +104,11 @@ class AdminMriGan():
             print("TRAIN_GAN_DISP_INTERVAL:", MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
             self.thread = QThread()
-
-            # Reset the plot and clear metrics before starting the training
-            self.progressBar.setValue(0)
-            self.real_time_metrics = RealTimeMetrics_GEN(epochs, self.progressBar, self.ui.plotLabel_GAN_plot)
-            self.real_time_metrics.start()
-
+            print("\nChuj2")
+            #self.progressBar.setValue(0)
+            #self.real_time_metrics = RealTimeMetrics_GEN(epochs, self.progressBar, self.ui.plotLabel_GAN_plot)
+            #self.real_time_metrics.start()
+            print("\nChuj3")
             # Create a worker object
             self.worker = Worker(self)
 
