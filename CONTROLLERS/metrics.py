@@ -10,13 +10,10 @@ import time
 
 global_train_d_loss = []
 global_train_g_loss = []
-global_train_d_accuracy = []
 global_val_d_loss = []
 global_val_g_loss = []
-global_val_d_accuracy = []
 
 global_accuracy = []
-global_val_accuracy = []
 global_loss = []
 global_val_loss = []
 
@@ -174,14 +171,12 @@ class RealTimeMetrics_GEN(QThread):
             print(f"An error occurred while creating the plot: {e}")
 
     def clear_metrics(self):
-        global global_train_d_loss, global_train_g_loss, global_train_d_accuracy
-        global global_val_d_loss, global_val_g_loss, global_val_d_accuracy
+        global global_train_d_loss, global_train_g_loss
+        global global_val_d_loss, global_val_g_loss
         global_train_d_loss = []
         global_train_g_loss = []
-        global_train_d_accuracy = []
         global_val_d_loss = []
         global_val_g_loss = []
-        global_val_d_accuracy = []
 
 class WorkerMetrics(Callback):
     """Callback for updating global metrics during model training."""
@@ -204,41 +199,34 @@ class WorkerMetrics_GAN:
     def __init__(self):
         self.train_d_loss = []
         self.train_g_loss = []
-        self.train_d_accuracy = []
         self.val_d_loss = []
         self.val_g_loss = []
-        self.val_d_accuracy = []
 
-    def update_train_metrics(self, d_loss, g_loss, d_accuracy):
+    def update_train_metrics(self, d_loss, g_loss):
         self.train_d_loss.append(d_loss)
         self.train_g_loss.append(g_loss)
-        self.train_d_accuracy.append(d_accuracy)
         self.update_global_metrics()
         self.get_metrics()
 
-    def update_val_metrics(self, d_loss, g_loss, d_accuracy):
+    def update_val_metrics(self, d_loss, g_loss):
         self.val_d_loss.append(d_loss)
         self.val_g_loss.append(g_loss)
-        self.val_d_accuracy.append(d_accuracy)
         self.update_global_metrics()
         self.get_metrics()
 
     def get_metrics(self):
-        return {
-            "train_d_loss": self.train_d_loss,
-            "train_g_loss": self.train_g_loss,
-            "train_d_accuracy": self.train_d_accuracy,
-            "val_d_loss": self.val_d_loss,
-            "val_g_loss": self.val_g_loss,
-            "val_d_accuracy": self.val_d_accuracy,
-        }
+        print("\ntrain_d_loss", self.train_d_loss,)
+        print("\ntrain_g_loss", self.train_g_loss,)
+        print("\nval_d_loss", self.val_d_loss,)
+        print("\nval_g_loss", self.val_g_loss,)
+
+
 
     def update_global_metrics(self):
-        global global_train_d_loss, global_train_g_loss, global_train_d_accuracy
-        global global_val_d_loss, global_val_g_loss, global_val_d_accuracy
+        global global_train_d_loss, global_train_g_loss
+        global global_val_d_loss, global_val_g_loss
         global_train_d_loss = self.train_d_loss
         global_train_g_loss = self.train_g_loss
-        global_train_d_accuracy = self.train_d_accuracy
         global_val_d_loss = self.val_d_loss
         global_val_g_loss = self.val_g_loss
-        global_val_d_accuracy = self.val_d_accuracy
+
