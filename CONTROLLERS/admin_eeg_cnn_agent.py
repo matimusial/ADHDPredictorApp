@@ -18,11 +18,8 @@ class AdminEegCnn:
         self.MAIN_PATH = main_path
         self.mainWindow = mainWindow
         self.MODEL_PATH = os.path.join(self.MAIN_PATH, 'EEG', 'temp_model_path')
-        self.TRAIN_PATH = os.path.join(self.MAIN_PATH, 'INPUT_DATA', 'EEG', 'MAT')
         self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'EEG', 'PREDICT', 'PREDICT_DATA')
         self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_EEG.ui'), mainWindow)
-
-        #_, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
 
         self.loaded_adhd_files = 0
         self.loaded_control_files = 0
@@ -43,8 +40,6 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
-        #self.ui.path_label.setText(f'{self.TRAIN_PATH}')
-        #self.ui.path_label.setTextElideMode(Qt.ElideRight)
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -71,7 +66,7 @@ class AdminEegCnn:
             if os.path.isdir(adhd_path) and os.path.isdir(control_path):
                 self.pathTrain = folder
                 self.ui.path_label.setText(f'{folder}')
-                _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.pathTrain)
+                _, _, initChannels, adhdcount, controlcount = read_eeg_raw(folder)
                 self.loaded_adhd_files = adhdcount
                 self.loaded_control_files = controlcount
                 self.currChannels = initChannels[0]['shape'][0]
