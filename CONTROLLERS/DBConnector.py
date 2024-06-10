@@ -1,6 +1,19 @@
+import os
+import sys
+
 import mysql.connector
 from mysql.connector import Error
 
+
+def get_base_path():
+    """
+    Returns:
+        str: The base path of the application.
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
 class DBConnector:
     def __init__(self):
@@ -218,18 +231,20 @@ class DBConnector:
                         model_file_data = file_result[0][0]
 
                         import os
-                        with open("tmp.keras", 'wb') as file:
+                        temp_model_path = os.path.join(get_base_path(), "tmp.keras")
+
+                        with open(temp_model_path, 'wb') as file:
                             file.write(model_file_data)
 
                         try:
-                            loaded_model = load_model("tmp.keras")
+                            loaded_model = load_model(temp_model_path)
                             print("Model successfully loaded by Keras.")
                         except Exception as e:
                             print(f"Error loading model by Keras: {e}")
                             return None
-
-                        if os.path.exists("tmp.keras"):
-                            os.remove("tmp.keras")
+                        finally:
+                            if os.path.exists(temp_model_path):
+                                os.remove(temp_model_path)
 
                         return loaded_model
                     else:
@@ -270,3 +285,11 @@ class DBConnector:
                 print(f"Error deleting data: {e}")
         else:
             print("No database connection, use establish_connection function.")
+
+
+# db = DBConnector()
+# db.establish_connection()
+# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 1")
+# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 2")
+# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 3")
+# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 4")
