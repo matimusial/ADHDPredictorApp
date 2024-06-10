@@ -18,6 +18,9 @@ from CONTROLLERS.metrics import WorkerMetrics_GAN
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
     from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
                             TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
+
+    if GAN_EPOCHS_MRI <= 1000:
+        raise ValueError("GAN_EPOCHS_MRI has to be greater than 1000.")
     try:
         print(f"TRAINING GAN {data_type} STARTED for {GAN_EPOCHS_MRI} EPOCHS...")
         print(f"RESULTS WILL BE DISPLAYED EVERY {TRAIN_GAN_PRINT_INTERVAL}")
