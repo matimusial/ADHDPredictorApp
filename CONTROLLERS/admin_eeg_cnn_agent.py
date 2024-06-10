@@ -162,7 +162,7 @@ class AdminEegCnn:
         if not os.path.exists(self.MODEL_PATH):
             os.makedirs(self.MODEL_PATH)
         self.ui.status_label.setText("STATUS: Running")
-        out = train_cnn_eeg_readraw(True, self.pathTrain, self.PREDICT_PATH, self.MODEL_PATH)
+        out = train_cnn_eeg_readraw(True, self.TRAIN_PATH, self.PREDICT_PATH, self.MODEL_PATH)
         if out == "STOP":
             self.ui.status_label.setText("STATUS: Await")
             EEG.TRAIN.train.modelStopFlag = False
