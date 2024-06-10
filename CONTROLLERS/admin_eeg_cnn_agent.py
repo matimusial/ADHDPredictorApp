@@ -30,7 +30,7 @@ class AdminEegCnn:
 
         self.updateInfoDump()
 
-        self.pathTrain = self.TRAIN_PATH
+        self.pathTrain = None
         self.db_conn = None
 
         self.model_description = ""
@@ -71,7 +71,7 @@ class AdminEegCnn:
             if os.path.isdir(adhd_path) and os.path.isdir(control_path):
                 self.pathTrain = folder
                 self.ui.path_label.setText(f'{folder}')
-                _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.TRAIN_PATH)
+                _, _, initChannels, adhdcount, controlcount = read_eeg_raw(self.pathTrain)
                 self.loaded_adhd_files = adhdcount
                 self.loaded_control_files = controlcount
                 self.currChannels = initChannels[0]['shape'][0]
@@ -162,7 +162,7 @@ class AdminEegCnn:
         if not os.path.exists(self.MODEL_PATH):
             os.makedirs(self.MODEL_PATH)
         self.ui.status_label.setText("STATUS: Running")
-        out = train_cnn_eeg_readraw(True, self.TRAIN_PATH, self.PREDICT_PATH, self.MODEL_PATH)
+        out = train_cnn_eeg_readraw(True, self.pathTrain, self.PREDICT_PATH, self.MODEL_PATH)
         if out == "STOP":
             self.ui.status_label.setText("STATUS: Await")
             EEG.TRAIN.train.modelStopFlag = False
