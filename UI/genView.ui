@@ -63,6 +63,12 @@ QPushButton{
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>ADHD brain image generator</string>
               </property>
@@ -84,6 +90,12 @@ QPushButton{
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
              <widget class="QLabel" name="label_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Healthy brain image generator</string>
               </property>
