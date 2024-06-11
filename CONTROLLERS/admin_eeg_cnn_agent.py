@@ -169,32 +169,40 @@ class AdminEegCnn:
         if os.path.exists(self.MODEL_PATH):
             file_name = os.listdir(self.MODEL_PATH)
             self.ui.db_status.setText("STATUS: Connecting...")
-            self.connect_to_db()
-            self.ui.db_status.setText("STATUS: Sending...")
-            file_path = os.path.join(self.MAIN_PATH, 'EEG', 'temp_model_path', file_name[0])
-            self.ui.status_label.setText("STATUS: Uploading model")
-            self.db_conn.insert_data_into_models_table(
-                file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES,
-                EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
-                f"learning rate: {EEG.config.CNN_LEARNING_RATE}; batch size: {EEG.config.CNN_BATCH_SIZE}; epochs: {EEG.config.CNN_EPOCHS}; {self.model_description}"
-            )
-            self.ui.status_label.setText("STATUS: Await")
-            self.ui.db_status.setText("STATUS: Await")
-            self.upload_done_msgbox()
-            for filename in os.listdir(self.MODEL_PATH):
-                file_path = os.path.join(self.MODEL_PATH, filename)
+            conn = self.connect_to_db()
+            if conn:
+                self.ui.db_status.setText("STATUS: Sending...")
+                file_path = os.path.join(self.MAIN_PATH, 'EEG', 'temp_model_path', file_name[0])
+                self.ui.status_label.setText("STATUS: Uploading model")
                 try:
-                    if os.path.isfile(file_path) or os.path.islink(file_path):
-                        os.unlink(file_path)
-                    elif os.path.isdir(file_path):
-                        shutil.rmtree(file_path)
+                    self.db_conn.insert_data_into_models_table(
+                        file_name[0].replace(".keras", ""), file_path, EEG.config.EEG_NUM_OF_ELECTRODES,
+                        EEG.config.CNN_INPUT_SHAPE, 'cnn_eeg', EEG.config.FS, None,
+                        f"learning rate: {EEG.config.CNN_LEARNING_RATE}; batch size: {EEG.config.CNN_BATCH_SIZE}; epochs: {EEG.config.CNN_EPOCHS}; {self.model_description}"
+                    )
+                    self.upload_done_msgbox()
                 except Exception as e:
-                    print(f'Failed to delete {file_path}. Reason: {e}')
+                    print(f'Failed to upload model to db. Reason: {e}')
+                    self.model_upload_failed()
+                self.ui.status_label.setText("STATUS: Await")
+                self.ui.db_status.setText("STATUS: Await")
+                for filename in os.listdir(self.MODEL_PATH):
+                    file_path = os.path.join(self.MODEL_PATH, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+                    except Exception as e:
+                        print(f'Failed to delete {file_path}. Reason: {e}')
 
-            try:
-                os.rmdir(self.MODEL_PATH)
-            except Exception as e:
-                print(f'Failed to delete the directory {self.MODEL_PATH}. Reason: {e}')
+                try:
+                    os.rmdir(self.MODEL_PATH)
+                except Exception as e:
+                    print(f'Failed to delete the directory {self.MODEL_PATH}. Reason: {e}')
+            else:
+                print(f'Database connection error')
+                self.model_upload_failed()
         else:
             print("No model to upload")
 
@@ -328,6 +336,13 @@ class AdminEegCnn:
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
         msg.setText("Invalid input folder")
+        msg.setWindowTitle("Error")
+        msg.exec_()
+
+    def model_upload_failed(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText("Model upload has failed.")
         msg.setWindowTitle("Error")
         msg.exec_()
 
