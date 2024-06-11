@@ -16,7 +16,6 @@ modelStopFlag = False
 
 class StopTrainingCallback(Callback):
     def on_epoch_end(self, epoch, logs=None):
-        print(f"model Stop MRI: {modelStopFlag}")
         if modelStopFlag:
             print("Stopped on epoch:", epoch)
             self.model.stop_training = True
