@@ -2,8 +2,13 @@ from tensorflow.keras.callbacks import Callback
 from PyQt5.QtCore import QMutex, QMutexLocker, QThread
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
+
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QProgressBar
+
+import numpy as np
+from matplotlib import pyplot as plt
+
 
 import io
 import time
@@ -16,6 +21,19 @@ global_val_g_loss = []
 global_accuracy = []
 global_loss = []
 global_val_loss = []
+
+generated_image = []
+
+def plot_mri(image, title):
+    fig, ax = plt.subplots()
+    ax.imshow(image, cmap='gray')
+    ax.set_title(title)
+    ax.axis('off')
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    buf.seek(0)
+    return buf
 
 class RealTimeMetrics(QThread):
     """Thread for visualizing accuracy and loss in real time during model training."""
@@ -92,11 +110,13 @@ class RealTimeMetrics(QThread):
 
 class RealTimeMetrics_GEN(QThread):
     """Thread for visualizing GAN metrics in real time during model training."""
-    def __init__(self, total_epochs, progressBar, plot_label, interval=1):
+    def __init__(self, total_epochs, print_interval, disp_interval, plot_label, image_label, progressBar, interval=1):
         super().__init__()
-
+        self.print_interval = print_interval
+        self.disp_interval = disp_interval
         self.total_epochs = total_epochs
         self.plot_label = plot_label
+        self.image_label = image_label
         self.mutex = QMutex()
         self.interval = interval
         self.progressBar = progressBar
@@ -109,13 +129,25 @@ class RealTimeMetrics_GEN(QThread):
         while control_counter < self.total_epochs:
             if not self.running:
                 break
-            control_counter = len(global_train_d_loss)
+            control_counter = len(global_train_d_loss)*self.print_interval
+            disp_counter = self.disp_interval*((len(global_train_d_loss)*self.print_interval)//self.disp_interval)
             self.plot_metrics()
+            self.generate_and_display_image(disp_counter)
             time.sleep(self.interval)
             self.progressBar.setValue(control_counter)
 
     def stop(self):
         self.running = False
+    def generate_and_display_image(self, epoch):
+        if not generated_image == []:
+            try:
+                    buf = plot_mri(generated_image[0], f'Epoch: {epoch}')
+                    qpm = QPixmap()
+                    qpm.loadFromData(buf.getvalue(), 'PNG')
+                    self.image_label.setPixmap(qpm)
+                    buf.close()
+            except Exception as e:
+                print(f"Failed to generate image in epoch {epoch}: {e}")
 
     def plot_metrics(self):
         try:
@@ -123,39 +155,27 @@ class RealTimeMetrics_GEN(QThread):
                 fig = Figure()
                 canvas = FigureCanvas(fig)
 
-                # Plot for discriminator accuracy
-                ax1 = fig.add_subplot(311)
-                ax1.plot(range(1, len(global_train_d_accuracy) + 1), global_train_d_accuracy, 'r-', label='Training Discriminator Accuracy')
-                ax1.plot(range(1, len(global_val_d_accuracy) + 1), global_val_d_accuracy, 'b-', label='Validation Discriminator Accuracy')
+                # Plot for generator loss
+                ax1 = fig.add_subplot(211)
+                ax1.plot(range(1, len(global_train_g_loss)*self.print_interval + 1,self.print_interval), global_train_g_loss, 'r-', label='Training Generator Loss')
+                ax1.plot(range(1, len(global_val_g_loss)*self.print_interval + 1,self.print_interval), global_val_g_loss, 'b-', label='Validation Generator Loss')
                 ax1.set_xlabel('Epoch')
-                ax1.set_ylabel('Accuracy')
-                ax1.set_title('Discriminator Accuracy')
+                ax1.set_ylabel('Loss')
+                ax1.set_title('Generator Loss')
                 ax1.legend()
                 ax1.grid(True)
-                ax1.set_ylim(0, 1.0)
                 ax1.set_xlim(1, self.total_epochs)
 
-                # Plot for generator loss
-                ax2 = fig.add_subplot(312)
-                ax2.plot(range(1, len(global_train_g_loss) + 1), global_train_g_loss, 'r-', label='Training Generator Loss')
-                ax2.plot(range(1, len(global_val_g_loss) + 1), global_val_g_loss, 'b-', label='Validation Generator Loss')
+                # Plot for discriminator loss
+                ax2 = fig.add_subplot(212)
+                ax2.plot(range(1, len(global_train_d_loss)*self.print_interval + 1,self.print_interval), global_train_d_loss, 'r-', label='Training Discriminator Loss')
+                ax2.plot(range(1, len(global_val_d_loss)*self.print_interval + 1,self.print_interval), global_val_d_loss, 'b-', label='Validation Discriminator Loss')
                 ax2.set_xlabel('Epoch')
                 ax2.set_ylabel('Loss')
-                ax2.set_title('Generator Loss')
+                ax2.set_title('Discriminator Loss')
                 ax2.legend()
                 ax2.grid(True)
                 ax2.set_xlim(1, self.total_epochs)
-
-                # Plot for discriminator loss
-                ax3 = fig.add_subplot(313)
-                ax3.plot(range(1, len(global_train_d_loss) + 1), global_train_d_loss, 'r-', label='Training Discriminator Loss')
-                ax3.plot(range(1, len(global_val_d_loss) + 1), global_val_d_loss, 'b-', label='Validation Discriminator Loss')
-                ax3.set_xlabel('Epoch')
-                ax3.set_ylabel('Loss')
-                ax3.set_title('Discriminator Loss')
-                ax3.legend()
-                ax3.grid(True)
-                ax3.set_xlim(1, self.total_epochs)
 
                 fig.tight_layout()
                 fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
@@ -215,12 +235,20 @@ class WorkerMetrics_GAN:
         self.get_metrics()
 
     def get_metrics(self):
-        print("\ntrain_d_loss", self.train_d_loss,)
-        print("\ntrain_g_loss", self.train_g_loss,)
-        print("\nval_d_loss", self.val_d_loss,)
-        print("\nval_g_loss", self.val_g_loss,)
+        print("\ntrain_d_loss", global_train_d_loss,)
+        print("\ntrain_g_loss", global_train_g_loss,)
+        print("\nval_d_loss", global_val_d_loss,)
+        print("\nval_g_loss", global_val_g_loss,)
 
+    def generate_image(self, generator, epoch):
+        try:
+            global generated_image
+            noise = np.random.normal(0, 1, [1, 100])
+            generated_image_predict = generator.predict(noise)
+            generated_image = generated_image_predict * 0.5 + 0.5  # Scale the image to [0, 1]
 
+        except Exception as e:
+            print(f"Failed to generate image in epoch {epoch}: {e}")
 
     def update_global_metrics(self):
         global global_train_d_loss, global_train_g_loss

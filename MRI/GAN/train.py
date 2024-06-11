@@ -206,7 +206,6 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                     if d_loss is None or g_loss is None:
                         return
 
-                    metrics.update_train_metrics(d_loss.numpy().mean(), g_loss.numpy().mean())
                     if (epoch + 1) % 1000 == 0:
                         gen_loss = np.append(gen_loss, g_loss.numpy().mean())
 
@@ -216,12 +215,13 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                         val_d_loss, val_g_loss = train_step(generator, discriminator, val_real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
                         if val_d_loss is None or val_g_loss is None:
                             return
+                        metrics.update_train_metrics(d_loss.numpy().mean(), g_loss.numpy().mean())
                         metrics.update_val_metrics(val_d_loss.numpy().mean(), val_g_loss.numpy().mean())
                         print(f"Epoch {epoch + 1} [Train D loss: {d_loss.numpy().mean()} | Train G loss: {g_loss.numpy().mean()}")
                         print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()}")
 
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
-                        generate_image(generator, epoch + 1)
+                        metrics.generate_image(generator, epoch + 1)
                 except Exception as e:
                     print(f"Error in epoch {epoch + 1}: {e}")
                     return
