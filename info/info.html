@@ -87,11 +87,71 @@
 
     <div id="admin" class="content">
         <h2>Admin Instructions</h2>
-        TU WSTAW INSTRUKCJĘ ADMINA TAK BY PASOWAŁA DO SCHEMATU STRONY
+        <p>To access the admin view, press the "Admin View" button on the left side of the program window (the one that appears when you start the program).</p>
+        <ul>
+            <li><strong>"GAN for MRI"</strong> - (Button) Window for training the GAN model to generate MRI images</li>
+            <li><strong>"CNN for MRI"</strong> - (Button) Window for training the CNN model for MRI images</li>
+            <li><strong>"CNN for EEG"</strong> - (Button) Window for training the CNN model for EEG waves</li>
+            <li><strong>"Exit"</strong> - (Button) Closes the application</li>
+            <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
+            <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
+        </ul>
+
+        <h3>CNN for EEG</h3>
+        <ul>
+            <li><strong>"Choose folder with data"</strong> - (button) text type</li>
+            <p>The folder with training data must have the following structure:</p>
+            <pre>(chosen folder)
+    |
+    | ADHD
+    |    |
+    |    [files of the ADHD group .mat/.csv/.edf]
+    |
+    | CONTROL
+    |    |
+    |    [files of the control group .mat/.csv/.edf]</pre>
+            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Batch size"</strong> - numeric type</li>
+            <li><strong>"Learning rate"</strong> - floating-point type</li>
+            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+        </ul>
+
+        <h3>CNN for MRI</h3>
+        <ul>
+            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Batch size"</strong> - numeric type</li>
+            <li><strong>"Learning rate"</strong> - floating-point type</li>
+            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+        </ul>
+
+        <h3>GAN for MRI</h3>
+        <ul>
+            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Batch size"</strong> - numeric type</li>
+            <li><strong>"Learning rate"</strong> - floating-point type</li>
+            <li><strong>"Control/ADHD"</strong> - radio button to select the type of training data</li>
+            <li><strong>"Print plot int."</strong> - numeric type</li>
+            <li><strong>"Disp interval"</strong> - numeric type</li>
+            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+        </ul>
+
         <footer>
             <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
         </footer>
     </div>
+
 
     <div id="specification" class="content">
         <h2>Specification</h2>
