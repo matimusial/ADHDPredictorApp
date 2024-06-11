@@ -161,8 +161,8 @@ function draw() {
     drawRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawRect(computerPaddle.x, computerPaddle.y, computerPaddle.width, computerPaddle.height);
     drawImage(ballImg, ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2);
-    drawText(`Gracz: ${playerScore}`, 20, 20);
-    drawText(`Komputer: ${computerScore}`, canvas.width - 150, 20);
+    drawText(`Brain: ${playerScore}`, 20, 20);
+    drawText(`Computer: ${computerScore}`, canvas.width - 150, 20);
 }
 
 function loop() {
