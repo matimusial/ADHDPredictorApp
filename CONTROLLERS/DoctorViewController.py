@@ -83,6 +83,7 @@ class DoctorViewController:
         self.curr_idx_plane = 0
         self.predictions = None
         self.all_data = {"EEG": [], "MRI": []}
+        self.file_names = {"EEG": [], "MRI": []}
 
     def add_events(self):
         """
@@ -392,6 +393,8 @@ class DoctorViewController:
             if data_type == "EEG":
                 self.all_data[data_type].append(data)
 
+            self.file_names[data_type].append(path)
+
             if result is not None:
                 self.predictions.append(result)
 
@@ -505,13 +508,13 @@ class DoctorViewController:
         if self.all_data["EEG"]:
             self.show_plot(
                 self.all_data["EEG"][0], "EEG",
-                self.file_paths[self.curr_idx_eeg].split("/")[-1]
+                self.file_names["EEG"][self.curr_idx_eeg].split("/")[-1]
             )
 
         if self.all_data["MRI"]:
             self.show_plot(
                 self.all_data["MRI"][0][0], "MRI",
-                self.file_paths[self.curr_idx_mri].split("/")[-1]
+                self.file_names["MRI"][self.curr_idx_mri].split("/")[-1]
             )
 
     """
@@ -642,7 +645,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["EEG"][self.curr_idx_eeg], "EEG",
-            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+            self.file_names["EEG"][self.curr_idx_eeg].split("/")[-1]
         )
 
     def show_next_channel(self):
@@ -659,7 +662,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["EEG"][self.curr_idx_eeg], "EEG",
-            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+            self.file_names["EEG"][self.curr_idx_eeg].split("/")[-1]
         )
 
     def show_prev_plot_eeg(self):
@@ -677,7 +680,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["EEG"][self.curr_idx_eeg], "EEG",
-            self.file_paths[self.curr_idx_eeg].split("/")[-1]
+            self.file_names["EEG"][self.curr_idx_eeg].split("/")[-1]
         )
 
     def show_prev_channel(self):
@@ -694,7 +697,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["EEG"][self.curr_idx_eeg], "EEG",
-            self.file_paths[self.curr_idx_eeg].split("/")[-1])
+            self.file_names["EEG"][self.curr_idx_eeg].split("/")[-1])
 
     def show_next_plot_mri(self):
         """
@@ -711,7 +714,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
+            self.file_names["MRI"][self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_next_plane(self):
         """
@@ -727,7 +730,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
+            self.file_names["MRI"][self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_prev_plot_mri(self):
         """
@@ -744,7 +747,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
+            self.file_names["MRI"][self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
     def show_prev_plane(self):
         """
@@ -760,7 +763,7 @@ class DoctorViewController:
 
         self.show_plot(
             self.all_data["MRI"][self.curr_idx_mri][self.curr_idx_plane], "MRI",
-            self.file_paths[self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
+            self.file_names["MRI"][self.curr_idx_mri].split("/")[-1] if self.file_paths is not None else "")
 
 
 """
