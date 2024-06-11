@@ -189,29 +189,54 @@ class AdminMriGan:
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
-    def validate_epochs(self):
+    def validate_input(self, text):
         try:
-            return int(self.ui.textEdit_epochs.toPlainText())
+            num = float(text)
+            if num.is_integer():
+                return int(num)
+            else:
+                return num
         except ValueError:
+            return None
+
+    def validate_epochs(self):
+        text = self.ui.textEdit_epochs.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
             return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1000 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1000.\n")
+                return False
+            else:
+                return value
 
     def validate_batch_size(self):
-        try:
-            return int(self.ui.textEdit_batch_size.toPlainText())
-        except ValueError:
+        text = self.ui.textEdit_batch_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
             return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 1 or not isinstance(value, int):
+                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
+                return False
+            else:
+                return value
 
     def validate_learning_rate(self):
-        try:
-            return float(self.ui.textEdit_learning_rate.toPlainText())
-        except ValueError:
+        text = self.ui.textEdit_learning_rate.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
             return False
-
-    def validate_frame_size(self):
-        try:
-            return int(self.ui.textEdit_input_size.toPlainText())
-        except ValueError:
-            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                return False
+            else:
+                return value
 
 
     def invalid_input_msgbox(self):

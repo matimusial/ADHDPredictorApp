@@ -302,7 +302,7 @@ class AdminEegCnn:
             return False
         else:
             value = self.validate_input(text)
-            if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
+            if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
                 print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
                 return False
             else:
@@ -345,6 +345,18 @@ class AdminEegCnn:
         msg.setText("Model upload has failed.")
         msg.setWindowTitle("Error")
         msg.exec_()
+
+    def change_btn_state(self, state):
+        """
+        Changes the state of UI buttons.
+        :param state: The state (True/False) of the buttons.
+        """
+        self.ui.CNN_MRI_Button.setEnabled(state)
+        self.ui.GAN_MRI_Button.setEnabled(state)
+        self.ui.startButton.setEnabled(state)
+        self.ui.dbButton.setEnabled(state)
+        self.ui.switchSceneBtn.setEnabled(state)
+        self.ui.folder_explore.setEnabled(state)
 
 
 class Worker(QObject):

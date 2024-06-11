@@ -233,7 +233,7 @@ class AdminMriCnn:
             return False
         else:
             value = self.validate_input(text)
-            if value is None or value <= 0 or value >= 1 or not isinstance(value, float):
+            if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
                 print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
                 return False
             else:
