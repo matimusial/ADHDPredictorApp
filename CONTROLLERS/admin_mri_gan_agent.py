@@ -30,7 +30,7 @@ class AdminMriGan:
 
         self.pathTrain = self.TRAIN_PATH
         self.db_conn = None
-
+        self.modelTrained = False
         self.checked = "ADHD"
 
         self.model_description = ""
@@ -122,6 +122,7 @@ class AdminMriGan:
 
         self.ui.status_label.setText("STATUS: Model done")
         self.toggle_buttons(True)
+        self.modelTrained = True
 
     def toggle_buttons(self, state):
         try:
@@ -136,6 +137,8 @@ class AdminMriGan:
             print(f'Failed toggle_buttons: {e}')
 
     def sendToDb(self):
+        if not self.modelTrained: return
+
         if os.path.exists(self.MODEL_PATH):
             file_name = os.listdir(self.MODEL_PATH)
             self.ui.db_status.setText("STATUS: Connecting...")

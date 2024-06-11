@@ -312,10 +312,14 @@ class DoctorViewController:
         """
         Starts the prediction process based on the loaded data and models.
         """
+
         self.ui.btnNextPlane.setEnabled(True)
         self.ui.btnPrevPlane.setEnabled(True)
 
-        if self.file_paths is None or (self.chosen_model_info_eeg is None and self.chosen_model_info_mri is None):
+        if (self.file_paths is None or
+            (self.chosen_model_info_eeg is None and self.loaded_eeg_files > 0) or
+            (self.chosen_model_info_eeg is None and self.loaded_mri_files > 0)):
+
             self.show_alert("No files or models chosen")
             return
 
@@ -355,59 +359,62 @@ class DoctorViewController:
         for path in self.file_paths:
             data = np.array([])
             data_type = ""
+            try:
+                if path.endswith('.edf'):
+                    f = pyedflib.EdfReader(path)
+                    n_channels = f.signals_in_file
+                    n_samples = f.getNSamples()[0]
+                    data = np.zeros((n_channels, n_samples))
+                    for i in range(n_channels):
+                        data[i, :] = f.readSignal(i)
+                    f.close()
+                    data_type = "EEG"
+                    model = self.model_eeg
+                    model_info = self.chosen_model_info_eeg
 
-            if path.endswith('.edf'):
-                f = pyedflib.EdfReader(path)
-                n_channels = f.signals_in_file
-                n_samples = f.getNSamples()[0]
-                data = np.zeros((n_channels, n_samples))
-                for i in range(n_channels):
-                    data[i, :] = f.readSignal(i)
-                f.close()
-                data_type = "EEG"
-                model = self.model_eeg
-                model_info = self.chosen_model_info_eeg
+                elif path.endswith('.mat'):
+                    file = loadmat(path)
+                    data_key = list(file.keys())[-1]
+                    data = file[data_key].T
+                    data_type = "EEG"
+                    model = self.model_eeg
+                    model_info = self.chosen_model_info_eeg
 
-            elif path.endswith('.mat'):
-                file = loadmat(path)
-                data_key = list(file.keys())[-1]
-                data = file[data_key].T
-                data_type = "EEG"
-                model = self.model_eeg
-                model_info = self.chosen_model_info_eeg
+                elif path.endswith('.csv'):
+                    data = read_csv(path).values.T
+                    data_type = "EEG"
+                    model = self.model_eeg
+                    model_info = self.chosen_model_info_eeg
 
-            elif path.endswith('.csv'):
-                data = read_csv(path).values.T
-                data_type = "EEG"
-                model = self.model_eeg
-                model_info = self.chosen_model_info_eeg
+                elif path.endswith('.nii.gz') or path.endswith('.nii'):
+                    file = nib.load(path)
+                    file_data = file.get_fdata()
+                    (x, y, z, t) = file_data.shape
 
-            elif path.endswith('.nii.gz') or path.endswith('.nii'):
-                file = nib.load(path)
-                file_data = file.get_fdata()
-                (x, y, z, t) = file_data.shape
+                    frontal_plane = file_data[:, int(y / 2), :, int(t / 2)]
+                    sagittal_plane = file_data[int(x / 2), :, :, int(t / 2)]
+                    horizontal_plane = file_data[:, :, int(z / 2), int(t / 2)]
 
-                frontal_plane = file_data[:, int(y / 2), :, int(t / 2)]
-                sagittal_plane = file_data[int(x / 2), :, :, int(t / 2)]
-                horizontal_plane = file_data[:, :, int(z / 2), int(t / 2)]
+                    data = horizontal_plane
+                    data_type = "MRI"
+                    self.all_data[data_type]["data"].append([horizontal_plane,
+                                                     rotate(sagittal_plane, 90, reshape=True),
+                                                     rotate(frontal_plane, 90, reshape=True)])
+                    model = self.model_mri
+                    model_info = self.chosen_model_info_mri
 
-                data = horizontal_plane
-                data_type = "MRI"
-                self.all_data[data_type]["data"].append([horizontal_plane,
-                                                 rotate(sagittal_plane, 90, reshape=True),
-                                                 rotate(frontal_plane, 90, reshape=True)])
-                model = self.model_mri
-                model_info = self.chosen_model_info_mri
+                result = self.process_data(data, model, model_info, data_type=data_type)
 
-            result = self.process_data(data, model, model_info, data_type=data_type)
+                if data_type == "EEG":
+                    self.all_data[data_type]["data"].append(data)
 
-            if data_type == "EEG":
-                self.all_data[data_type]["data"].append(data)
+                self.all_data[data_type]["names"].append(path)
 
-            self.all_data[data_type]["names"].append(path)
-
-            if result is not None:
-                self.predictions.append(result)
+                if result is not None:
+                    self.predictions.append(result)
+            except Exception as e:
+                print(f"Error processing file {path}: {e}")
+                continue
 
     def process_data(self, data, model, model_info, data_type="EEG"):
         """
