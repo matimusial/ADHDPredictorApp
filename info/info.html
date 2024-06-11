@@ -66,6 +66,22 @@
             background-color: #000;
             border: 2px solid #fff;
         }
+        #gameArea {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            background-color: #f0f0f0;
+        }
+
+        #target {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -75,7 +91,7 @@
         <a href="#" class="tablink active" data-tab="overview">Overview</a>
         <a href="#" class="tablink" data-tab="admin">Admin Instructions</a>
         <a href="#" class="tablink" data-tab="specification">Specification</a>
-        <a href="#" class="tablink" data-tab="click-the-red-dot">Click the Red Dot</a>
+        <a href="#" class="tablink" data-tab="click-the-red-dot">Click the Brain</a>
         <a href="#" class="tablink" data-tab="pong">Pong</a>
     </nav>
 
@@ -471,7 +487,7 @@
     <div id="click-the-red-dot" class="content">
         <h2>Click the Red Dot</h2>
         <div id="gameArea">
-            <div id="target"></div>
+            <img id="target" src="pilka.png" alt="Target">
         </div>
         <p>Wynik: <span id="score">0</span></p>
     </div>
@@ -524,6 +540,7 @@
             moveTarget();
         });
 
+
         // Pong Game Script
         const canvas = document.getElementById('pongCanvas');
         const ctx = canvas.getContext('2d');
@@ -560,17 +577,16 @@
             dy: 4
         };
 
+        const ballImg = new Image();
+        ballImg.src = 'pilka.png';
+
         function drawRect(x, y, width, height) {
             ctx.fillStyle = '#fff';
             ctx.fillRect(x, y, width, height);
         }
 
-        function drawCircle(x, y, radius) {
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.closePath();
+        function drawImage(img, x, y, width, height) {
+            ctx.drawImage(img, x, y, width, height);
         }
 
         function update() {
@@ -633,7 +649,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
             drawRect(computerPaddle.x, computerPaddle.y, computerPaddle.width, computerPaddle.height);
-            drawCircle(ball.x, ball.y, ball.radius);
+            drawImage(ballImg, ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2);
         }
 
         function loop() {
@@ -657,6 +673,7 @@
         });
 
         loop();
+
     </script>
 </body>
 </html>
