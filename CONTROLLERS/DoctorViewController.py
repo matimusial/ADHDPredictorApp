@@ -542,7 +542,7 @@ class DoctorViewController:
             "MRI", f"{data_type}_MRI",
             f"{'ADHD' if radio_adhd.isChecked() else 'CONTROL'}_{data_type}.pkl"
         )
-        print(file_path)
+
         data = read_pickle(file_path)
 
         input_number = min(int(input_number.text()), 20)
