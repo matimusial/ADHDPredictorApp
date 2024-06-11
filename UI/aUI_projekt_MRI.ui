@@ -176,7 +176,7 @@ QPushButton{
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
-                  <string>Training data is built in.</string>
+                  <string>Training files are built in.</string>
                  </property>
                 </widget>
                </item>
@@ -406,7 +406,7 @@ QPushButton{
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(245, 250, 254);</string>
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">
               <string/>

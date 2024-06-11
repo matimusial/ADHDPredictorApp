@@ -57,9 +57,6 @@ class AdminMriCnn:
         )
 
     def train_mri(self):
-        # Disable buttons
-        self.toggle_buttons(False)
-
         self.ui.status_label_2.setText("STATUS: Starting")
         MRI.CNN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -79,7 +76,7 @@ class AdminMriCnn:
 
             self.thread = QThread()
 
-            # Reset the plot and clear metrics before starting the training
+            self.toggle_buttons(False)
             self.progressBar.setValue(0)
             self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN_2)
             self.real_time_metrics.start()
@@ -195,6 +192,7 @@ class AdminMriCnn:
 
     def onError(self, error):
         print(f"Error: {error}")
+        self.toggle_buttons(True)
 
     def on_exit(self):
         QApplication.quit()

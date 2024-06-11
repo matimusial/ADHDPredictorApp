@@ -58,7 +58,6 @@ class AdminMriGan:
         )
 
     def train_gan(self):
-        self.toggle_buttons(False)
         self.ui.status_label.setText("STATUS: Starting")
         MRI.GAN.train.modelStopFlag = False
         epochs = self.validate_epochs()
@@ -79,6 +78,7 @@ class AdminMriGan:
             MRI.config.TRAIN_GAN_PRINT_INTERVAL = print_interval
             MRI.config.TRAIN_GAN_DISP_INTERVAL = disp_interval
 
+            self.toggle_buttons(False)
             self.thread = QThread()
             self.real_time_metrics = RealTimeMetrics_GEN(epochs, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image)
             self.real_time_metrics.start()
@@ -291,6 +291,7 @@ class AdminMriGan:
 
     def onError(self, error):
         print(f"Error occurred: {error}")
+        self.toggle_buttons(True)
 
 class Worker(QObject):
     finished = pyqtSignal()
