@@ -176,7 +176,7 @@ QPushButton{
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
-                  <string>Training files are built in.</string>
+                  <string>Training data is built in.</string>
                  </property>
                 </widget>
                </item>

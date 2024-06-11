@@ -96,20 +96,8 @@ class AdminEegCnn:
 
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
-        frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
-
         self.model_description = self.ui.model_description.toPlainText()
-
-        if self.ui.textEdit_electrodes.toPlainText().strip() == "":
-            electrodes = EEG.config.EEG_NUM_OF_ELECTRODES
-        else:
-            electrodes = int(self.ui.textEdit_electrodes.toPlainText())
-
-        if self.ui.textEdit_frequency.toPlainText().strip() == "":
-            frequency = EEG.config.FS
-        else:
-            frequency = int(self.ui.textEdit_frequency.toPlainText())
 
         if epochs is False or batch_size is False or learning_rate is False:
             self.invalid_input_msgbox()
@@ -117,9 +105,6 @@ class AdminEegCnn:
             EEG.config.CNN_EPOCHS = epochs
             EEG.config.CNN_BATCH_SIZE = batch_size
             EEG.config.CNN_LEARNING_RATE = learning_rate
-            EEG.config.EEG_NUM_OF_ELECTRODES = electrodes
-            EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
-            EEG.config.FS = frequency
 
             self.thread = QThread()
 
@@ -146,13 +131,15 @@ class AdminEegCnn:
             self.thread.start()
 
     def train(self):
-
-        if os.path.exists(self.MODEL_PATH):
-            shutil.rmtree(self.MODEL_PATH)
-
         if not os.path.exists(self.MODEL_PATH):
-            os.makedirs(self.MODEL_PATH)
+            try:
+                os.makedirs(self.MODEL_PATH)
+            except Exception as e:
+                print(f"err: {e}")
+
         self.ui.status_label.setText("STATUS: Running")
+        if self.pathTrain.endswith("ADHD") or self.pathTrain.endswith("CONTROL"):
+            self.pathTrain = self.pathTrain[:-5]
         out = train_cnn_eeg_readraw(True, self.pathTrain, self.PREDICT_PATH, self.MODEL_PATH)
         if out == "STOP":
             self.ui.status_label.setText("STATUS: Await")

@@ -269,6 +269,13 @@ class AdminMriGan:
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
+    def model_upload_failed(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText("Model upload has failed.")
+        msg.setWindowTitle("Error")
+        msg.exec_()
+
     def connect_to_db(self):
         try:
             self.db_conn = DBConnector('localhost', 'admin', 'test', 'postgres', 'password')
