@@ -4,85 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADHDPredictorApp</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        p {
-            margin: 10px 0;
-        }
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        nav {
-            margin-bottom: 20px;
-        }
-        nav a {
-            margin-right: 15px;
-            color: #3498db;
-        }
-        nav a.active {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .content {
-            display: none;
-        }
-        .content.active {
-            display: block;
-        }
-        .logo {
-            width: 50px;
-            height: 50px;
-        }
-        #gameArea {
-            position: relative;
-            width: 600px;
-            height: 400px;
-            margin: 0 auto;
-            border: 2px solid #000;
-            background-color: #f0f0f0;
-        }
-        #target {
-            width: 30px;
-            height: 30px;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
-            cursor: pointer;
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            background-color: #000;
-            border: 2px solid #fff;
-        }
-        #gameArea {
-            position: relative;
-            width: 600px;
-            height: 400px;
-            margin: 0 auto;
-            border: 2px solid #000;
-            background-color: #f0f0f0;
-        }
-
-        #target {
-            width: 30px;
-            height: 30px;
-            position: absolute;
-            cursor: pointer;
-        }
-
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
@@ -93,7 +15,25 @@
         <a href="#" class="tablink" data-tab="specification">Specification</a>
         <a href="#" class="tablink" data-tab="click-the-red-dot">Click the Brain</a>
         <a href="#" class="tablink" data-tab="pong">Brain pong</a>
+        <a href="#" class="tablink" data-tab="tic-tac-toe">Tic Tac Brain</a>
     </nav>
+
+    <div id="tic-tac-toe" class="content">
+    <h2>Tic Tac Brain</h2>
+    <div id="ticTacToeBoard">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <p id="winningMessage" class="hidden">Winner: <span id="winner"></span></p>
+    <button id="restartButton">Restart</button>
+</div>
 
     <div id="overview" class="content active">
         <h2>Overview</h2>
@@ -495,185 +435,12 @@
     <div id="pong" class="content">
         <h2>Brain pong</h2>
         <canvas id="pongCanvas"></canvas>
+         <button id="startButton">Start</button>
     </div>
 
-    <script>
-        document.querySelectorAll('.tablink').forEach(function(tablink) {
-            tablink.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.tablink').forEach(function(link) {
-                    link.classList.remove('active');
-                });
-                document.querySelectorAll('.content').forEach(function(content) {
-                    content.classList.remove('active');
-                });
-                tablink.classList.add('active');
-                document.getElementById(tablink.getAttribute('data-tab')).classList.add('active');
-            });
-        });
-
-        // Click the Red Dot Game Script
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const gameArea = document.getElementById('gameArea');
-            const target = document.getElementById('target');
-            const scoreDisplay = document.getElementById('score');
-            let score = 0;
-
-            function moveTarget() {
-                const gameAreaRect = gameArea.getBoundingClientRect();
-                const maxX = gameAreaRect.width - target.clientWidth;
-                const maxY = gameAreaRect.height - target.clientHeight;
-
-                const randomX = Math.floor(Math.random() * maxX);
-                const randomY = Math.floor(Math.random() * maxY);
-
-                target.style.left = `${randomX}px`;
-                target.style.top = `${randomY}px`;
-            }
-
-            target.addEventListener('click', () => {
-                score++;
-                scoreDisplay.textContent = score;
-                moveTarget();
-            });
-
-            moveTarget();
-        });
-
-
-        // Pong Game Script
-        const canvas = document.getElementById('pongCanvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = 800;
-        canvas.height = 400;
-
-        const paddleWidth = 10;
-        const paddleHeight = 100;
-        const ballRadius = 10;
-
-        const playerPaddle = {
-            x: 10,
-            y: canvas.height / 2 - paddleHeight / 2,
-            width: paddleWidth,
-            height: paddleHeight,
-            dy: 0,
-            speed: 6
-        };
-
-        const computerPaddle = {
-            x: canvas.width - 10 - paddleWidth,
-            y: canvas.height / 2 - paddleHeight / 2,
-            width: paddleWidth,
-            height: paddleHeight,
-            dy: 4
-        };
-
-        const ball = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            radius: ballRadius,
-            dx: 4,
-            dy: 4
-        };
-
-        const ballImg = new Image();
-        ballImg.src = 'pilka.png';
-
-        function drawRect(x, y, width, height) {
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(x, y, width, height);
-        }
-
-        function drawImage(img, x, y, width, height) {
-            ctx.drawImage(img, x, y, width, height);
-        }
-
-        function update() {
-            // Move player paddle
-            playerPaddle.y += playerPaddle.dy;
-
-            // Prevent player paddle from going out of bounds
-            if (playerPaddle.y < 0) {
-                playerPaddle.y = 0;
-            }
-            if (playerPaddle.y + playerPaddle.height > canvas.height) {
-                playerPaddle.y = canvas.height - playerPaddle.height;
-            }
-
-            // Move computer paddle
-            if (ball.y < computerPaddle.y + computerPaddle.height / 2) {
-                computerPaddle.y -= computerPaddle.dy;
-            } else {
-                computerPaddle.y += computerPaddle.dy;
-            }
-
-            // Prevent computer paddle from going out of bounds
-            if (computerPaddle.y < 0) {
-                computerPaddle.y = 0;
-            }
-            if (computerPaddle.y + computerPaddle.height > canvas.height) {
-                computerPaddle.y = canvas.height - computerPaddle.height;
-            }
-
-            // Move ball
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-
-            // Ball collision with top and bottom walls
-            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
-                ball.dy *= -1;
-            }
-
-            // Ball collision with paddles
-            if (
-                (ball.x - ball.radius < playerPaddle.x + playerPaddle.width &&
-                ball.y > playerPaddle.y &&
-                ball.y < playerPaddle.y + playerPaddle.height) ||
-                (ball.x + ball.radius > computerPaddle.x &&
-                ball.y > computerPaddle.y &&
-                ball.y < computerPaddle.y + computerPaddle.height)
-            ) {
-                ball.dx *= -1;
-            }
-
-            // Reset ball if it goes out of bounds
-            if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
-                ball.x = canvas.width / 2;
-                ball.y = canvas.height / 2;
-                ball.dx *= -1;
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-            drawRect(computerPaddle.x, computerPaddle.y, computerPaddle.width, computerPaddle.height);
-            drawImage(ballImg, ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2);
-        }
-
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp') {
-                playerPaddle.dy = -playerPaddle.speed;
-            } else if (e.key === 'ArrowDown') {
-                playerPaddle.dy = playerPaddle.speed;
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                playerPaddle.dy = 0;
-            }
-        });
-
-        loop();
-
-    </script>
+    <script src="script.js"></script>
+    <script src="red_dot.js"></script>
+    <script src="tic_tac.js"></script>
+    <script src="ping_pong.js"></script>
 </body>
 </html>
