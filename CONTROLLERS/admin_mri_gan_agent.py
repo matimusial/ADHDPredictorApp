@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QSpinBox
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QSpinBox
 
 import MRI.config
 from MRI.GAN.train import train_gan
@@ -53,8 +53,6 @@ class AdminMriGan:
         self.ui.save_db.clicked.connect(self.sendToDb)
         self.ui.del_model.clicked.connect(self.delModel)
 
-        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
-
         self.gan_generation_warning_msgbox()
 
     def updateInfoDump(self):
@@ -94,7 +92,7 @@ class AdminMriGan:
             print("TRAIN_GAN_DISP_INTERVAL:", MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
             self.thread = QThread()
-            self.real_time_metrics = RealTimeMetrics_GEN(epochs, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image,  self.progressBar)
+            self.real_time_metrics = RealTimeMetrics_GEN(epochs, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image)
             self.real_time_metrics.start()
 
             # Create a worker object
