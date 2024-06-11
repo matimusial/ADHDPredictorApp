@@ -138,6 +138,7 @@ class AdminMriGan:
 
     def sendToDb(self):
         if not self.modelTrained: return
+        self.modelTrained = False
 
         if os.path.exists(self.MODEL_PATH):
             file_name = os.listdir(self.MODEL_PATH)
