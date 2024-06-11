@@ -1,4 +1,4 @@
-# ADHD Prediction Project
+# ADHD Predictor
 
 ## Overview
 This project aims to predict ADHD (Attention Deficit Hyperactivity Disorder) in children using Convolutional Neural Networks (CNN). It utilizes two main datasets: EEG brain wave data and MRI brain images. The project consists of two main components:
