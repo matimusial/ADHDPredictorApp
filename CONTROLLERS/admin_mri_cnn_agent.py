@@ -112,8 +112,12 @@ class AdminMriCnn:
 
     def onFinished(self):
         file_name = os.listdir(self.MODEL_PATH)
-        acc = file_name[0].replace(".keras", "")
-        self.ui.more_info_dump_2.setText(f"Final model accuracy: {acc}")
+        if file_name:
+            acc = file_name[0].replace(".keras", "")
+            self.ui.more_info_dump_2.setText(f"Final model accuracy: {acc}")
+        else:
+            self.ui.more_info_dump_2.setText("Warning: Could not find model file in MODEL_PATH")
+
         self.ui.status_label_2.setText("STATUS: Model done")
 
     def sendToDb(self):

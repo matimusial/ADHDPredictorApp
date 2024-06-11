@@ -157,9 +157,14 @@ class AdminEegCnn:
 
     def onFinished(self):
         file_name = os.listdir(self.MODEL_PATH)
-        acc = file_name[0].replace(".keras", "")
-        self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
+        if file_name:
+            acc = file_name[0].replace(".keras", "")
+            self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
+        else:
+            self.ui.more_info_dump.setText("Warning: Could not find model file in MODEL_PATH")
+
         self.ui.status_label.setText("STATUS: Model done")
+
     def sendToDb(self):
         if os.path.exists(self.MODEL_PATH):
             file_name = os.listdir(self.MODEL_PATH)
