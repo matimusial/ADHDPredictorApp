@@ -4,7 +4,6 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QProgressBar
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -102,15 +101,16 @@ class RealTimeMetrics(QThread):
             print(f"An error occurred while creating the plot: {e}")
 
     def clear_metrics(self):
-        global global_accuracy, global_val_accuracy, global_loss, global_val_loss
+        global global_accuracy, global_val_accuracy, global_loss, global_val_loss, generated_image
         global_accuracy = []
         global_val_accuracy = []
         global_loss = []
         global_val_loss = []
+        generated_image = []
 
 class RealTimeMetrics_GEN(QThread):
     """Thread for visualizing GAN metrics in real time during model training."""
-    def __init__(self, total_epochs, print_interval, disp_interval, plot_label, image_label, progressBar, interval=1):
+    def __init__(self, total_epochs, print_interval, disp_interval, plot_label, image_label, interval=1):
         super().__init__()
         self.print_interval = print_interval
         self.disp_interval = disp_interval
@@ -119,8 +119,6 @@ class RealTimeMetrics_GEN(QThread):
         self.image_label = image_label
         self.mutex = QMutex()
         self.interval = interval
-        self.progressBar = progressBar
-        self.progressBar.setRange(0, total_epochs)
         self.running = True
 
     def run(self):
@@ -134,7 +132,6 @@ class RealTimeMetrics_GEN(QThread):
             self.plot_metrics()
             self.generate_and_display_image(disp_counter)
             time.sleep(self.interval)
-            self.progressBar.setValue(control_counter)
 
     def stop(self):
         self.running = False
