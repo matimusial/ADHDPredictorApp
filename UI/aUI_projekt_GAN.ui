@@ -332,23 +332,24 @@ QPushButton{
                   <item>
                    <widget class="QLabel" name="print_interval">
                     <property name="text">
-                     <string>Print interval</string>
+                     <string>Print plot interval</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QTextEdit" name="textEdit_print_interval">
-                    <property name="minimumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
+                   <widget class="QSpinBox" name="textEdit_print_interval">
+                    <property name="minimum">
+                     <number>100</number>
                     </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
+                    <property name="maximum">
+                     <number>100000</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="epochs_print">
+                    <property name="text">
+                     <string>Epochs</string>
                     </property>
                    </widget>
                   </item>
@@ -364,18 +365,19 @@ QPushButton{
                    </widget>
                   </item>
                   <item>
-                   <widget class="QTextEdit" name="textEdit_disp_interval">
-                    <property name="minimumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
+                   <widget class="QSpinBox" name="textEdit_disp_interval">
+                    <property name="minimum">
+                     <number>100</number>
                     </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
+                    <property name="maximum">
+                     <number>100000</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="epochs_disp">
+                    <property name="text">
+                     <string>Epochs</string>
                     </property>
                    </widget>
                   </item>

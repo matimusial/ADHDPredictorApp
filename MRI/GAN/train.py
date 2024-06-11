@@ -16,6 +16,15 @@ from MRI.file_io import read_pickle
 from CONTROLLERS.metrics import WorkerMetrics_GAN
 
 def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
+    """
+    Trains a GAN using MRI data.
+
+    Args:
+        save (bool): Whether to save the model after training.
+        data_type (str): The type of data (ADHD or CONTROL).
+        pickle_path (str): The path to the pickle files with the data.
+        gan_model_path (str): The path to save the trained model.
+    """
     from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
                             TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
 

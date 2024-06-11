@@ -2,7 +2,7 @@ import sys
 
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QSpinBox
 
 import MRI.config
 from MRI.GAN.train import train_gan
@@ -51,8 +51,8 @@ class AdminMriGan():
         self.ui.textEdit_learning_rate.setPlainText(str(MRI.config.GAN_LEARNING_RATE))
         self.ui.textEdit_input_size.setPlainText(str(MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI))
 
-        self.ui.textEdit_print_interval.setPlainText(str(MRI.config.TRAIN_GAN_PRINT_INTERVAL))
-        self.ui.textEdit_disp_interval.setPlainText(str(MRI.config.TRAIN_GAN_DISP_INTERVAL))
+        self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
+        self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
         self.ui.path_label.setText(f'{self.TRAIN_PATH}')
 
