@@ -91,8 +91,7 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
-        # Disable buttons
-        self.toggle_buttons(False)
+
         self.ui.status_label.setText("STATUS: Starting")
         EEG.TRAIN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -111,7 +110,7 @@ class AdminEegCnn:
 
             self.thread = QThread()
 
-            # Reset the plot and clear metrics before starting the training
+            self.toggle_buttons(False)
             self.progressBar.setValue(0)
             self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN)
             self.real_time_metrics.start()
@@ -240,7 +239,9 @@ class AdminEegCnn:
             print("Nie ma ścieżki MODEL_PATH")
 
     def onError(self, error):
+        self.toggle_buttons(True)
         print(f"Error: {error}")
+
 
     def on_exit(self):
         QApplication.quit()

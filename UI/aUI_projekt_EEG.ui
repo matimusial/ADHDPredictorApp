@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>760</height>
+    <height>742</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -535,7 +535,7 @@ QPushButton{
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(245, 250, 254);</string>
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">
               <string/>
