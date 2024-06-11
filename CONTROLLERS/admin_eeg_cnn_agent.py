@@ -119,13 +119,6 @@ class AdminEegCnn:
             EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
             EEG.config.FS = frequency
 
-            print("CNN_EPOCHS:", EEG.config.CNN_EPOCHS)
-            print("CNN_BATCH_SIZE:", EEG.config.CNN_BATCH_SIZE)
-            print("CNN_LEARNING_RATE:", EEG.config.CNN_LEARNING_RATE)
-            print("EEG_NUM_OF_ELECTRODES:", EEG.config.EEG_NUM_OF_ELECTRODES)
-            print("EEG_SIGNAL_FRAME_SIZE:", EEG.config.EEG_SIGNAL_FRAME_SIZE)
-            print("FS:", EEG.config.FS)
-
             self.thread = QThread()
 
             # Reset the plot and clear metrics before starting the training
