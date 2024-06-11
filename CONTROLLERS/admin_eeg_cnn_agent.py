@@ -244,7 +244,10 @@ class AdminEegCnn:
     def connect_to_db(self):
         self.db_conn = DBConnector()
         self.db_conn.establish_connection()
-        if self.db_conn.connection is None: return
+        if self.db_conn.connection is None:
+            return False
+        else:
+            return True
 
     def validate_input(self, text):
         try:
