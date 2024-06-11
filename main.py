@@ -28,7 +28,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 current_dir = get_base_path()
 UI_PATH = os.path.join(current_dir, 'UI')
 
-print("chuj")
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
