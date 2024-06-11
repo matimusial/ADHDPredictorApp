@@ -142,7 +142,17 @@ class AdminEegCnn:
 
             # Start the thread
             self.thread.start()
+    def change_btn_state_EEG_CNN(self,state):
+        self.ui.CNN_MRI_Button.setEnabled(state)
+        self.ui.GAN_MRI_Button.setEnabled(state)
 
+        self.ui.dbButton.setEnabled(state)
+        self.ui.switchSceneBtn.setEnabled(state)
+
+        self.ui.folder_explore.setEnabled(state)
+        self.ui.startButton.setEnabled(state)
+        self.ui.save_db.setEnabled(state)
+        self.ui.del_model.setEnabled(state)
     def train(self):
         if os.path.exists(self.MODEL_PATH):
             shutil.rmtree(self.MODEL_PATH)

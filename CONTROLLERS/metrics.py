@@ -2,6 +2,7 @@ from tensorflow.keras.callbacks import Callback
 from PyQt5.QtCore import QMutex, QMutexLocker, QThread
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
+from PyQt5.QtWidgets import QPushButton
 
 from PyQt5.QtGui import QPixmap
 
@@ -34,6 +35,7 @@ def plot_mri(image, title):
     buf.seek(0)
     return buf
 
+
 class RealTimeMetrics(QThread):
     """Thread for visualizing accuracy and loss in real time during model training."""
     def __init__(self, total_epochs, progressBar, plot_label, interval=1):
@@ -45,6 +47,7 @@ class RealTimeMetrics(QThread):
         self.interval = interval
         self.progressBar = progressBar
         self.progressBar.setRange(0, total_epochs)
+        self.running = True
 
     def run(self):
         self.clear_metrics()
@@ -132,6 +135,7 @@ class RealTimeMetrics_GEN(QThread):
             self.plot_metrics()
             self.generate_and_display_image(disp_counter)
             time.sleep(self.interval)
+
 
     def generate_and_display_image(self, epoch):
         if not generated_image == []:
@@ -252,4 +256,7 @@ class WorkerMetrics_GAN:
         global_train_g_loss = self.train_g_loss
         global_val_d_loss = self.val_d_loss
         global_val_g_loss = self.val_g_loss
+
+
+
 

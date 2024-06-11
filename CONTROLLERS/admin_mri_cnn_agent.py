@@ -2,7 +2,7 @@ import sys
 
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton
 
 import MRI.config
 from MRI.CNN.train import train_cnn, readPickleForUI
@@ -57,6 +57,9 @@ class AdminMriCnn:
         )
 
     def train_mri(self):
+        # Disable buttons
+        self.toggle_buttons(False)
+
         self.ui.status_label_2.setText("STATUS: Starting")
         MRI.CNN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -118,6 +121,19 @@ class AdminMriCnn:
             self.ui.more_info_dump_2.setText("Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label_2.setText("STATUS: Model done")
+        self.toggle_buttons(True)
+
+    def toggle_buttons(self, state):
+        try:
+            self.ui.CNN_EEG_Button.setEnabled(state)
+            self.ui.GAN_MRI_Button.setEnabled(state)
+            self.ui.dbButton_2.setEnabled(state)
+            self.ui.switchSceneBtn.setEnabled(state)
+            self.ui.startButton_2.setEnabled(state)
+            self.ui.save_db_2.setEnabled(state)
+            self.ui.del_model_2.setEnabled(state)
+        except Exception as e:
+            print(f'Failed toggle_buttons: {e}')
 
     def sendToDb(self):
         if os.path.exists(self.MODEL_PATH):
