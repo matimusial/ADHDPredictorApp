@@ -167,7 +167,11 @@ class AdminEegCnn:
 
     def sendToDb(self):
         if os.path.exists(self.MODEL_PATH):
-            file_name = os.listdir(self.MODEL_PATH)
+            if any(os.path.isfile(os.path.join(self.MODEL_PATH, f)) for f in os.listdir(self.MODEL_PATH)):
+                file_name = os.listdir(self.MODEL_PATH)
+            else:
+                self.model_upload_failed()
+                return
             self.ui.db_status.setText("STATUS: Connecting...")
             conn = self.connect_to_db()
             if conn:
