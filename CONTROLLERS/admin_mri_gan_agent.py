@@ -40,7 +40,6 @@ class AdminMriGan:
         self.ui.textEdit_epochs.setPlainText(str(MRI.config.GAN_EPOCHS_MRI))
         self.ui.textEdit_batch_size.setPlainText(str(MRI.config.GAN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate.setPlainText(str(MRI.config.GAN_LEARNING_RATE))
-        self.ui.textEdit_input_size.setPlainText(str(MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI))
 
         self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
         self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
@@ -66,7 +65,6 @@ class AdminMriGan:
         MRI.GAN.train.modelStopFlag = False
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
-        frame_size = self.validate_frame_size()
         learning_rate = self.validate_learning_rate()
 
         print_interval = self.ui.textEdit_print_interval.value()
@@ -80,16 +78,8 @@ class AdminMriGan:
             MRI.config.GAN_EPOCHS_MRI = epochs
             MRI.config.GAN_BATCH_SIZE_MRI = batch_size
             MRI.config.GAN_LEARNING_RATE = learning_rate
-            MRI.config.GAN_SINGLE_INPUT_SHAPE_MRI = frame_size
             MRI.config.TRAIN_GAN_PRINT_INTERVAL = print_interval
             MRI.config.TRAIN_GAN_DISP_INTERVAL = disp_interval
-
-            print("GAN_EPOCHS:", MRI.config.GAN_EPOCHS_MRI)
-            print("GAN_BATCH_SIZE:", MRI.config.GAN_BATCH_SIZE_MRI)
-            print("GAN_LEARNING_RATE:", MRI.config.GAN_LEARNING_RATE)
-            print("GAN_TEST_SIZE:", MRI.config.GAN_INPUT_SHAPE_MRI)
-            print("TRAIN_GAN_PRINT_INTERVAL:", MRI.config.TRAIN_GAN_PRINT_INTERVAL)
-            print("TRAIN_GAN_DISP_INTERVAL:", MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
             self.thread = QThread()
             self.real_time_metrics = RealTimeMetrics_GEN(epochs, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image)

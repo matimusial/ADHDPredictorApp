@@ -75,10 +75,6 @@ class AdminMriCnn:
             MRI.config.CNN_BATCH_SIZE_MRI = batch_size
             MRI.config.CNN_LEARNING_RATE_MRI = learning_rate
 
-            print("MRI_EPOCHS:", MRI.config.CNN_EPOCHS_MRI)
-            print("MRI_BATCH_SIZE:", MRI.config.CNN_BATCH_SIZE_MRI)
-            print("MRI_LEARNING_RATE:", MRI.config.CNN_LEARNING_RATE_MRI)
-
             self.thread = QThread()
 
             # Reset the plot and clear metrics before starting the training
@@ -194,7 +190,6 @@ class AdminMriCnn:
     def connect_to_db(self):
         self.db_conn = DBConnector()
         self.db_conn.establish_connection()
-        print(self.db_conn.connection)
         if self.db_conn.connection is None: return
 
     def validate_epochs(self):
