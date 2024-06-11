@@ -44,7 +44,28 @@
             width: 50px;
             height: 50px;
         }
-
+        #gameArea {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            background-color: #f0f0f0;
+        }
+        #target {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #000;
+            border: 2px solid #fff;
+        }
     </style>
 </head>
 <body>
@@ -54,6 +75,8 @@
         <a href="#" class="tablink active" data-tab="overview">Overview</a>
         <a href="#" class="tablink" data-tab="admin">Admin Instructions</a>
         <a href="#" class="tablink" data-tab="specification">Specification</a>
+        <a href="#" class="tablink" data-tab="click-the-red-dot">Click the Red Dot</a>
+        <a href="#" class="tablink" data-tab="pong">Pong</a>
     </nav>
 
     <div id="overview" class="content active">
@@ -92,8 +115,9 @@
             <li><strong>"GAN for MRI"</strong> - (Button) Window for training the GAN model to generate MRI images</li>
             <li><strong>"CNN for MRI"</strong> - (Button) Window for training the CNN model for MRI images</li>
             <li><strong>"CNN for EEG"</strong> - (Button) Window for training the CNN model for EEG waves</li>
+            <li><strong>"Exit"</strong> - (Button) Closes the application</li>
             <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"Plot"</strong> - (Plot) For CNN displays accuracy and loss for test and validation; For GAN displays loss of generator and discriminator for test and validation</li>
+            <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
         </ul>
 
         <h3>CNN for EEG</h3>
@@ -109,7 +133,7 @@
     | CONTROL
     |    |
     |    [files of the control group .mat/.csv/.edf]</pre>
-            <li><strong>"Epochs"</strong> - numeric type, at least 2</li>
+            <li><strong>"Epochs"</strong> - numeric type</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
@@ -121,7 +145,7 @@
 
         <h3>CNN for MRI</h3>
         <ul>
-            <li><strong>"Epochs"</strong> - numeric type, at least 2</li>
+            <li><strong>"Epochs"</strong> - numeric type</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
@@ -133,12 +157,12 @@
 
         <h3>GAN for MRI</h3>
         <ul>
-            <li><strong>"Epochs"</strong> - numeric type, at least 1000</li>
+            <li><strong>"Epochs"</strong> - numeric type</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Control/ADHD"</strong> - radio button to select the type of training data</li>
-            <li><strong>"Print plot int."</strong> - (numeric type) Set interval between plot update</li>
-            <li><strong>"Disp interval"</strong> - (numeric type) Set interval between image update</li>
+            <li><strong>"Print plot int."</strong> - numeric type</li>
+            <li><strong>"Disp interval"</strong> - numeric type</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
             <li><strong>"Start"</strong> - (button) Starts the model training process</li>
             <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
@@ -150,7 +174,6 @@
             <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
         </footer>
     </div>
-
 
     <div id="specification" class="content">
         <h2>Specification</h2>
@@ -445,6 +468,19 @@
         </footer>
     </div>
 
+    <div id="click-the-red-dot" class="content">
+        <h2>Click the Red Dot</h2>
+        <div id="gameArea">
+            <div id="target"></div>
+        </div>
+        <p>Wynik: <span id="score">0</span></p>
+    </div>
+
+    <div id="pong" class="content">
+        <h2>Pong</h2>
+        <canvas id="pongCanvas"></canvas>
+    </div>
+
     <script>
         document.querySelectorAll('.tablink').forEach(function(tablink) {
             tablink.addEventListener('click', function(e) {
@@ -459,6 +495,168 @@
                 document.getElementById(tablink.getAttribute('data-tab')).classList.add('active');
             });
         });
+
+        // Click the Red Dot Game Script
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const gameArea = document.getElementById('gameArea');
+            const target = document.getElementById('target');
+            const scoreDisplay = document.getElementById('score');
+            let score = 0;
+
+            function moveTarget() {
+                const gameAreaRect = gameArea.getBoundingClientRect();
+                const maxX = gameAreaRect.width - target.clientWidth;
+                const maxY = gameAreaRect.height - target.clientHeight;
+
+                const randomX = Math.floor(Math.random() * maxX);
+                const randomY = Math.floor(Math.random() * maxY);
+
+                target.style.left = `${randomX}px`;
+                target.style.top = `${randomY}px`;
+            }
+
+            target.addEventListener('click', () => {
+                score++;
+                scoreDisplay.textContent = score;
+                moveTarget();
+            });
+
+            moveTarget();
+        });
+
+        // Pong Game Script
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 800;
+        canvas.height = 400;
+
+        const paddleWidth = 10;
+        const paddleHeight = 100;
+        const ballRadius = 10;
+
+        const playerPaddle = {
+            x: 10,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            dy: 0,
+            speed: 6
+        };
+
+        const computerPaddle = {
+            x: canvas.width - 10 - paddleWidth,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            dy: 4
+        };
+
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: ballRadius,
+            dx: 4,
+            dy: 4
+        };
+
+        function drawRect(x, y, width, height) {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(x, y, width, height);
+        }
+
+        function drawCircle(x, y, radius) {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function update() {
+            // Move player paddle
+            playerPaddle.y += playerPaddle.dy;
+
+            // Prevent player paddle from going out of bounds
+            if (playerPaddle.y < 0) {
+                playerPaddle.y = 0;
+            }
+            if (playerPaddle.y + playerPaddle.height > canvas.height) {
+                playerPaddle.y = canvas.height - playerPaddle.height;
+            }
+
+            // Move computer paddle
+            if (ball.y < computerPaddle.y + computerPaddle.height / 2) {
+                computerPaddle.y -= computerPaddle.dy;
+            } else {
+                computerPaddle.y += computerPaddle.dy;
+            }
+
+            // Prevent computer paddle from going out of bounds
+            if (computerPaddle.y < 0) {
+                computerPaddle.y = 0;
+            }
+            if (computerPaddle.y + computerPaddle.height > canvas.height) {
+                computerPaddle.y = canvas.height - computerPaddle.height;
+            }
+
+            // Move ball
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Ball collision with top and bottom walls
+            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+                ball.dy *= -1;
+            }
+
+            // Ball collision with paddles
+            if (
+                (ball.x - ball.radius < playerPaddle.x + playerPaddle.width &&
+                ball.y > playerPaddle.y &&
+                ball.y < playerPaddle.y + playerPaddle.height) ||
+                (ball.x + ball.radius > computerPaddle.x &&
+                ball.y > computerPaddle.y &&
+                ball.y < computerPaddle.y + computerPaddle.height)
+            ) {
+                ball.dx *= -1;
+            }
+
+            // Reset ball if it goes out of bounds
+            if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+                ball.dx *= -1;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+            drawRect(computerPaddle.x, computerPaddle.y, computerPaddle.width, computerPaddle.height);
+            drawCircle(ball.x, ball.y, ball.radius);
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                playerPaddle.dy = -playerPaddle.speed;
+            } else if (e.key === 'ArrowDown') {
+                playerPaddle.dy = playerPaddle.speed;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                playerPaddle.dy = 0;
+            }
+        });
+
+        loop();
     </script>
 </body>
 </html>
