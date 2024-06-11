@@ -162,7 +162,7 @@ QPushButton{
            <item row="0" column="0">
             <widget class="QLabel" name="window_name_2">
              <property name="text">
-              <string>MRI for CNN</string>
+              <string>CNN for MRI</string>
              </property>
              <property name="scaledContents">
               <bool>false</bool>
