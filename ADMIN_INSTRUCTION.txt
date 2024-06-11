@@ -1,12 +1,15 @@
 Żeby dostać się do widoku admina wciśnij przycisk "Admin View" po lewej stronie okienka programu (tego po uruchomieniu programu).
 
-USER VIEW - Przywraca do głównego okna
-GAN for MRI - Okno z uczeniem modelu GAN do generowania zdjęć MRI
-CNN for MRI - Okno z uczeniem modelu CNN dla zdjęć MRI
-CNN for EEG - Okno z uczeniem modelu CNN dla fal EEG
+    - "GAN for MRI"     - (Przycisk) Okno z uczeniem modelu GAN do generowania zdjęć MRI
+    - "CNN for MRI"     - (Przycisk) Okno z uczeniem modelu CNN dla zdjęć MRI
+    - "CNN for EEG"     - (Przycisk) Okno z uczeniem modelu CNN dla fal EEG
+
+    - "Exit"            - (Przycisk) Wyłącza aplikację
+    - "Database Admin"  - (Przycisk) Łączy się z bazą danych i wyświetla jej zawartość z możliwością usunięcia modeli (UWAGA: wymaga połączenia VPN z siecią ZUT)
+    - "USER VIEW"       - (Przycisk) Przywraca do głównego okna
 
 =CNN for EEG=====================================================================================:
-    - "Chose folder with data" - (przycisk) typ tekstowy,          domyślnie rf'{parent_dir}/EEG/TRAIN/TRAIN_DATA'
+    - "Chose folder with data" - (przycisk) typ tekstowy
         Folder z danymi uczącymi musi mieć następującą strukturę:
         (wybrany folder)
                         |
@@ -18,13 +21,37 @@ CNN for EEG - Okno z uczeniem modelu CNN dla fal EEG
                                 |
                                 [pliki grupy kontrolnej .mat/.csv/.edf]
 
-    - "Epochs"          -   typ liczbowy,               domyślnie 20
-    - "Batch size"      -   typ liczbowy,               domyślnie 32
-    - "Learning rate"   -   typ zmiennoprzecinkowy,     domyślnie 0.001
-    - "Electrodes"      -   typ liczbowy,               domyślnie 19
-    - "Frame size"      -   typ liczbowy,               domyślnie 128
-    - "Frequency"       -   typ liczbowy,               domyślnie 128
+    - "Epochs"          -   typ liczbowy
+    - "Batch size"      -   typ liczbowy
+    - "Learning rate"   -   typ zmiennoprzecinkowy
+    - "Description"     -   (typ tekstowy) Opis dla modelu zapisywany w bazie danych
 
     - "Start"           -   (przycisk) Uruchamia proces uczenia modelu
+    - "Stop"            -   (przycisk) Zatrzymuje proces uczenia modelu na ostatniej epoce
+    - "Save model to db"-   (przycisk) Gdy model jest gotowy, zapisuje go do bazy danych (UWAGA: wymaga połączenia VPN z siecią ZUT)
+    - "Delete model"    -   (przycisk) Gdy model jest gotowy, usuwa go bez zapisu do bazy danych.
 
-    - [PLOT]            -   (graf) Wyświetla wartość Accuracy i Loss po uruchomieniu uczenia w czasie rzeczywistym
+=CNN for MRI=====================================================================================:
+    - "Epochs"          -   typ liczbowy
+    - "Batch size"      -   typ liczbowy
+    - "Learning rate"   -   typ zmiennoprzecinkowy
+    - "Description"     -   (typ tekstowy) Opis dla modelu zapisywany w bazie danych
+
+    - "Start"           -   (przycisk) Uruchamia proces uczenia modelu
+    - "Stop"            -   (przycisk) Zatrzymuje proces uczenia modelu na ostatniej epoce
+    - "Save model to db"-   (przycisk) Gdy model jest gotowy, zapisuje go do bazy danych (UWAGA: wymaga połączenia VPN z siecią ZUT)
+    - "Delete model"    -   (przycisk) Gdy model jest gotowy, usuwa go bez zapisu do bazy danych.
+
+=GAN for MRI=====================================================================================:
+    - "Epochs"          -   typ liczbowy
+    - "Batch size"      -   typ liczbowy
+    - "Learning rate"   -   typ zmiennoprzecinkowy
+    - "Control/ADHD"    -   przycisk radiowy Wybór typu danych uczących
+    - "Print plot int." -   typ liczbowy
+    - "Disp interval"   -   typ liczbowy
+    - "Description"     -   (typ tekstowy) Opis dla modelu zapisywany w bazie danych
+
+    - "Start"           -   (przycisk) Uruchamia proces uczenia modelu
+    - "Stop"            -   (przycisk) Zatrzymuje proces uczenia modelu na ostatniej epoce
+    - "Save model to db"-   (przycisk) Gdy model jest gotowy, zapisuje go do bazy danych (UWAGA: wymaga połączenia VPN z siecią ZUT)
+    - "Delete model"    -   (przycisk) Gdy model jest gotowy, usuwa go bez zapisu do bazy danych.
