@@ -92,9 +92,8 @@
             <li><strong>"GAN for MRI"</strong> - (Button) Window for training the GAN model to generate MRI images</li>
             <li><strong>"CNN for MRI"</strong> - (Button) Window for training the CNN model for MRI images</li>
             <li><strong>"CNN for EEG"</strong> - (Button) Window for training the CNN model for EEG waves</li>
-            <li><strong>"Exit"</strong> - (Button) Closes the application</li>
             <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
+            <li><strong>"Plot"</strong> - (Plot) For CNN displays accuracy and loss for test and validation; For GAN displays loss of generator and discriminator for test and validation</li>
         </ul>
 
         <h3>CNN for EEG</h3>
@@ -110,7 +109,7 @@
     | CONTROL
     |    |
     |    [files of the control group .mat/.csv/.edf]</pre>
-            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Epochs"</strong> - numeric type, at least 2</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
@@ -122,7 +121,7 @@
 
         <h3>CNN for MRI</h3>
         <ul>
-            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Epochs"</strong> - numeric type, at least 2</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
@@ -134,12 +133,12 @@
 
         <h3>GAN for MRI</h3>
         <ul>
-            <li><strong>"Epochs"</strong> - numeric type</li>
+            <li><strong>"Epochs"</strong> - numeric type, at least 1000</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
             <li><strong>"Control/ADHD"</strong> - radio button to select the type of training data</li>
-            <li><strong>"Print plot int."</strong> - numeric type</li>
-            <li><strong>"Disp interval"</strong> - numeric type</li>
+            <li><strong>"Print plot int."</strong> - (numeric type) Set interval between plot update</li>
+            <li><strong>"Disp interval"</strong> - (numeric type) Set interval between image update</li>
             <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
             <li><strong>"Start"</strong> - (button) Starts the model training process</li>
             <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
