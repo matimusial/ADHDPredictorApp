@@ -15,6 +15,7 @@ from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidato
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from scipy.io import loadmat
+from scipy.ndimage import rotate
 from pandas import read_csv
 
 from keras.models import load_model
@@ -123,6 +124,11 @@ class DoctorViewController:
                 self.loaded_eeg_files += 1
             if path.endswith('.nii') or path.endswith('.nii.gz'):
                 self.loaded_mri_files += 1
+
+        if self.loaded_eeg_files > 0:
+            self.ui.imgViewer.setCurrentIndex(0)
+        if self.loaded_mri_files > 0:
+            self.ui.imgViewer.setCurrentIndex(1)
 
         self.ui.dataName.setText(f"{self.loaded_eeg_files} EEG and {self.loaded_mri_files} MRI files chosen")
         self.get_model_names()
@@ -375,7 +381,9 @@ class DoctorViewController:
 
                 data = horizontal_plane
                 data_type = "MRI"
-                self.all_data[data_type].append([horizontal_plane, sagittal_plane, frontal_plane])
+                self.all_data[data_type].append([horizontal_plane,
+                                                 rotate(sagittal_plane, 90, reshape=True),
+                                                 rotate(frontal_plane, 90, reshape=True)])
                 model = self.model_mri
                 model_info = self.chosen_model_info_mri
 
