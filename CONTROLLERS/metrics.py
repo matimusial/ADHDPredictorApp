@@ -50,6 +50,8 @@ class RealTimeMetrics(QThread):
         self.clear_metrics()
         control_counter = 0
         while control_counter < self.total_epochs:
+            if not self.running:
+                break
             control_counter = len(global_accuracy)
             self.plot_metrics()
             time.sleep(self.interval)
@@ -125,16 +127,12 @@ class RealTimeMetrics_GEN(QThread):
         self.clear_metrics()
         control_counter = 0
         while control_counter < self.total_epochs:
-            if not self.running:
-                break
             control_counter = len(global_train_d_loss)*self.print_interval
             disp_counter = self.disp_interval*((len(global_train_d_loss)*self.print_interval)//self.disp_interval)
             self.plot_metrics()
             self.generate_and_display_image(disp_counter)
             time.sleep(self.interval)
 
-    def stop(self):
-        self.running = False
     def generate_and_display_image(self, epoch):
         if not generated_image == []:
             try:
@@ -223,13 +221,13 @@ class WorkerMetrics_GAN:
         self.train_d_loss.append(d_loss)
         self.train_g_loss.append(g_loss)
         self.update_global_metrics()
-        self.get_metrics()
+        #self.get_metrics()
 
     def update_val_metrics(self, d_loss, g_loss):
         self.val_d_loss.append(d_loss)
         self.val_g_loss.append(g_loss)
         self.update_global_metrics()
-        self.get_metrics()
+        #self.get_metrics()
 
     def get_metrics(self):
         print("\ntrain_d_loss", global_train_d_loss,)

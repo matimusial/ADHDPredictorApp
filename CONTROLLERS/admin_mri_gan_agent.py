@@ -47,7 +47,6 @@ class AdminMriGan:
         self.ui.path_label.setText(f'{self.TRAIN_PATH}')
 
         self.ui.startButton.clicked.connect(self.train_gan)
-        self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)
         self.ui.del_model.clicked.connect(self.delModel)
@@ -191,10 +190,6 @@ class AdminMriGan:
         msg.setText("Generating synthetic data using GAN models can be a time-consuming process, especially for large datasets. Please ensure your system has enough resources and patience for the process to complete.")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
-
-    def stopModel(self):
-        MRI.GAN.train.modelStopFlag = True
-        self.ui.status_label.setText("STATUS: Stopping model")
 
     def validate_epochs(self):
         try:

@@ -170,13 +170,6 @@ QPushButton{
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
-                <widget class="QPushButton" name="folder_explore">
-                 <property name="text">
-                  <string>Chose folder with data</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QLabel" name="path_label">
                  <property name="text">
                   <string>[Folder Path]</string>
@@ -281,36 +274,12 @@ QPushButton{
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
-                  <item>
-                   <widget class="QLabel" name="frame_size">
-                    <property name="text">
-                     <string>Input shape</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTextEdit" name="textEdit_input_size">
-                    <property name="minimumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>181</width>
-                      <height>31</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
                  <widget class="QRadioButton" name="radioButton_Control">
                   <property name="text">
                    <string>Control</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -486,13 +455,6 @@ QPushButton{
                </item>
               </layout>
              </item>
-             <item>
-              <widget class="QProgressBar" name="progressBar">
-               <property name="value">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
             </layout>
            </item>
           </layout>
@@ -530,7 +492,7 @@ QPushButton{
 }</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabImage_2">
        <property name="sizePolicy">
