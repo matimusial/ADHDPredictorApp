@@ -3,6 +3,7 @@ import sys
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
+from PyQt5.QtGui import QFontMetrics
 
 import EEG.config
 from EEG.TRAIN.train import train_cnn_eeg_readraw
@@ -65,7 +66,9 @@ class AdminEegCnn:
 
             if os.path.isdir(adhd_path) and os.path.isdir(control_path):
                 self.pathTrain = folder
-                self.ui.path_label.setText(f'{folder}')
+                metrics = QFontMetrics(self.ui.path_label.font())
+                elided_text = metrics.elidedText(folder, Qt.ElideMiddle, self.ui.path_label.width())
+                self.ui.path_label.setText(elided_text)
                 _, _, initChannels, adhdcount, controlcount = read_eeg_raw(folder)
                 self.loaded_adhd_files = adhdcount
                 self.loaded_control_files = controlcount
