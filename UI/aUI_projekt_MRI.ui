@@ -176,14 +176,14 @@ QPushButton{
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
-                  <string>Built in files:</string>
+                  <string>Training files are built in.</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLabel" name="path_label_2">
                  <property name="text">
-                  <string>[Folder Path]</string>
+                  <string/>
                  </property>
                 </widget>
                </item>

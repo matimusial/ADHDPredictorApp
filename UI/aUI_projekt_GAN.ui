@@ -172,7 +172,7 @@ QPushButton{
                <item>
                 <widget class="QLabel" name="path_label">
                  <property name="text">
-                  <string>[Folder Path]</string>
+                  <string>Training data is built in.</string>
                  </property>
                 </widget>
                </item>

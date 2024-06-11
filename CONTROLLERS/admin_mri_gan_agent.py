@@ -44,8 +44,6 @@ class AdminMriGan:
         self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
         self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
-        self.ui.path_label.setText(f'{self.TRAIN_PATH}')
-
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)

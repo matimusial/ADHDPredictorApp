@@ -39,7 +39,6 @@ class AdminMriCnn:
         self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
         self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.path_label_2.setText(f'{self.TRAIN_PATH}')
 
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
