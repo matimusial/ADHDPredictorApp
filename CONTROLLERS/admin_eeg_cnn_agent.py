@@ -88,6 +88,8 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
+        # Disable buttons
+        self.toggle_buttons(False)
         self.ui.status_label.setText("STATUS: Starting")
         EEG.TRAIN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -142,18 +144,9 @@ class AdminEegCnn:
 
             # Start the thread
             self.thread.start()
-    def change_btn_state_EEG_CNN(self,state):
-        self.ui.CNN_MRI_Button.setEnabled(state)
-        self.ui.GAN_MRI_Button.setEnabled(state)
 
-        self.ui.dbButton.setEnabled(state)
-        self.ui.switchSceneBtn.setEnabled(state)
-
-        self.ui.folder_explore.setEnabled(state)
-        self.ui.startButton.setEnabled(state)
-        self.ui.save_db.setEnabled(state)
-        self.ui.del_model.setEnabled(state)
     def train(self):
+
         if os.path.exists(self.MODEL_PATH):
             shutil.rmtree(self.MODEL_PATH)
 
@@ -174,6 +167,20 @@ class AdminEegCnn:
             self.ui.more_info_dump.setText("Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label.setText("STATUS: Model done")
+        self.toggle_buttons(True)
+
+    def toggle_buttons(self,state):
+        try:
+            self.ui.CNN_MRI_Button.setEnabled(state)
+            self.ui.GAN_MRI_Button.setEnabled(state)
+            self.ui.dbButton.setEnabled(state)
+            self.ui.switchSceneBtn.setEnabled(state)
+            self.ui.folder_explore.setEnabled(state)
+            self.ui.startButton.setEnabled(state)
+            self.ui.save_db.setEnabled(state)
+            self.ui.del_model.setEnabled(state)
+        except Exception as e:
+            print(f'Failed toggle_buttons: {e}')
 
     def sendToDb(self):
         if os.path.exists(self.MODEL_PATH):
