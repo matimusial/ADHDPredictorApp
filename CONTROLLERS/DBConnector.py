@@ -15,6 +15,81 @@ def get_base_path():
     else:
         return os.path.dirname(os.path.abspath(__file__))
 
+
+def extract_url():
+    """
+    Extracts the database connection details from a 'url.txt' file.
+
+    Returns:
+        tuple: A tuple containing host, user, password, and database name.
+
+    Raises:
+        FileNotFoundError: If the 'url.txt' file is not found.
+    """
+    try:
+        with open("url.txt", 'r') as file:
+            url = file.read()
+    except Exception:
+        raise FileNotFoundError("Did not find a url.txt")
+
+    host = url.split('@')[1].split('/')[0]
+    user = url.split('://')[1].split(':')[0]
+    password = url.split(':')[2].split('@')[0]
+    database = url.split('/')[-1]
+
+    return host, user, password, database
+
+
+def validate_and_convert_input_models(name, file_data, channels, input_shape, type_value, fs, plane,
+                                      description):
+    """
+    Validates input for models table
+    """
+    if not all(char.isdigit() or char == '.' for char in name):
+        print("Error: 'name' must consist only of digits (0-9) and/or dots ('.').")
+        return
+
+    if not file_data.endswith('.keras'):
+        print("Error: 'model path' must have '.keras' extension.")
+        return
+
+    if channels is not None and not isinstance(channels, int):
+        print("Error: 'channels' must be an integer or None.")
+        return
+
+    if not (isinstance(input_shape, tuple) and all(isinstance(i, int) for i in input_shape)):
+        print("Error: 'input_shape' must be a tuple of integers.")
+        return
+
+    type_value = type_value.lower()
+    if type_value not in ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control']:
+        print("Error: 'type' must be one of 'cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'.")
+        return
+
+    if fs is not None:
+        if not isinstance(fs, (float, int)):
+            print("Error: 'fs' must be a float, integer, or None.")
+            return
+        if fs == 0:
+            print("Error: 'fs' cannot be 0.")
+            return
+
+    if plane is not None and plane not in ['A', 'S', 'C']:
+        print("Error: 'plane' must be one of 'A', 'S', 'C' or None.")
+        return
+
+    if len(description) > 254:
+        print("Error: 'description' cannot be longer than 254 characters.")
+        return
+
+    channels = channels if channels is not None else None
+    fs = fs if fs is not None else None
+    plane = plane if plane is not None else None
+
+    return name, file_data, channels, str(input_shape), type_value, float(
+        fs) if fs is not None else None, plane, description
+
+
 class DBConnector:
     def __init__(self):
         self.connection = None
@@ -25,13 +100,25 @@ class DBConnector:
             print("Database connection closed.")
 
     def establish_connection(self):
+        """
+        Establishes a connection to the database using the details from the 'url.txt' file.
+
+        Raises:
+            ConnectionError: If the 'url.txt' file is not found or the connection to the database fails.
+        """
         if self.connection and self.connection.is_connected():
             return
         try:
-            host = '192.168.205.218'
-            database = 'mydatabase'
-            user = 'user'
-            password = 'user'
+            url = self.extract_url()
+        except FileNotFoundError as e:
+            raise ConnectionError(e)
+
+        try:
+            host = url[0]
+            user = url[1]
+            password = url[2]
+            database = url[3]
+
             self.connection = mysql.connector.connect(
                 host=host,
                 database=database,
@@ -48,55 +135,6 @@ class DBConnector:
             print(f"Connection error: {e}")
             print("Remember to enable ZUT VPN.")
             raise ConnectionError("Failed to establish database connection, remember to enable ZUT VPN.")
-
-    def validate_and_convert_input_models(self, name, file_data, channels, input_shape, type_value, fs, plane,
-                                          description):
-        """
-        Validates input for models table
-        """
-        if not all(char.isdigit() or char == '.' for char in name):
-            print("Error: 'name' must consist only of digits (0-9) and/or dots ('.').")
-            return
-
-        if not file_data.endswith('.keras'):
-            print("Error: 'model path' must have '.keras' extension.")
-            return
-
-        if channels is not None and not isinstance(channels, int):
-            print("Error: 'channels' must be an integer or None.")
-            return
-
-        if not (isinstance(input_shape, tuple) and all(isinstance(i, int) for i in input_shape)):
-            print("Error: 'input_shape' must be a tuple of integers.")
-            return
-
-        type_value = type_value.lower()
-        if type_value not in ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control']:
-            print("Error: 'type' must be one of 'cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'.")
-            return
-
-        if fs is not None:
-            if not isinstance(fs, (float, int)):
-                print("Error: 'fs' must be a float, integer, or None.")
-                return
-            if fs == 0:
-                print("Error: 'fs' cannot be 0.")
-                return
-
-        if plane is not None and plane not in ['A', 'S', 'C']:
-            print("Error: 'plane' must be one of 'A', 'S', 'C' or None.")
-            return
-
-        if len(description) > 254:
-            print("Error: 'description' cannot be longer than 254 characters.")
-            return
-
-        channels = channels if channels is not None else None
-        fs = fs if fs is not None else None
-        plane = plane if plane is not None else None
-
-        return name, file_data, channels, str(input_shape), type_value, float(
-            fs) if fs is not None else None, plane, description
 
     def insert_data_into_models_table(self, name="none", file_path="none", channels=None, input_shape=(0, 0, 0),
                                       type_value="none", fs=None, plane=None, description="none"):
