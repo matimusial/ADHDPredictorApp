@@ -318,7 +318,7 @@ class DoctorViewController:
 
         if (self.file_paths is None or
             (self.chosen_model_info_eeg is None and self.loaded_eeg_files > 0) or
-            (self.chosen_model_info_eeg is None and self.loaded_mri_files > 0)):
+            (self.chosen_model_info_mri is None and self.loaded_mri_files > 0)):
 
             self.show_alert("No files or models chosen")
             return
