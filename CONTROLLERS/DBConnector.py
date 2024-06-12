@@ -109,7 +109,7 @@ class DBConnector:
         if self.connection and self.connection.is_connected():
             return
         try:
-            url = self.extract_url()
+            url = extract_url()
         except FileNotFoundError as e:
             raise ConnectionError(e)
 
