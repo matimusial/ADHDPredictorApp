@@ -30,7 +30,7 @@ def extract_url():
         with open("url.txt", 'r') as file:
             url = file.read()
     except Exception:
-        raise FileNotFoundError("Did not find a url.txt")
+        raise FileNotFoundError("Could not find a url.txt in /CONTROLLERS")
 
     host = url.split('@')[1].split('/')[0]
     user = url.split('://')[1].split(':')[0]
