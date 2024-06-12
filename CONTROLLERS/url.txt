@@ -1,1 +1,0 @@
-mysql://user:chvjchvj321@192.168.205.218/mydatabase
