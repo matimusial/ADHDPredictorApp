@@ -75,7 +75,7 @@
             <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
             <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
         </ul>
-
+        <p>For prediction, the program supports only files with the extensions "mat", "csv", "edf", "nii.gz", and "nii".</p>
         <h3>CNN for EEG</h3>
         <ul>
             <li><strong>"Choose folder with data"</strong> - (button) text type</li>
@@ -89,6 +89,7 @@
     | CONTROL
     |    |
     |    [files of the control group .mat/.csv/.edf]</pre>
+
             <li><strong>"Epochs"</strong> - numeric type</li>
             <li><strong>"Batch size"</strong> - numeric type</li>
             <li><strong>"Learning rate"</strong> - floating-point type</li>
@@ -125,6 +126,8 @@
             <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
             <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
         </ul>
+
+        <p><strong>Note:</strong> It is possible to train CNN or GAN on custom MRI images. The developer should process the images into a list (Python) containing numpy arrays (images) of size 128x120. Save the lists in pickle format as: ADHD_REAL.pkl and CONTROL_REAL.pkl and replace the files in: _internal\MRI\REAL_MRI.</p>
 
         <footer>
             <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
