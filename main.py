@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
 
         ui.deleteBtn.clicked.connect(self.av.show_dialog)
         ui.backBtn.clicked.connect(self.loadAdminEegCnn)
+        ui.exitBtn.clicked.connect(self.av.on_exit)
 
     def load_gen_view(self):
         """
@@ -68,6 +69,8 @@ class MainWindow(QMainWindow):
         ui.btnPrevPlot.clicked.connect(self.gn.show_prev_plot_mri)
         ui.btnNextPlot.clicked.connect(self.gn.show_next_plot_mri)
         ui.saveBtn.clicked.connect(self.gn.save_image)
+        ui.exitBtn.clicked.connect(self.gn.on_exit)
+
 
     def load_doctor_ui(self):
         """

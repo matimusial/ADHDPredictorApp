@@ -9,7 +9,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QModelIndex, QThread, QObject, pyqtSignal, QSize, Qt
 from PyQt5.QtWidgets import (
     QFileDialog, QDialog, QVBoxLayout, QRadioButton, QLineEdit, QLabel,
-    QPushButton, QMessageBox
+    QPushButton, QMessageBox, QApplication
 )
 from PyQt5.QtGui import QPixmap, QStandardItem, QStandardItemModel, QIntValidator, QMovie
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -108,6 +108,13 @@ class DoctorViewController:
         self.ui.predictBtn.clicked.connect(self.predict)
         self.ui.showReal.clicked.connect(lambda: self.show_dialog('REAL'))
         self.ui.showGenerated.clicked.connect(lambda: self.show_dialog('GENERATED'))
+        self.ui.exitBtn.clicked.connect(self.on_exit)
+
+    def on_exit(self):
+        """
+        Quit the application
+        """
+        QApplication.quit()
 
     def get_file_paths(self):
         """

@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap, QMovie
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QApplication
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
@@ -92,6 +92,12 @@ class GenerateNew:
             del self.generated
         if self.generator is not None:
             del self.generator
+
+    def on_exit(self):
+        """
+        Quit the application
+        """
+        QApplication.quit()
 
     def choose_model(self):
         """

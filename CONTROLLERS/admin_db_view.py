@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox, QHeaderView
+from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox, QHeaderView, QApplication
 from PyQt5.QtCore import Qt
 
 from CONTROLLERS.DBConnector import DBConnector
@@ -115,3 +115,9 @@ class AdminDbView:
         alert.setIcon(QMessageBox.Warning)
         alert.setStandardButtons(QMessageBox.Ok)
         alert.exec_()
+
+    def on_exit(self):
+        """
+        Quit the application
+        """
+        QApplication.quit()
