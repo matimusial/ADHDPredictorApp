@@ -125,50 +125,86 @@ QPushButton{
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
           <item>
-           <widget class="QLabel" name="label_selectModel_2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>MRI models</string>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_selectModel_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>MRI models</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="modelListViewMRI">
+              <property name="resizeMode">
+               <enum>QListView::Adjust</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
-           <widget class="QListView" name="modelListViewMRI">
-            <property name="resizeMode">
-             <enum>QListView::Adjust</enum>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>MRI files</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="fileListViewMRI"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
-           <widget class="QLabel" name="label_selectModel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>EEG models</string>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_selectModel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>EEG models</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="modelListViewEEG">
+              <property name="resizeMode">
+               <enum>QListView::Adjust</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
-           <widget class="QListView" name="modelListViewEEG">
-            <property name="resizeMode">
-             <enum>QListView::Adjust</enum>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>EEG files</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="fileListViewEEG"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>

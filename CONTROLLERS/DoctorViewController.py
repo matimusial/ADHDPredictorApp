@@ -43,7 +43,8 @@ def get_base_path():
 current_dir = os.path.dirname(__file__)
 parent_directory = os.path.dirname(get_base_path())
 UI_PATH = os.path.join(get_base_path(), 'UI')
-FILE_TYPES = ["mat", "csv", 'edf', 'nii.gz', 'nii']
+FILE_TYPES = {"EEG": ["mat", "csv", 'edf'],
+                "MRI":['nii.gz', 'nii']}
 GIF_PATH = os.path.join(UI_PATH, 'loading.gif')
 electrode_positions = [
     "Fz", "Cz", "Pz", "C3", "T3", "C4", "T4", "Fp1", "Fp2", "F3", "F4",
@@ -144,7 +145,44 @@ class DoctorViewController:
             self.ui.imgViewer.setCurrentIndex(1)
 
         self.ui.dataName.setText(f"{self.loaded_eeg_files} EEG and {self.loaded_mri_files} MRI files chosen")
+        self.show_file_names()
         self.get_model_names()
+
+    def show_file_names(self):
+        model_eeg = self.ui.fileListViewEEG.model()
+
+        if model_eeg:
+            model_eeg.clear()
+        else:
+            model_eeg = QStandardItemModel()
+
+        if self.loaded_eeg_files > 0:
+
+            for path in self.file_paths:
+                if path.endswith('.mat') or path.endswith('.edf') or path.endswith('.csv'):
+                    item = QStandardItem(path.split("/")[-1])
+                    item.setEditable(False)
+                    item.setSelectable(False)
+                    model_eeg.appendRow(item)
+
+            self.ui.fileListViewEEG.setModel(model_eeg)
+
+        model_mri = self.ui.fileListViewMRI.model()
+        if model_mri:
+            model_mri.clear()
+        else:
+            model_mri = QStandardItemModel()
+
+        if self.loaded_mri_files > 0:
+
+            for path in self.file_paths:
+                if path.endswith('.nii') or path.endswith('.nii.gz'):
+                    item = QStandardItem(path.split("/")[-1])
+                    item.setEditable(False)
+                    item.setSelectable(False)
+                    model_mri.appendRow(item)
+
+            self.ui.fileListViewMRI.setModel(model_mri)
 
     def get_model_names(self):
         """
