@@ -25,9 +25,9 @@ from CONTROLLERS.metrics import RealTimeMetrics
 
 5.Zresetować progres bar po stopie bo Pani mysli że stop robi pauze [X]
 
-6.Wykres przywiazany jest do rozdzielczości ekranu a nie okna w którym siedzi []
+6.Wykres przywiazany jest do rozdzielczości ekranu a nie okna w którym siedzi [Niby X]
 
-7.Przyczepiła się że proporcji międzyzbiorem uczącym a walidacyjnym niemoże zmieniać []
+7.Przyczepiła się że proporcji międzyzbiorem uczącym a walidacyjnym niemoże zmieniać [X]
 
 8.Chce widzieć tren test val accuracy na finale []
 
@@ -64,6 +64,7 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
+        self.ui.textEdit_test_size.setPlainText(str(EEG.config.TEST_SIZE_EEG_CNN))
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -123,6 +124,7 @@ class AdminEegCnn:
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         learning_rate = self.validate_learning_rate()
+        test_size = self.validate_test_size()
         self.model_description = self.ui.model_description.toPlainText()
 
         if epochs is False or batch_size is False or learning_rate is False:
@@ -131,7 +133,7 @@ class AdminEegCnn:
             EEG.config.CNN_EPOCHS = epochs
             EEG.config.CNN_BATCH_SIZE = batch_size
             EEG.config.CNN_LEARNING_RATE = learning_rate
-
+            EEG.config.CNN_TEST_SIZE = test_size
             self.thread = QThread()
 
             self.toggle_buttons(False)
@@ -342,7 +344,20 @@ class AdminEegCnn:
         else:
             value = self.validate_input(text)
             if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0.0001 and 1 (exclusive).\n")
+                return False
+            else:
+                return value
+
+    def validate_test_size(self):
+        text = self.ui.textEdit_test_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 0.1 or value >= 0.9 or not isinstance(value, float):
+                print(f"WARNING: '{text}' is invalid.\nTest size value must be a float between 0.1 and 0.9 (exclusive).\n")
                 return False
             else:
                 return value

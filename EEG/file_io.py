@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
+from EEG.config import TEST_SIZE_EEG_CNN
 
 
 def read_pickle(filepath):
@@ -130,7 +131,7 @@ def prepare_for_cnn(adhd_data_tt, control_data_tt):
         y = np.concatenate((np.array(y_control), np.array(y_adhd)))
 
         x_4d = np.reshape(x, (x.shape[0], x.shape[1], x.shape[2], 1))
-        x_train, x_test, y_train, y_test = train_test_split(x_4d, y, test_size=0.2, shuffle=True)
+        x_train, x_test, y_train, y_test = train_test_split(x_4d, y, test_size=TEST_SIZE_EEG_CNN, shuffle=True)
 
         return x_train, y_train, x_test, y_test
 

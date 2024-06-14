@@ -26,7 +26,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
         gan_model_path (str): The path to save the trained model.
     """
     from MRI.config import (GAN_EPOCHS_MRI, GAN_BATCH_SIZE_MRI, GAN_INPUT_SHAPE_MRI, GAN_LEARNING_RATE,
-                            TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL)
+                            TRAIN_GAN_DISP_INTERVAL, TRAIN_GAN_PRINT_INTERVAL,TEST_SIZE_MRI_GAN)
 
     if GAN_EPOCHS_MRI <= 1000:
         raise ValueError("GAN_EPOCHS_MRI has to be greater than 1000.")
@@ -54,7 +54,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             return
 
         try:
-            train_data, val_data = train_test_split(NORMALIZED, test_size=0.2)
+            train_data, val_data = train_test_split(NORMALIZED, test_size=TEST_SIZE_MRI_GAN)
             train_data = np.expand_dims(train_data, axis=-1)
             val_data = np.expand_dims(val_data, axis=-1)
         except Exception as e:

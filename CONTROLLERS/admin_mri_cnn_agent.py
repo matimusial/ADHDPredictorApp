@@ -39,6 +39,7 @@ class AdminMriCnn:
         self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
         self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
+        self.ui.textEdit_test_size.setPlainText(str(MRI.config.TEST_SIZE_MRI_CNN))
 
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
@@ -64,6 +65,7 @@ class AdminMriCnn:
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         learning_rate = self.validate_learning_rate()
+        test_size = self.validate_test_size()
 
         self.model_description = self.ui.model_description_2.toPlainText()
 
@@ -73,6 +75,7 @@ class AdminMriCnn:
             MRI.config.CNN_EPOCHS_MRI = epochs
             MRI.config.CNN_BATCH_SIZE_MRI = batch_size
             MRI.config.CNN_LEARNING_RATE_MRI = learning_rate
+            MRI.config.CNN_TEST_SIZE_MRI_CNN = test_size
 
             self.thread = QThread()
 
@@ -251,7 +254,20 @@ class AdminMriCnn:
         else:
             value = self.validate_input(text)
             if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0.0001 and 1 (exclusive).\n")
+                return False
+            else:
+                return value
+
+    def validate_test_size(self):
+        text = self.ui.textEdit_test_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 0.1 or value >= 0.9 or not isinstance(value, float):
+                print(f"WARNING: '{text}' is invalid.\nTest size value must be a float between 0.1 and 0.9 (exclusive).\n")
                 return False
             else:
                 return value

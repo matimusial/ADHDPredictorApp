@@ -1,5 +1,6 @@
 import pickle
 from sklearn.model_selection import train_test_split
+from MRI.config import TEST_SIZE_MRI_CNN
 import numpy as np
 
 
@@ -46,6 +47,6 @@ def prepare_for_cnn(adhd_data, control_data):
     X_control = np.reshape(control_data, (len(control_data), CNN_SINGLE_INPUT_SHAPE_MRI, CNN_SINGLE_INPUT_SHAPE_MRI, 1))
     X = np.vstack((X_adhd, X_control))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE_MRI_CNN, shuffle=True)
 
     return X_train, X_test, y_train, y_test

@@ -274,6 +274,33 @@ QPushButton{
                  </layout>
                 </item>
                 <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLabel" name="Test_size">
+                    <property name="text">
+                     <string>Test size</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextEdit" name="textEdit_test_size">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>31</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
                  <widget class="QRadioButton" name="radioButton_Control">
                   <property name="text">
                    <string>Control</string>

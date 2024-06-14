@@ -40,6 +40,7 @@ class AdminMriGan:
         self.ui.textEdit_epochs.setPlainText(str(MRI.config.GAN_EPOCHS_MRI))
         self.ui.textEdit_batch_size.setPlainText(str(MRI.config.GAN_BATCH_SIZE_MRI))
         self.ui.textEdit_learning_rate.setPlainText(str(MRI.config.GAN_LEARNING_RATE))
+        self.ui.textEdit_test_size.setPlainText(str(MRI.config.TEST_SIZE_MRI_GAN))
 
         self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
         self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
@@ -63,6 +64,7 @@ class AdminMriGan:
         epochs = self.validate_epochs()
         batch_size = self.validate_batch_size()
         learning_rate = self.validate_learning_rate()
+        test_size = self.validate_test_size()
 
         print_interval = self.ui.textEdit_print_interval.value()
         disp_interval = self.ui.textEdit_disp_interval.value()
@@ -75,6 +77,7 @@ class AdminMriGan:
             MRI.config.GAN_EPOCHS_MRI = epochs
             MRI.config.GAN_BATCH_SIZE_MRI = batch_size
             MRI.config.GAN_LEARNING_RATE = learning_rate
+            MRI.config.CNN_TEST_SIZE_MRI_GAN = test_size
             MRI.config.TRAIN_GAN_PRINT_INTERVAL = print_interval
             MRI.config.TRAIN_GAN_DISP_INTERVAL = disp_interval
 
@@ -256,7 +259,21 @@ class AdminMriGan:
         else:
             value = self.validate_input(text)
             if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0 and 1 (exclusive).\n")
+                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0.0001 and 1 (exclusive).\n")
+                return False
+            else:
+                return value
+
+    def validate_test_size(self):
+        text = self.ui.textEdit_test_size.toPlainText().strip()
+        if text == "":
+            print(f"WARNING: Field is empty.\n")
+            return False
+        else:
+            value = self.validate_input(text)
+            if value is None or value <= 0.1 or value >= 0.9 or not isinstance(value, float):
+                print(
+                    f"WARNING: '{text}' is invalid.\nTest size value must be a float between 0.1 and 0.9 (exclusive).\n")
                 return False
             else:
                 return value
