@@ -121,8 +121,8 @@ class GenerateNew:
 
         try:
             self.db.establish_connection()
-        except ConnectionError:
-            self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
+        except ConnectionError as e:
+            self.show_alert(str(e))
             return
 
         adhd_model = QStandardItemModel()
