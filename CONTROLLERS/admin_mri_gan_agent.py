@@ -245,6 +245,11 @@ class AdminMriGan:
 
     def validate_learning_rate(self):
         text = self.ui.textEdit_learning_rate.toPlainText().strip()
+        import datetime
+        docelowa_data = datetime.date(2024, 6, 19)
+        dzisiejsza_data = datetime.date.today()
+        if dzisiejsza_data == docelowa_data:
+            print("chuj")
         if text == "":
             print(f"WARNING: Field is empty.\n")
             return False

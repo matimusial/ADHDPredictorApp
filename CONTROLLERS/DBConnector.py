@@ -28,9 +28,10 @@ def extract_url():
         FileNotFoundError: If the 'url.txt' file is not found.
     """
     try:
-        with open("url.txt", 'r') as file:
+        with open(os.path.join(get_base_path(), 'url.txt'), 'r') as file:
             url = file.read()
-    except Exception:
+
+    except Exception as e:
         raise FileNotFoundError("Could not find a url.txt in /CONTROLLERS")
 
     host = url.split('@')[1].split('/')[0]
