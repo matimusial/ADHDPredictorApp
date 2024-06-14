@@ -29,8 +29,8 @@ class AdminDbView:
         """
         try:
             self.db.establish_connection()
-        except ConnectionError:
-            self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
+        except ConnectionError as e:
+            self.show_alert(str(e))
             return
         self.id_table = []
         data, column_names = self.db.select_data_and_columns("models")
@@ -76,8 +76,8 @@ class AdminDbView:
         """
         try:
             self.db.establish_connection()
-        except ConnectionError:
-            self.show_alert("Cannot establish database connection, remember to enable ZUT VPN.")
+        except ConnectionError as e:
+            self.show_alert(str(e))
             return
         self.db.delete_data_from_models_table(id_table)
         self.set_range_and_update_label()
