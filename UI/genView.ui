@@ -77,7 +77,7 @@ QPushButton{
                </sizepolicy>
               </property>
               <property name="text">
-               <string>ADHD brain image generator</string>
+               <string>ADHD brain image generator (by loss)</string>
               </property>
              </widget>
             </item>
@@ -104,7 +104,7 @@ QPushButton{
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Healthy brain image generator</string>
+               <string>Healthy brain image generator (by loss)</string>
               </property>
              </widget>
             </item>
