@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1139</width>
-    <height>760</height>
+    <width>1143</width>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QWidget" name="buttons_widget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true">QWidget{
 	background-color: rgb(31, 149, 239);
@@ -35,21 +41,24 @@ QPushButton{
          <item>
           <widget class="QPushButton" name="generateNew">
            <property name="text">
-            <string>Generate New</string>
+            <string>Generate New
+Brain Image</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="showReal">
            <property name="text">
-            <string>Show Real</string>
+            <string>Show Real
+Brain Examples</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="showGenerated">
            <property name="text">
-            <string>Show Generated</string>
+            <string>Show Generated
+Brain Examples</string>
            </property>
           </widget>
          </item>
@@ -85,7 +94,7 @@ QPushButton{
          <item>
           <widget class="QPushButton" name="exitBtn">
            <property name="text">
-            <string>Exit</string>
+            <string> Exit </string>
            </property>
           </widget>
          </item>
@@ -137,7 +146,7 @@ QPushButton{
                </sizepolicy>
               </property>
               <property name="text">
-               <string>MRI models</string>
+               <string>MRI models (by accuracy)</string>
               </property>
              </widget>
             </item>
@@ -179,7 +188,7 @@ QPushButton{
                </sizepolicy>
               </property>
               <property name="text">
-               <string>EEG models</string>
+               <string>EEG models (by accuracy)</string>
               </property>
              </widget>
             </item>
