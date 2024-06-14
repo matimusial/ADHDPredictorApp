@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
+    <width>1139</width>
     <height>760</height>
    </rect>
   </property>
@@ -79,6 +79,13 @@ QPushButton{
            </property>
            <property name="text">
             <string>Admin View</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exitBtn">
+           <property name="text">
+            <string>Exit</string>
            </property>
           </widget>
          </item>
