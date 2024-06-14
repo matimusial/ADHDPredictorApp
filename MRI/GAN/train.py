@@ -222,6 +222,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
 
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
                         metrics.generate_image(generator, epoch + 1)
+                        #generate_image(generator, epoch + 1)
                 except Exception as e:
                     print(f"Error in epoch {epoch + 1}: {e}")
                     return
@@ -232,7 +233,7 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                 except Exception as e:
                     print(f"Error saving model: {e}")
                     return
-            return metrics.get_metrics()
+            return round(np.mean(gen_loss), 4)
 
         metrics = train_gan(generator, discriminator, epochs=GAN_EPOCHS_MRI, batch_size=GAN_BATCH_SIZE_MRI, train_data=train_data, val_data=val_data)
         print("Training complete. Final metrics:")
