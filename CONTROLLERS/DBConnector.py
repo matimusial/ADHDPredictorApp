@@ -156,7 +156,7 @@ class DBConnector:
         Returns:
             None
         """
-        validated_data = self.validate_and_convert_input_models(name, file_path, channels, input_shape, type_value, fs, plane, description)
+        validated_data = validate_and_convert_input_models(name, file_path, channels, input_shape, type_value, fs, plane, description)
         if not validated_data:
             print("Invalid input data.")
             return
