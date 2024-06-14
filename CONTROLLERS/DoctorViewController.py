@@ -670,7 +670,6 @@ class DoctorViewController:
             return
 
         self.curr_idx_eeg += 1
-        self.curr_idx_channel = 0
 
         if self.curr_idx_eeg > len(self.all_data["EEG"]["data"]) - 1:
             self.curr_idx_eeg = len(self.all_data["EEG"]["data"]) - 1
@@ -705,7 +704,6 @@ class DoctorViewController:
             return
 
         self.curr_idx_eeg -= 1
-        self.curr_idx_channel = 0
 
         if self.curr_idx_eeg < 0:
             self.curr_idx_eeg = 0
@@ -739,7 +737,6 @@ class DoctorViewController:
             return
 
         self.curr_idx_mri += 1
-        self.curr_idx_plane = 0
 
         if self.curr_idx_mri > len(self.all_data["MRI"]["data"]) - 1:
             self.curr_idx_mri = len(self.all_data["MRI"]["data"]) - 1
@@ -772,7 +769,6 @@ class DoctorViewController:
             return
 
         self.curr_idx_mri -= 1
-        self.curr_idx_plane = 0
 
         if self.curr_idx_mri < 0:
             self.curr_idx_mri = 0
