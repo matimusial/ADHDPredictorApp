@@ -121,9 +121,10 @@ class DoctorViewController:
         """
         Opens a file selection dialog and saves the paths of the selected files.
         """
+        file_filter = "All supported files (*.mat *.csv *.edf *.nii.gz *.nii)"
         options = QFileDialog.Options()
         self.file_paths, _ = QFileDialog.getOpenFileNames(
-            self.main_window, "Choose files", "", "", options=options
+            self.main_window, "Choose files", "", file_filter, options=options
         )
 
         if len(self.file_paths) == 0:
