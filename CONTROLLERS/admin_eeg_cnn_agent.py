@@ -14,6 +14,29 @@ import shutil
 
 from CONTROLLERS.metrics import RealTimeMetrics
 
+"""
+1.Długość sygnalu w mat i wyswietlic by moc batch size ustawiać []
+
+2.Edf ma działać []
+
+3.Wywalić frame size []
+
+4.Delete model jest "bez sensu" masprzątać po sobie sam []
+
+5.Zresetować progres bar po stopie bo Pani mysli że stop robi pauze [X]
+
+6.Wykres przywiazany jest do rozdzielczości ekranu a nie okna w którym siedzi []
+
+7.Przyczepiła się że proporcji międzyzbiorem uczącym a walidacyjnym niemoże zmieniać []
+
+8.Chce widzieć tren test val accuracy na finale []
+
+9. CNN for MRI to samo co eeg poprawki []
+
+10. Chece uczyć CNN dla mri z własnymi plikami []
+"""
+
+
 class AdminEegCnn:
     def __init__(self, mainWindow, ui_path, main_path):
         self.MAIN_PATH = main_path
@@ -56,6 +79,7 @@ class AdminEegCnn:
         self.run_stop_controller = False
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
+
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
