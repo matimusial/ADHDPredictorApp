@@ -36,10 +36,10 @@ class AdminMriCnn:
         self.ui.status_label_2.setText("STATUS: Await")
         self.ui.db_status_2.setText("STATUS: Await")
 
-        self.ui.textEdit_epochs_2.setPlainText(str(MRI.config.CNN_EPOCHS_MRI))
-        self.ui.textEdit_batch_size_2.setPlainText(str(MRI.config.CNN_BATCH_SIZE_MRI))
-        self.ui.textEdit_learning_rate_2.setPlainText(str(MRI.config.CNN_LEARNING_RATE_MRI))
-        self.ui.textEdit_test_size.setPlainText(str(MRI.config.TEST_SIZE_MRI_CNN))
+        self.ui.textEdit_epochs_2.setValue(MRI.config.CNN_EPOCHS_MRI)
+        self.ui.textEdit_batch_size_2.setValue(MRI.config.CNN_BATCH_SIZE_MRI)
+        self.ui.textEdit_learning_rate_2.setValue(MRI.config.CNN_LEARNING_RATE_MRI)
+        self.ui.textEdit_test_size.setValue(MRI.config.TEST_SIZE_MRI_CNN)
 
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
@@ -62,10 +62,10 @@ class AdminMriCnn:
         MRI.CNN.train.modelStopFlag = False
         self.run_stop_controller = True
 
-        epochs = self.validate_epochs()
-        batch_size = self.validate_batch_size()
-        learning_rate = self.validate_learning_rate()
-        test_size = self.validate_test_size()
+        epochs = self.ui.textEdit_epochs_2.value()
+        batch_size = self.ui.textEdit_batch_size_2.value()
+        learning_rate = self.ui.textEdit_learning_rate_2.value()
+        test_size = self.ui.textEdit_test_size.value()
 
         self.model_description = self.ui.model_description_2.toPlainText()
 
@@ -211,66 +211,6 @@ class AdminMriCnn:
         self.db_conn.establish_connection()
         if self.db_conn.connection is None: return
 
-    def validate_epochs(self):
-        text = self.ui.textEdit_epochs_2.toPlainText().strip()
-        if text == "":
-            print(f"WARNING: Field is empty.\n")
-            return False
-        else:
-            value = self.validate_input(text)
-            if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nEpochs value must be an integer greater than 1.\n")
-                return False
-            else:
-                return value
-    def validate_input(self, text):
-        try:
-            num = float(text)
-            if num.is_integer():
-                return int(num)
-            else:
-                return num
-        except ValueError:
-            return None
-
-    def validate_batch_size(self):
-        text = self.ui.textEdit_batch_size_2.toPlainText().strip()
-        if text == "":
-            print(f"WARNING: Field is empty.\n")
-            return False
-        else:
-            value = self.validate_input(text)
-            if value is None or value <= 1 or not isinstance(value, int):
-                print(f"WARNING: '{text}' is invalid.\nBatch size value must be an integer greater than 1.\n")
-                return False
-            else:
-                return value
-
-    def validate_learning_rate(self):
-        text = self.ui.textEdit_learning_rate_2.toPlainText().strip()
-        if text == "":
-            print(f"WARNING: Field is empty.\n")
-            return False
-        else:
-            value = self.validate_input(text)
-            if value is None or value <= 0.0001 or value >= 1 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nLearning rate value must be a float between 0.0001 and 1 (exclusive).\n")
-                return False
-            else:
-                return value
-
-    def validate_test_size(self):
-        text = self.ui.textEdit_test_size.toPlainText().strip()
-        if text == "":
-            print(f"WARNING: Field is empty.\n")
-            return False
-        else:
-            value = self.validate_input(text)
-            if value is None or value <= 0.1 or value >= 0.9 or not isinstance(value, float):
-                print(f"WARNING: '{text}' is invalid.\nTest size value must be a float between 0.1 and 0.9 (exclusive).\n")
-                return False
-            else:
-                return value
 
     def invalid_input_msgbox(self):
         msg = QMessageBox()

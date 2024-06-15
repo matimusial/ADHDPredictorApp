@@ -58,13 +58,14 @@ class AdminEegCnn:
         self.ui.status_label.setText("STATUS: Await")
         self.ui.db_status.setText("STATUS: Await")
 
-        self.ui.textEdit_epochs.setPlainText(str(EEG.config.CNN_EPOCHS))
-        self.ui.textEdit_batch_size.setPlainText(str(EEG.config.CNN_BATCH_SIZE))
-        self.ui.textEdit_learning_rate.setPlainText(str(EEG.config.CNN_LEARNING_RATE))
+        self.ui.textEdit_epochs.setValue(EEG.config.CNN_EPOCHS)
+        self.ui.textEdit_batch_size.setValue(EEG.config.CNN_BATCH_SIZE)
+        self.ui.textEdit_learning_rate.setValue(EEG.config.CNN_LEARNING_RATE)
+        self.ui.textEdit_test_size.setValue(EEG.config.TEST_SIZE_EEG_CNN)
+
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
         self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
-        self.ui.textEdit_test_size.setPlainText(str(EEG.config.TEST_SIZE_EEG_CNN))
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
@@ -121,10 +122,10 @@ class AdminEegCnn:
         EEG.TRAIN.train.modelStopFlag = False
         self.run_stop_controller = True
 
-        epochs = self.validate_epochs()
-        batch_size = self.validate_batch_size()
-        learning_rate = self.validate_learning_rate()
-        test_size = self.validate_test_size()
+        epochs = self.ui.textEdit_epochs.value()
+        batch_size = self.ui.textEdit_batch_size.value()
+        learning_rate = self.ui.textEdit_learning_rate.value()
+        test_size = self.ui.textEdit_test_size.value()
         self.model_description = self.ui.model_description.toPlainText()
 
         if epochs is False or batch_size is False or learning_rate is False:
