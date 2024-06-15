@@ -234,24 +234,18 @@ QPushButton{
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout">
-                 <item row="2" column="2">
-                  <widget class="QTextEdit" name="textEdit_frequency">
-                   <property name="minimumSize">
-                    <size>
-                     <width>90</width>
-                     <height>31</height>
-                    </size>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="electrodes">
+                   <property name="text">
+                    <string>Electrodes</string>
                    </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>90</width>
-                     <height>31</height>
-                    </size>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
-                  <widget class="QTextEdit" name="textEdit_electrodes">
+                 <item row="2" column="2">
+                  <widget class="QTextEdit" name="textEdit_frequency">
                    <property name="minimumSize">
                     <size>
                      <width>90</width>
@@ -276,18 +270,8 @@ QPushButton{
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="electrodes">
-                   <property name="text">
-                    <string>Electrodes</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="3">
-                  <widget class="QTextEdit" name="textEdit_frame_size">
+                 <item row="2" column="0">
+                  <widget class="QTextEdit" name="textEdit_electrodes">
                    <property name="minimumSize">
                     <size>
                      <width>90</width>
@@ -299,16 +283,6 @@ QPushButton{
                      <width>90</width>
                      <height>31</height>
                     </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="3">
-                  <widget class="QLabel" name="frame_size">
-                   <property name="text">
-                    <string>Frame size</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -357,6 +331,27 @@ QPushButton{
                         </property>
                         <property name="value">
                          <number>1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_2">
+                      <item>
+                       <widget class="QLabel" name="frame_size_3">
+                        <property name="text">
+                         <string>Frame size</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="textEdit_frame_size">
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>9999</number>
                         </property>
                        </widget>
                       </item>

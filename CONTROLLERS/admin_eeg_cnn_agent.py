@@ -19,7 +19,7 @@ from CONTROLLERS.metrics import RealTimeMetrics
 
 2.Edf ma działać []
 
-3.Wywalić frame size []
+3.Wywalić frame size [Działa X]
 
 4.Delete model jest "bez sensu" masprzątać po sobie sam []
 
@@ -62,14 +62,14 @@ class AdminEegCnn:
         self.ui.textEdit_batch_size.setValue(EEG.config.CNN_BATCH_SIZE)
         self.ui.textEdit_learning_rate.setValue(EEG.config.CNN_LEARNING_RATE)
         self.ui.textEdit_test_size.setValue(EEG.config.TEST_SIZE_EEG_CNN)
+        self.ui.textEdit_frame_size.setValue(EEG.config.EEG_SIGNAL_FRAME_SIZE)
 
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
-        self.ui.textEdit_frame_size.setPlainText(str(EEG.config.EEG_SIGNAL_FRAME_SIZE))
         self.ui.textEdit_frequency.setPlainText(str(EEG.config.FS))
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
-        self.ui.textEdit_frame_size.setReadOnly(True)
+        #self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -77,6 +77,10 @@ class AdminEegCnn:
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)
         self.ui.del_model.clicked.connect(self.delModel)
+
+        frame_size = self.ui.textEdit_frame_size.value()
+        EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
+
 
         self.run_stop_controller = False
 
@@ -125,6 +129,7 @@ class AdminEegCnn:
         epochs = self.ui.textEdit_epochs.value()
         batch_size = self.ui.textEdit_batch_size.value()
         learning_rate = self.ui.textEdit_learning_rate.value()
+
         test_size = self.ui.textEdit_test_size.value()
         self.model_description = self.ui.model_description.toPlainText()
 
@@ -135,6 +140,7 @@ class AdminEegCnn:
             EEG.config.CNN_BATCH_SIZE = batch_size
             EEG.config.CNN_LEARNING_RATE = learning_rate
             EEG.config.CNN_TEST_SIZE = test_size
+
             self.thread = QThread()
 
             self.toggle_buttons(False)
