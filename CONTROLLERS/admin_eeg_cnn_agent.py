@@ -15,13 +15,13 @@ import shutil
 from CONTROLLERS.metrics import RealTimeMetrics
 
 """
-1.Długość sygnalu w mat i wyswietlic by moc batch size ustawiać []
+1.Długość sygnalu w mat i wyswietlic by moc batch size ustawiać [X]
 
-2.Edf ma działać []
+2.Edf ma działać [X]
 
 3.Wywalić frame size [Działa X]
 
-4.Delete model jest "bez sensu" masprzątać po sobie sam []
+4.Delete model jest "bez sensu" masprzątać po sobie sam [X]
 
 5.Zresetować progres bar po stopie bo Pani mysli że stop robi pauze [X]
 
@@ -77,7 +77,7 @@ class AdminEegCnn:
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)
-        self.ui.del_model.clicked.connect(self.delModel)
+        #self.ui.del_model.clicked.connect(self.delModel)
 
         frame_size = self.ui.textEdit_frame_size.value()
         EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
@@ -86,6 +86,8 @@ class AdminEegCnn:
         self.run_stop_controller = False
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
+
+        self.delModel()
 
 
     def showDialog(self):
@@ -123,6 +125,7 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
+        self.delModel()
         self.current_size = self.ui.size()
         self.ui.setFixedSize(self.current_size)
         self.ui.status_label.setText("STATUS: Starting")
@@ -189,7 +192,7 @@ class AdminEegCnn:
             acc = file_name[0].replace(".keras", "")
             self.ui.more_info_dump.setText(f"Final model accuracy: {acc}")
         else:
-            self.ui.more_info_dump.setText("Warning: Could not find model file in MODEL_PATH")
+            self.ui.more_info_dump.setText(f"Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label.setText("STATUS: Model done")
         self.ui.setFixedSize(QSize(16777215, 16777215))
@@ -257,21 +260,20 @@ class AdminEegCnn:
         if os.path.exists(self.MODEL_PATH):
             file_list = os.listdir(self.MODEL_PATH)
             if file_list:
-                file_name = file_list[0]
-                file_path = os.path.join(self.MODEL_PATH, file_name)
-                if os.path.isfile(file_path):
-                    try:
-                        os.remove(file_path)
-                        self.ui.status_label.setText("STATUS: Await")
-                        self.delete_done_msgbox()
-                        print(f"Plik {file_name} został usunięty.")
-                    except Exception as e:
-                        print(f"Nie można usunąć pliku {file_name}: {e}")
-                else:
-                    print(f"{file_name} nie jest plikiem.")
+                for file_name in file_list:
+                    file_path = os.path.join(self.MODEL_PATH, file_name)
+                    if os.path.isfile(file_path):
+                        try:
+                            os.remove(file_path)
+                            print(f"Plik {file_name} został usunięty.")
+                        except Exception as e:
+                            print(f"Nie można usunąć pliku {file_name}: {e}")
+                    else:
+                        print(f"{file_name} nie jest plikiem.")
+                self.ui.status_label.setText("STATUS: Await")
+                #self.delete_done_msgbox()
             else:
                 print("Katalog jest pusty, nie ma plików do usunięcia.")
-
         else:
             print("Nie ma ścieżki MODEL_PATH")
 
