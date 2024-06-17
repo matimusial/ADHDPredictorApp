@@ -42,6 +42,7 @@
             <li><strong>EEG Data Analysis</strong>: Using EEG data to predict the presence of ADHD in children with deep learning models.</li>
             <li><strong>MRI Data Augmentation and Analysis</strong>: Generating additional MRI brain images using Generative Adversarial Networks (GAN) and using CNN to predict ADHD from original images.</li>
         </ol>
+        <p><strong>Note:</strong> This project is an engineering thesis at the West Pomeranian University of Technology in Szczecin. The program does not function fully without a database connection, which is only accessible within the university network. To use the application, you need to download the repository and run the main_MRI or main_EEG files after obtaining the necessary files from the locations specified in "link.txt". Minor code adjustments might be necessary for proper functioning. You can also download an executable file from <a href="#">this location</a>, but without a database connection, the program will have limited functionality.</p>
         <h2>Datasets</h2>
         <h3>EEG Data</h3>
         <p>The EEG dataset is a collection of brain waves from children, both with and without ADHD. This data is crucial for training our model to identify patterns associated with ADHD.</p>
@@ -75,7 +76,6 @@
             <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
             <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
         </ul>
-        <p>For prediction, the program supports only files with the extensions "mat", "csv", "edf", "nii.gz", and "nii".</p>
         <p>All MRI models are trained on built-in brain images in the Axial plane with a size of 120x120.</p>
         <h3>CNN for EEG</h3>
         <ul>
