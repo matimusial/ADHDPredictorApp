@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QSpinBox
 
 import MRI.config
@@ -58,6 +58,8 @@ class AdminMriGan:
         )
 
     def train_gan(self):
+        self.current_size = self.ui.size()
+        self.ui.setFixedSize(self.current_size)
         self.ui.status_label.setText("STATUS: Starting")
         MRI.GAN.train.modelStopFlag = False
 
@@ -123,6 +125,7 @@ class AdminMriGan:
             self.ui.more_info_dump.setText("Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label.setText("STATUS: Model done")
+        self.ui.setFixedSize(QSize(16777215, 16777215))
         self.toggle_buttons(True)
         self.modelTrained = True
 
