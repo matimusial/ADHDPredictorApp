@@ -48,6 +48,7 @@ class AdminEegCnn:
         self.loaded_adhd_files = 0
         self.loaded_control_files = 0
         self.currChannels = 0
+        self.currSamples = 0
 
         self.updateInfoDump()
 
@@ -103,6 +104,7 @@ class AdminEegCnn:
                 self.loaded_adhd_files = adhdcount
                 self.loaded_control_files = controlcount
                 self.currChannels = initChannels[0]['shape'][0]
+                self.currSamples = initChannels[0]['shape'][1]
                 self.updateInfoDump()
             else:
                 self.invalid_folder_msgbox()
@@ -116,7 +118,7 @@ class AdminEegCnn:
     def updateInfoDump(self):
         self.ui.info_dump.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
-            f'{self.currChannels} channels'
+            f'{self.currChannels} channels; {self.currSamples} samples'
         )
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
