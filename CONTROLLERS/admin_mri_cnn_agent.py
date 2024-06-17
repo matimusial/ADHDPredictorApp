@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton
 
 import MRI.config
@@ -58,6 +58,8 @@ class AdminMriCnn:
         )
 
     def train_mri(self):
+        self.current_size = self.ui.size()
+        self.ui.setFixedSize(self.current_size)
         self.ui.status_label_2.setText("STATUS: Starting")
         MRI.CNN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -121,6 +123,7 @@ class AdminMriCnn:
             self.ui.more_info_dump_2.setText("Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label_2.setText("STATUS: Model done")
+        self.ui.setFixedSize(QSize(16777215, 16777215))
         self.toggle_buttons(True)
         self.modelTrained = True
 

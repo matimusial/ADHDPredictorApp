@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt, QSize
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar
 from PyQt5.QtGui import QFontMetrics
 
@@ -25,7 +25,7 @@ from CONTROLLERS.metrics import RealTimeMetrics
 
 5.Zresetować progres bar po stopie bo Pani mysli że stop robi pauze [X]
 
-6.Wykres przywiazany jest do rozdzielczości ekranu a nie okna w którym siedzi [Niby X]
+6.Wykres przywiazany jest do rozdzielczości ekranu a nie okna w którym siedzi [X]
 
 7.Przyczepiła się że proporcji międzyzbiorem uczącym a walidacyjnym niemoże zmieniać [X]
 
@@ -121,7 +121,8 @@ class AdminEegCnn:
         self.ui.textEdit_electrodes.setPlainText(str(self.currChannels))
 
     def train_cnn(self):
-
+        self.current_size = self.ui.size()
+        self.ui.setFixedSize(self.current_size)
         self.ui.status_label.setText("STATUS: Starting")
         EEG.TRAIN.train.modelStopFlag = False
         self.run_stop_controller = True
@@ -189,6 +190,7 @@ class AdminEegCnn:
             self.ui.more_info_dump.setText("Warning: Could not find model file in MODEL_PATH")
 
         self.ui.status_label.setText("STATUS: Model done")
+        self.ui.setFixedSize(QSize(16777215, 16777215))
         self.toggle_buttons(True)
 
     def toggle_buttons(self,state):
