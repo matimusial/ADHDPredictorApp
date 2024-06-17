@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>760</height>
+    <height>787</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -517,13 +517,6 @@ QPushButton{
                       <widget class="QLabel" name="db_status">
                        <property name="text">
                         <string>STATUS:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="del_model">
-                       <property name="text">
-                        <string>Delete model</string>
                        </property>
                       </widget>
                      </item>

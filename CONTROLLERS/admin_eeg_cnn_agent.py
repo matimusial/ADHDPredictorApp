@@ -77,7 +77,6 @@ class AdminEegCnn:
         self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db.clicked.connect(self.sendToDb)
-        #self.ui.del_model.clicked.connect(self.delModel)
 
         frame_size = self.ui.textEdit_frame_size.value()
         EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
@@ -207,7 +206,6 @@ class AdminEegCnn:
             self.ui.folder_explore.setEnabled(state)
             self.ui.startButton.setEnabled(state)
             self.ui.save_db.setEnabled(state)
-            self.ui.del_model.setEnabled(state)
         except Exception as e:
             print(f'Failed toggle_buttons: {e}')
 
