@@ -45,7 +45,6 @@ class AdminMriCnn:
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db_2.clicked.connect(self.sendToDb)
-        self.ui.del_model_2.clicked.connect(self.delModel)
 
         self.run_stop_controller = False
 
@@ -138,7 +137,6 @@ class AdminMriCnn:
             self.ui.switchSceneBtn.setEnabled(state)
             self.ui.startButton_2.setEnabled(state)
             self.ui.save_db_2.setEnabled(state)
-            self.ui.del_model_2.setEnabled(state)
         except Exception as e:
             print(f'Failed toggle_buttons: {e}')
 

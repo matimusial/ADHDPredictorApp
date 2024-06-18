@@ -199,6 +199,10 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
             gen_loss = np.array([])
             for epoch in range(epochs):
                 try:
+                    stop_training = metrics.GAN_stoppping()
+                    if stop_training:
+                        return
+
                     idx = np.random.randint(0, train_data.shape[0], batch_size)
                     real_imgs = train_data[idx]
                     d_loss, g_loss = train_step(generator, discriminator, real_imgs, batch_size, generator_optimizer, discriminator_optimizer)
@@ -219,7 +223,6 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                         metrics.update_val_metrics(val_d_loss.numpy().mean(), val_g_loss.numpy().mean())
                         print(f"Epoch {epoch + 1} [Train D loss: {d_loss.numpy().mean()} | Train G loss: {g_loss.numpy().mean()}")
                         print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()}")
-
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
                         metrics.generate_image(generator, epoch + 1)
                         #generate_image(generator, epoch + 1)

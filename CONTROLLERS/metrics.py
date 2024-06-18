@@ -25,6 +25,8 @@ global_val_loss = []
 
 generated_image = []
 
+stop_training_GAN = False
+
 def plot_mri(image, title):
     fig, ax = plt.subplots()
     ax.imshow(image, cmap='gray')
@@ -117,7 +119,7 @@ class RealTimeMetrics(QThread):
 
 class RealTimeMetrics_GEN(QThread):
     """Thread for visualizing GAN metrics in real time during model training."""
-    def __init__(self, total_epochs, print_interval, disp_interval, plot_label, image_label, interval=1):
+    def __init__(self, total_epochs, progressBar, print_interval, disp_interval, plot_label, image_label, interval=1):
         super().__init__()
         self.print_interval = print_interval
         self.disp_interval = disp_interval
@@ -128,19 +130,33 @@ class RealTimeMetrics_GEN(QThread):
         self.image_label = image_label
         self.image_label.setScaledContents(True)
         self.image_label.setMinimumSize(640, 640)
+        self.progressBar = progressBar
+        self.progressBar.setRange(0, total_epochs)
         self.mutex = QMutex()
         self.interval = interval
         self.running = True
 
     def run(self):
+        global stop_training_GAN
+        stop_training_GAN = False
         self.clear_metrics()
         control_counter = 0
         while control_counter < self.total_epochs:
+            if not self.running:
+                self.progressBar.setValue(0)
+                break
             control_counter = len(global_train_d_loss)*self.print_interval
             disp_counter = self.disp_interval*((len(global_train_d_loss)*self.print_interval)//self.disp_interval)
+            self.progressBar.setValue(control_counter)
             self.plot_metrics()
             self.generate_and_display_image(disp_counter)
             time.sleep(self.interval)
+
+    def stop(self):
+        global stop_training_GAN
+        stop_training_GAN = True
+        self.running = False
+
 
     def generate_and_display_image(self, epoch):
         if not generated_image == []:
@@ -235,12 +251,6 @@ class WorkerMetrics_GAN:
         self.val_g_loss.append(g_loss)
         self.update_global_metrics()
 
-    def get_metrics(self):
-        print("\ntrain_d_loss", global_train_d_loss,)
-        print("\ntrain_g_loss", global_train_g_loss,)
-        print("\nval_d_loss", global_val_d_loss,)
-        print("\nval_g_loss", global_val_g_loss,)
-
     def generate_image(self, generator, epoch):
         try:
             global generated_image
@@ -259,5 +269,7 @@ class WorkerMetrics_GAN:
         global_val_d_loss = self.val_d_loss
         global_val_g_loss = self.val_g_loss
 
-
+    def GAN_stoppping(self):
+        if stop_training_GAN:
+            return True
 

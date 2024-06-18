@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QSpinBox
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QSpinBox, QProgressBar
 
 import MRI.config
 from MRI.GAN.train import train_gan
@@ -46,9 +46,12 @@ class AdminMriGan:
 
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
+        self.ui.stopButton.clicked.connect(self.stopModel)
         self.ui.save_db.clicked.connect(self.sendToDb)
-        self.ui.del_model.clicked.connect(self.delModel)
 
+        self.run_stop_controller = False
+
+        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
         self.gan_generation_warning_msgbox()
 
         self.delModel()
@@ -65,6 +68,7 @@ class AdminMriGan:
         self.ui.setFixedSize(self.current_size)
         self.ui.status_label.setText("STATUS: Starting")
         MRI.GAN.train.modelStopFlag = False
+        self.run_stop_controller = True
 
         epochs = self.ui.textEdit_epochs.value()
         batch_size = self.ui.textEdit_batch_size.value()
@@ -74,6 +78,8 @@ class AdminMriGan:
         disp_interval = self.ui.textEdit_disp_interval.value()
 
         self.model_description = self.ui.model_description.toPlainText()
+
+        self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
         if epochs is False or batch_size is False or learning_rate is False:
             self.invalid_input_msgbox()
@@ -86,8 +92,9 @@ class AdminMriGan:
             MRI.config.TRAIN_GAN_DISP_INTERVAL = disp_interval
 
             self.toggle_buttons(False)
+            self.progressBar.setValue(0)
             self.thread = QThread()
-            self.real_time_metrics = RealTimeMetrics_GEN(epochs, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image)
+            self.real_time_metrics = RealTimeMetrics_GEN(epochs, self.progressBar, MRI.config.TRAIN_GAN_PRINT_INTERVAL, MRI.config.TRAIN_GAN_DISP_INTERVAL, self.ui.plotLabel_GAN_plot, self.ui.plotLabel_GAN_image)
             self.real_time_metrics.start()
 
             # Create a worker object
@@ -140,7 +147,6 @@ class AdminMriGan:
             self.ui.switchSceneBtn.setEnabled(state)
             self.ui.startButton.setEnabled(state)
             self.ui.save_db.setEnabled(state)
-            self.ui.del_model.setEnabled(state)
         except Exception as e:
             print(f'Failed toggle_buttons: {e}')
 
@@ -247,6 +253,11 @@ class AdminMriGan:
     def on_exit(self):
         MRI.GAN.train.modelStopFlag = True
         QApplication.quit()
+
+    def stopModel(self):
+        if self.run_stop_controller:
+            self.real_time_metrics.stop()
+            self.ui.status_label.setText("STATUS: Stopping...")
 
     def onError(self, error):
         print(f"Error occurred: {error}")
