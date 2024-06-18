@@ -47,7 +47,6 @@ class AdminEegCnn:
 
         self.ui.textEdit_frequency.setReadOnly(True)
         self.ui.textEdit_electrodes.setReadOnly(True)
-        #self.ui.textEdit_frame_size.setReadOnly(True)
 
         self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_cnn)
@@ -58,13 +57,11 @@ class AdminEegCnn:
         frame_size = self.ui.textEdit_frame_size.value()
         EEG.config.EEG_SIGNAL_FRAME_SIZE = frame_size
 
-
         self.run_stop_controller = False
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar")
 
         self.delModel()
-
 
     def showDialog(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
@@ -130,13 +127,10 @@ class AdminEegCnn:
             self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN)
             self.real_time_metrics.start()
 
-            # Create a worker object
             self.worker = Worker(self)
 
-            # Move the worker to the thread
             self.worker.moveToThread(self.thread)
 
-            # Connect signals and slots
             self.thread.started.connect(self.worker.run)
             self.worker.finished.connect(self.onFinished)
             self.worker.finished.connect(self.thread.quit)
@@ -144,7 +138,6 @@ class AdminEegCnn:
             self.thread.finished.connect(self.thread.deleteLater)
             self.worker.error.connect(self.onError)
 
-            # Start the thread
             self.thread.start()
 
     def train(self):
@@ -246,7 +239,6 @@ class AdminEegCnn:
                     else:
                         print(f"{file_name} nie jest plikiem.")
                 self.ui.status_label.setText("STATUS: Await")
-                #self.delete_done_msgbox()
             else:
                 print("Katalog jest pusty, nie ma plików do usunięcia.")
         else:
@@ -256,7 +248,6 @@ class AdminEegCnn:
         self.toggle_buttons(True)
         print(f"Error: {error}")
 
-
     def on_exit(self):
         QApplication.quit()
 
@@ -265,7 +256,6 @@ class AdminEegCnn:
             EEG.TRAIN.train.modelStopFlag = True
             self.real_time_metrics.stop()
             self.ui.status_label.setText("STATUS: Stopping...")
-
 
     def connect_to_db(self):
         self.db_conn = DBConnector()
@@ -389,10 +379,6 @@ class AdminEegCnn:
         msg.exec_()
 
     def change_btn_state(self, state):
-        """
-        Changes the state of UI buttons.
-        :param state: The state (True/False) of the buttons.
-        """
         self.ui.CNN_MRI_Button.setEnabled(state)
         self.ui.GAN_MRI_Button.setEnabled(state)
         self.ui.startButton.setEnabled(state)

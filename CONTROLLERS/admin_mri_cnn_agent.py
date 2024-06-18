@@ -88,13 +88,10 @@ class AdminMriCnn:
             self.real_time_metrics = RealTimeMetrics(epochs, self.progressBar, self.ui.plotLabel_CNN_2)
             self.real_time_metrics.start()
 
-            # Create a worker object
             self.worker = Worker(self)
 
-            # Move the worker to the thread
             self.worker.moveToThread(self.thread)
 
-            # Connect signals and slots
             self.thread.started.connect(self.worker.run)
             self.worker.finished.connect(self.onFinished)
             self.worker.finished.connect(self.thread.quit)
@@ -102,7 +99,6 @@ class AdminMriCnn:
             self.thread.finished.connect(self.thread.deleteLater)
             self.worker.error.connect(self.onError)
 
-            # Start the thread
             self.thread.start()
 
     def train(self):
