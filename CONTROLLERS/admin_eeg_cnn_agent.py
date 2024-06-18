@@ -233,16 +233,16 @@ class AdminEegCnn:
                     if os.path.isfile(file_path):
                         try:
                             os.remove(file_path)
-                            print(f"Plik {file_name} został usunięty.")
+                            print(f"The file {file_name} has been deleted.")
                         except Exception as e:
-                            print(f"Nie można usunąć pliku {file_name}: {e}")
+                            print(f"Cannot delete the file {file_name}: {e}")
                     else:
-                        print(f"{file_name} nie jest plikiem.")
+                        print(f"{file_name} is not a file.")
                 self.ui.status_label.setText("STATUS: Await")
             else:
-                print("Katalog jest pusty, nie ma plików do usunięcia.")
+                print("The directory is empty, there are no files to delete.")
         else:
-            print("Nie ma ścieżki MODEL_PATH")
+            print("There is no MODEL_PATH.")
 
     def onError(self, error):
         self.toggle_buttons(True)
