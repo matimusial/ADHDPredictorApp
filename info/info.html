@@ -61,6 +61,7 @@
                 <li>Provide an accurate and reliable method for predicting ADHD using non-invasive EEG and MRI data.</li>
                 <li>Increase the availability of high-quality MRI brain images through generative techniques, supporting the development of robust predictive models.</li>
             </ul>
+            <p>Visit our repository: <a href="https://github.com/matimusial/ADHDPredictorApp" target="_blank">GitHub</a></p>
             <footer>
                 <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
             </footer>
@@ -449,7 +450,7 @@
         </ul>
         <p><strong>Relationships:</strong></p>
         <ul>
-            <li>The <strong>files</strong> table has a foreign key relationship with the <strong>models</strong> table. The <strong>model_id</strong> in the <strong>files</strong> table references the <strong>id</strong> in the <strong>models</strong> table, establishing a one-to-many relationship where one model can have multiple associated files.</li>
+            <li>The <strong>files</strong> table has a foreign key relationship with the <strong>models</strong> table. The <strong>model_id</strong> in the <strong>files</strong> table references the <strong>id</strong> in the <strong>models</strong> table, establishing a one-to-one relationship where one model can have only one associated file.</li>
         </ul>
         <footer>
             <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
