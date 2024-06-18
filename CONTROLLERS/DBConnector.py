@@ -324,11 +324,3 @@ class DBConnector:
                 print(f"Error deleting data: {e}")
         else:
             print("No database connection, use establish_connection function.")
-
-
-# db = DBConnector()
-# db.establish_connection()
-# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 1")
-# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 2")
-# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 3")
-# db.insert_data_into_models_table("9.9999", "../EEG/MODELS/0.9307.keras", None, (19, 999, 1), "cnn_eeg", None, "A", "EXAMPLE TO TEST DELETION 4")

@@ -20,7 +20,6 @@ def read_eeg_raw(path_or_folder):
     table_structures = []
 
     if os.path.isfile(path_or_folder) and path_or_folder.endswith('.mat'):
-        # Version 1: Loading a single .mat file
         mat_data = loadmat(path_or_folder, mat_dtype=True)
         file, _ = os.path.splitext(os.path.basename(path_or_folder))
         if file not in mat_data:
@@ -29,12 +28,10 @@ def read_eeg_raw(path_or_folder):
         return mat_data[file].T
 
     elif os.path.isdir(path_or_folder):
-        # Version 2: Loading data from a folder
         subfolders = ["ADHD", "CONTROL"]
         ADHD_DATA = []
         CONTROL_DATA = []
 
-        # Checking and converting CSV/EDF files to MATLAB format
         for subfolder in subfolders:
             current_folder = os.path.join(path_or_folder, subfolder)
             if not os.path.isdir(current_folder):
@@ -57,7 +54,6 @@ def read_eeg_raw(path_or_folder):
                         key_name = os.path.splitext(file)[0]
                         savemat(os.path.join(current_folder, mat_file_name), {key_name: data.transpose()})
 
-        # Importing .mat files
         for subfolder in subfolders:
             current_folder = os.path.join(path_or_folder, subfolder)
             mat_files = [f for f in os.listdir(current_folder) if f.endswith('.mat')]

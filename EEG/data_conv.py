@@ -5,9 +5,6 @@ import pyedflib
 import numpy as np
 
 
-# function not used in our project (one-time use)
-
-
 def convert_mat_to_csv_and_edf(input_directory, csv_output_directory, edf_output_directory, edf_channel_labels, sample_rate=128):
     """
     Converts .mat files from the input directory to .csv and .edf files, saving them in the respective output directories.
@@ -31,14 +28,12 @@ def convert_mat_to_csv_and_edf(input_directory, csv_output_directory, edf_output
             mat_path = os.path.join(input_directory, mat_file)
             mat_data = scipy.io.loadmat(mat_path)
 
-            # Save as .csv
             for key, value in mat_data.items():
                 if isinstance(value, np.ndarray):
                     df = pd.DataFrame(value)
                     csv_file = os.path.join(csv_output_directory, f'{os.path.splitext(mat_file)[0]}_{key}.csv')
                     df.to_csv(csv_file, index=False)
 
-            # Save as .edf
             eeg_data = mat_data['eeg'].T
             assert eeg_data.shape[0] == len(edf_channel_labels), "Incorrect number of EEG channels"
 

@@ -73,7 +73,6 @@ class RealTimeMetrics(QThread):
                 fig = Figure()
                 canvas = FigureCanvas(fig)
 
-                # Plot for accuracy
                 ax1 = fig.add_subplot(211)
                 ax1.plot(range(1, len(global_accuracy) + 1), global_accuracy, 'r-', label='Training Accuracy')
                 ax1.plot(range(1, len(global_val_accuracy) + 1), global_val_accuracy, 'b-', label='Validation Accuracy')
@@ -85,7 +84,6 @@ class RealTimeMetrics(QThread):
                 ax1.set_ylim(0, 1.0)
                 ax1.set_xlim(1, self.total_epochs)
 
-                # Plot for loss
                 ax2 = fig.add_subplot(212)
                 ax2.plot(range(1, len(global_loss) + 1), global_loss, 'r-', label='Training Loss')
                 ax2.plot(range(1, len(global_val_loss) + 1), global_val_loss, 'b-', label='Validation Loss')
@@ -97,7 +95,7 @@ class RealTimeMetrics(QThread):
                 ax2.set_xlim(1, self.total_epochs)
 
                 fig.tight_layout()
-                fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
+                fig.subplots_adjust(hspace=0.4)
 
                 buf = io.BytesIO()
                 canvas.print_png(buf)
@@ -175,7 +173,6 @@ class RealTimeMetrics_GEN(QThread):
                 fig = Figure()
                 canvas = FigureCanvas(fig)
 
-                # Plot for generator loss
                 ax1 = fig.add_subplot(211)
                 ax1.plot(range(1, len(global_train_g_loss)*self.print_interval + 1, self.print_interval), global_train_g_loss, 'r-', label='Training Generator Loss')
                 ax1.plot(range(1, len(global_val_g_loss)*self.print_interval + 1, self.print_interval), global_val_g_loss, 'b-', label='Validation Generator Loss')
@@ -186,7 +183,6 @@ class RealTimeMetrics_GEN(QThread):
                 ax1.grid(True)
                 ax1.set_xlim(1, self.total_epochs)
 
-                # Plot for discriminator loss
                 ax2 = fig.add_subplot(212)
                 ax2.plot(range(1, len(global_train_d_loss)*self.print_interval + 1, self.print_interval), global_train_d_loss, 'r-', label='Training Discriminator Loss')
                 ax2.plot(range(1, len(global_val_d_loss)*self.print_interval + 1, self.print_interval), global_val_d_loss, 'b-', label='Validation Discriminator Loss')
@@ -198,7 +194,7 @@ class RealTimeMetrics_GEN(QThread):
                 ax2.set_xlim(1, self.total_epochs)
 
                 fig.tight_layout()
-                fig.subplots_adjust(hspace=0.4)  # Adjust vertical spacing
+                fig.subplots_adjust(hspace=0.4)
 
                 buf = io.BytesIO()
                 canvas.print_png(buf)
@@ -256,7 +252,7 @@ class WorkerMetrics_GAN:
             global generated_image
             noise = np.random.normal(0, 1, [1, 100])
             generated_image_predict = generator.predict(noise)
-            generated_image = generated_image_predict * 0.5 + 0.5  # Scale the image to [0, 1]
+            generated_image = generated_image_predict * 0.5 + 0.5
 
         except Exception as e:
             print(f"Failed to generate image in epoch {epoch}: {e}")

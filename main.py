@@ -14,10 +14,6 @@ from CONTROLLERS.generateNew import GenerateNew
 from CONTROLLERS.admin_db_view import AdminDbView
 
 def get_base_path():
-    """
-    Returns:
-        str: The base path of the application.
-    """
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
     else:
@@ -43,9 +39,6 @@ class MainWindow(QMainWindow):
             traceback.print_exc()
 
     def load_admin_db_view(self):
-        """
-        Loads the admin database view UI and sets up event handlers for the buttons.
-        """
         ui_path = os.path.join(current_dir ,"UI", "admin_db.ui")
         ui = uic.loadUi(ui_path, self)
         self.av = AdminDbView(ui)
@@ -55,9 +48,6 @@ class MainWindow(QMainWindow):
         ui.exitBtn.clicked.connect(self.av.on_exit)
 
     def load_gen_view(self):
-        """
-        Load the generator view UI and connect signals to slots.
-        """
         ui_path = os.path.join(current_dir, "UI", "genView.ui")
         ui = uic.loadUi(ui_path, self)
         self.gn = GenerateNew(ui)
@@ -73,9 +63,6 @@ class MainWindow(QMainWindow):
 
 
     def load_doctor_ui(self):
-        """
-        Load the doctor view UI.
-        """
         self.viewController = DoctorViewController(self, UI_PATH, current_dir)
         self.viewController.ui.switchSceneBtn.clicked.connect(self.loadAdminEegCnn)
         self.viewController.ui.generateNew.clicked.connect(self.load_gen_view)

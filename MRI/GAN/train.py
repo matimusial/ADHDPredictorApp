@@ -225,7 +225,6 @@ def train_gan(save=True, data_type="ADHD", pickle_path=".", gan_model_path="."):
                         print(f"Epoch {epoch + 1} [Val D loss: {val_d_loss.numpy().mean()} | Val G loss: {val_g_loss.numpy().mean()}")
                     if (epoch + 1) % TRAIN_GAN_DISP_INTERVAL == 0:
                         metrics.generate_image(generator, epoch + 1)
-                        #generate_image(generator, epoch + 1)
                 except Exception as e:
                     print(f"Error in epoch {epoch + 1}: {e}")
                     return
