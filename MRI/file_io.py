@@ -1,7 +1,7 @@
 import pickle
+import numpy as np
 from sklearn.model_selection import train_test_split
 from MRI.config import TEST_SIZE_MRI_CNN
-import numpy as np
 
 
 def read_pickle(filepath):

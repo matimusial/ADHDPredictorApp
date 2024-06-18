@@ -1,5 +1,5 @@
-import numpy as np
 import copy
+import numpy as np
 
 
 def normalize(data):

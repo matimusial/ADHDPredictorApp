@@ -1,15 +1,14 @@
 import io
 import os
 import sys
-
 import numpy as np
+
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap, QMovie
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QApplication
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from CONTROLLERS.DBConnector import DBConnector
-from keras.models import load_model
 
 class ModelWorker(QObject):
     """

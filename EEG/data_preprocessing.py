@@ -1,6 +1,6 @@
 import copy
-from scipy import signal
 import numpy as np
+from scipy import signal
 
 
 def filter_eeg_data(ADHD_DATA, CONTROL_DATA=None, band_type=2):

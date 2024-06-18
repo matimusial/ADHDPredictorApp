@@ -1,4 +1,5 @@
 import os
+import sys
 import io
 import random
 import ast
@@ -18,8 +19,6 @@ from scipy.io import loadmat
 from scipy.ndimage import rotate
 from pandas import read_csv
 
-from keras.models import load_model
-
 import EEG.config
 from CONTROLLERS.DBConnector import DBConnector
 from EEG.data_preprocessing import (
@@ -29,7 +28,6 @@ from EEG.file_io import split_into_frames
 from EEG.PREDICT.predict import check_result
 from MRI.file_io import read_pickle
 from MRI.image_preprocessing import trim_one, normalize
-import sys
 def get_base_path():
     """
     Returns:

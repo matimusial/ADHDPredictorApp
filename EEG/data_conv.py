@@ -1,7 +1,7 @@
 import os
+import pyedflib
 import scipy.io
 import pandas as pd
-import pyedflib
 import numpy as np
 
 
