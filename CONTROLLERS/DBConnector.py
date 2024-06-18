@@ -13,7 +13,8 @@ def get_base_path():
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
     else:
-        return os.path.dirname(os.path.abspath(__file__))
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        return os.path.dirname(current_directory)
 
 
 def extract_url():
@@ -31,7 +32,7 @@ def extract_url():
             url = file.read()
 
     except Exception as e:
-        raise FileNotFoundError("Could not find a url.txt in /CONTROLLERS")
+        raise FileNotFoundError("Could not find a url.txt")
 
     host = url.split('@')[1].split('/')[0]
     user = url.split('://')[1].split(':')[0]
