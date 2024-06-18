@@ -33,110 +33,110 @@
     </div>
     <p id="winningMessage" class="hidden">Winner: <span id="winner"></span></p>
     <button id="restartButton">Restart</button>
-</div>
-
-    <div id="overview" class="content active">
-        <h2>Overview</h2>
-        <p>This project aims to predict ADHD (Attention Deficit Hyperactivity Disorder) in children using Convolutional Neural Networks (CNN). It utilizes two main datasets: EEG brain wave data and MRI brain images. The project consists of two main components:</p>
-        <ol>
-            <li><strong>EEG Data Analysis</strong>: Using EEG data to predict the presence of ADHD in children with deep learning models.</li>
-            <li><strong>MRI Data Augmentation and Analysis</strong>: Generating additional MRI brain images using Generative Adversarial Networks (GAN) and using CNN to predict ADHD from original images.</li>
-        </ol>
-        <p><strong>Note:</strong> This project is being carried out at the West Pomeranian University of Technology in Szczecin. The full version of the program with a user interface does not function fully without a connection to the database, which is only available on the university network. To use the application without the database, it can be run in console mode. You need to download the repository and run the main_MRI or main_EEG files after obtaining the necessary files from the locations specified in "link.txt". It may be necessary to make minor modifications to the code for the program to work correctly. You can also download the <a href="">executable file</a>, but without a connection to the database, the program's functionality will be limited.</p>
-        <p>The entire program specification can be found under the "Specification" section.</p>
-        <h2>Datasets</h2>
-        <h3>EEG Data</h3>
-        <p>The EEG dataset is a collection of brain waves from children, both with and without ADHD. This data is crucial for training our model to identify patterns associated with ADHD.</p>
-        <p><strong>Source</strong>: <a href="https://ieee-dataport.org/open-access/eeg-data-adhd-control-children">EEG Data for ADHD and Control Children</a></p>
-        <h3>MRI Data</h3>
-        <p>The MRI dataset provides brain images, which are used along with generated images to enhance the model's training and prediction capabilities.</p>
-        <p><strong>Source</strong>: <a href="https://openneuro.org/datasets/ds002424/versions/1.2.0">OpenNeuro Dataset ds002424</a></p>
-        <h2>Methodology</h2>
-        <ol>
-            <li><strong>EEG Data Processing and Model Training</strong>: EEG data is processed into a format suitable for CNN analysis. Then, a deep learning model is trained to identify ADHD features from EEG patterns.</li>
-            <li><strong>MRI Image Generation and Processing</strong>: GANs are used to generate additional MRI images to increase the existing dataset. These images are then processed and used to train another CNN model to predict ADHD.</li>
-        </ol>
-        <h2>Objectives</h2>
-        <ul>
-            <li>Provide an accurate and reliable method for predicting ADHD using non-invasive EEG and MRI data.</li>
-            <li>Increase the availability of high-quality MRI brain images through generative techniques, supporting the development of robust predictive models.</li>
-        </ul>
-        <footer>
-            <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
-        </footer>
     </div>
 
-    <div id="admin" class="content">
-        <h2>Admin Instructions</h2>
-        <p>To access the admin view, press the "Admin View" button on the left side of the program window (the one that appears when you start the program).</p>
-        <ul>
-            <li><strong>"GAN for MRI"</strong> - (Button) Window for training the GAN model to generate MRI images</li>
-            <li><strong>"CNN for MRI"</strong> - (Button) Window for training the CNN model for MRI images</li>
-            <li><strong>"CNN for EEG"</strong> - (Button) Window for training the CNN model for EEG waves</li>
-            <li><strong>"Exit"</strong> - (Button) Closes the application</li>
-            <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
-        </ul>
-        <p>All MRI models are trained on built-in brain images in the Axial plane with a size of 120x120.</p>
-        <h3>CNN for EEG</h3>
-        <ul>
-            <li><strong>"Choose folder with data"</strong> - (button) text type</li>
-            <p>The folder with training data must have the following structure:</p>
-            <pre>(chosen folder)
-    |
-    | ADHD
-    |    |
-    |    [files of the ADHD group .mat/.csv/.edf]
-    |
-    | CONTROL
-    |    |
-    |    [files of the control group .mat/.csv/.edf]</pre>
+        <div id="overview" class="content active">
+            <h2>Overview</h2>
+            <p>This project aims to predict ADHD (Attention Deficit Hyperactivity Disorder) in children using Convolutional Neural Networks (CNN). It utilizes two main datasets: EEG brain wave data and MRI brain images. The project consists of two main components:</p>
+            <ol>
+                <li><strong>EEG Data Analysis</strong>: Using EEG data to predict the presence of ADHD in children with deep learning models.</li>
+                <li><strong>MRI Data Augmentation and Analysis</strong>: Generating additional MRI brain images using Generative Adversarial Networks (GAN) and using CNN to predict ADHD from original images.</li>
+            </ol>
+            <p><strong>Note:</strong> This project is being carried out at the West Pomeranian University of Technology in Szczecin. The full version of the program with a user interface does not function fully without a connection to the database, which is only available on the university network. To use the application without the database, it can be run in console mode. You need to download the repository and run the main_MRI or main_EEG files after obtaining the necessary files from the locations specified in "link.txt". It may be necessary to make minor modifications to the code for the program to work correctly. You can also download the <a href="">executable file</a>, but without a connection to the database, the program's functionality will be limited.</p>
+            <p>The entire program specification can be found under the "Specification" section.</p>
+            <h2>Datasets</h2>
+            <h3>EEG Data</h3>
+            <p>The EEG dataset is a collection of brain waves from children, both with and without ADHD. This data is crucial for training our model to identify patterns associated with ADHD.</p>
+            <p><strong>Source</strong>: <a href="https://ieee-dataport.org/open-access/eeg-data-adhd-control-children">EEG Data for ADHD and Control Children</a></p>
+            <h3>MRI Data</h3>
+            <p>The MRI dataset provides brain images, which are used along with generated images to enhance the model's training and prediction capabilities.</p>
+            <p><strong>Source</strong>: <a href="https://openneuro.org/datasets/ds002424/versions/1.2.0">OpenNeuro Dataset ds002424</a></p>
+            <h2>Methodology</h2>
+            <ol>
+                <li><strong>EEG Data Processing and Model Training</strong>: EEG data is processed into a format suitable for CNN analysis. Then, a deep learning model is trained to identify ADHD features from EEG patterns.</li>
+                <li><strong>MRI Image Generation and Processing</strong>: GANs are used to generate additional MRI images to increase the existing dataset. These images are then processed and used to train another CNN model to predict ADHD.</li>
+            </ol>
+            <h2>Objectives</h2>
+            <ul>
+                <li>Provide an accurate and reliable method for predicting ADHD using non-invasive EEG and MRI data.</li>
+                <li>Increase the availability of high-quality MRI brain images through generative techniques, supporting the development of robust predictive models.</li>
+            </ul>
+            <footer>
+                <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
+            </footer>
+        </div>
 
-            <li><strong>"Epochs"</strong> - numeric type</li>
-            <li><strong>"Batch size"</strong> - numeric type</li>
-            <li><strong>"Learning rate"</strong> - floating-point type</li>
-            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
-            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
-            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
-            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
-        </ul>
+        <div id="admin" class="content">
+            <h2>Admin Instructions</h2>
+            <p>To access the admin view, press the "Admin View" button on the left side of the program window (the one that appears when you start the program).</p>
+            <ul>
+                <li><strong>"GAN for MRI"</strong> - (Button) Window for training the GAN model to generate MRI images</li>
+                <li><strong>"CNN for MRI"</strong> - (Button) Window for training the CNN model for MRI images</li>
+                <li><strong>"CNN for EEG"</strong> - (Button) Window for training the CNN model for EEG waves</li>
+                <li><strong>"Exit"</strong> - (Button) Closes the application</li>
+                <li><strong>"Database Admin"</strong> - (Button) Connects to the database and displays its contents with the option to delete models (NOTE: requires VPN connection to the ZUT network)</li>
+                <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
+            </ul>
+            <p>All MRI models are trained on built-in brain images in the Axial plane with a size of 120x120.</p>
+            <h3>CNN for EEG</h3>
+            <ul>
+                <li><strong>"Choose folder with data"</strong> - (button) text type</li>
+                <p>The folder with training data must have the following structure:</p>
+                <pre>(chosen folder)
+        |
+        | ADHD
+        |    |
+        |    [files of the ADHD group .mat/.csv/.edf]
+        |
+        | CONTROL
+        |    |
+        |    [files of the control group .mat/.csv/.edf]</pre>
 
-        <h3>CNN for MRI</h3>
-        <ul>
-            <li><strong>"Epochs"</strong> - numeric type</li>
-            <li><strong>"Batch size"</strong> - numeric type</li>
-            <li><strong>"Learning rate"</strong> - floating-point type</li>
-            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
-            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
-            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
-            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
-        </ul>
+                <li><strong>"Epochs"</strong> - numeric type</li>
+                <li><strong>"Batch size"</strong> - numeric type</li>
+                <li><strong>"Learning rate"</strong> - floating-point type</li>
+                <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+                <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+                <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+                <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+                <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+            </ul>
 
-        <h3>GAN for MRI</h3>
-        <ul>
-            <li><strong>"Epochs"</strong> - numeric type</li>
-            <li><strong>"Batch size"</strong> - numeric type</li>
-            <li><strong>"Learning rate"</strong> - floating-point type</li>
-            <li><strong>"Control/ADHD"</strong> - radio button to select the type of training data</li>
-            <li><strong>"Print plot int."</strong> - numeric type</li>
-            <li><strong>"Disp interval"</strong> - numeric type</li>
-            <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
-            <li><strong>"Start"</strong> - (button) Starts the model training process</li>
-            <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
-            <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
-            <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
-        </ul>
+            <h3>CNN for MRI</h3>
+            <ul>
+                <li><strong>"Epochs"</strong> - numeric type</li>
+                <li><strong>"Batch size"</strong> - numeric type</li>
+                <li><strong>"Learning rate"</strong> - floating-point type</li>
+                <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+                <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+                <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+                <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+                <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+            </ul>
 
-        <p><strong>Note:</strong> It is possible to train CNN or GAN on custom MRI images. The developer should process the images into a list (Python) containing numpy arrays (images) of size 128x120. Save the lists in pickle format as: ADHD_REAL.pkl and CONTROL_REAL.pkl and replace the files in: _internal\MRI\REAL_MRI.</p>
+            <h3>GAN for MRI</h3>
+            <ul>
+                <li><strong>"Epochs"</strong> - numeric type</li>
+                <li><strong>"Batch size"</strong> - numeric type</li>
+                <li><strong>"Learning rate"</strong> - floating-point type</li>
+                <li><strong>"Control/ADHD"</strong> - radio button to select the type of training data</li>
+                <li><strong>"Print plot int."</strong> - numeric type</li>
+                <li><strong>"Disp interval"</strong> - numeric type</li>
+                <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+                <li><strong>"Start"</strong> - (button) Starts the model training process</li>
+                <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
+                <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
+                <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
+            </ul>
 
-        <footer>
-            <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
-        </footer>
-    </div>
+            <p><strong>Note:</strong> It is possible to train CNN or GAN on custom MRI images. The developer should process the images into a list (Python) containing numpy arrays (images) of size 128x120. Save the lists in pickle format as: ADHD_REAL.pkl and CONTROL_REAL.pkl and replace the files in: _internal\MRI\REAL_MRI.</p>
 
-    <div id="specification" class="content">
+            <footer>
+                <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
+            </footer>
+        </div>
+
+        <div id="specification" class="content">
         <h2>Specification</h2>
         <h3>Data Analysis for Training CNN with EEG Data</h3>
         <ol>
@@ -424,6 +424,33 @@
                 </ul>
             </li>
         </ol>
+        <h3>Database Specification</h3>
+        <p><strong>Tables:</strong></p>
+        <ul>
+            <li><strong>models:</strong>
+                <ul>
+                    <li><strong>id:</strong> INT, PRIMARY KEY, AUTO_INCREMENT - Unique identifier for the model.</li>
+                    <li><strong>name:</strong> VARCHAR(255) - Name (cnn_accuracy/gen_loss) of the model.</li>
+                    <li><strong>channels:</strong> INT, NULL - Number of channels or NULL.</li>
+                    <li><strong>input_shape:</strong> VARCHAR(255) - Input shape of the model as a tuple converted to string.</li>
+                    <li><strong>type:</strong> VARCHAR(50) - Type of the model, allowed values: ['cnn_mri', 'cnn_eeg', 'gan_adhd', 'gan_control'].</li>
+                    <li><strong>fs:</strong> FLOAT, NULL - Sampling frequency or NULL.</li>
+                    <li><strong>plane:</strong> CHAR(1), NULL - Plane of the model, allowed values: ['A', 'S', 'C'] or NULL. (Axial/Sagittal/Coronal)</li>
+                    <li><strong>description:</strong> VARCHAR(255) - Description of the model (learning rate, batch size, epochs); etc</li>
+                </ul>
+            </li>
+            <li><strong>files:</strong>
+                <ul>
+                    <li><strong>id:</strong> INT, PRIMARY KEY, AUTO_INCREMENT - Unique identifier for the file.</li>
+                    <li><strong>model_id:</strong> INT, FOREIGN KEY - References the `id` in the `models` table.</li>
+                    <li><strong>file:</strong> LONGBLOB - Binary data of the model file.</li>
+                </ul>
+            </li>
+        </ul>
+        <p><strong>Relationships:</strong></p>
+        <ul>
+            <li>The <strong>files</strong> table has a foreign key relationship with the <strong>models</strong> table. The <strong>model_id</strong> in the <strong>files</strong> table references the <strong>id</strong> in the <strong>models</strong> table, establishing a one-to-many relationship where one model can have multiple associated files.</li>
+        </ul>
         <footer>
             <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
         </footer>

@@ -9,7 +9,7 @@ This project aims to predict ADHD (Attention Deficit Hyperactivity Disorder) in 
 
 **Note:** This project is being carried out at the West Pomeranian University of Technology in Szczecin. The full version of the program with a user interface does not function fully without a connection to the database, which is only available on the university network. To use the application without the database, it can be run in console mode. You need to download the repository and run the `main_MRI` or `main_EEG` files after obtaining the necessary files from the locations specified in `link.txt`. It may be necessary to make minor modifications to the code for the program to work correctly. You can also download the [executable file](#), but without a connection to the database, the program's functionality will be limited.
 
-The entire program specification can be found on the info.html page under the "Specification" section.
+The entire program specification can be found on the `info.html` page under the "Specification" section.
 
 ## Datasets
 

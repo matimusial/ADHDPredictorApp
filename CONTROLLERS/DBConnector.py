@@ -2,7 +2,6 @@ import os
 import sys
 
 import mysql.connector
-from PyQt5.QtWidgets import QApplication
 from mysql.connector import Error
 
 
