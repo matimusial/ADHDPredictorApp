@@ -109,11 +109,11 @@ canvas {
     }
     #gameArea {
         width: 100%;
-        height: 50vw; /* Zmiana wysokości na proporcjonalną do szerokości */
+        height: 50vw;
         border: 1px solid #000;
     }
     #target {
-        width: 5vw; /* Zmiana rozmiaru celu na proporcjonalną do szerokości */
+        width: 5vw;
         height: 5vw;
     }
     #ticTacToeBoard {
