@@ -51,6 +51,8 @@ class AdminMriGan:
 
         self.gan_generation_warning_msgbox()
 
+        self.delModel()
+
     def updateInfoDump(self):
         self.ui.info_dump.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
@@ -58,6 +60,7 @@ class AdminMriGan:
         )
 
     def train_gan(self):
+        self.delModel()
         self.current_size = self.ui.size()
         self.ui.setFixedSize(self.current_size)
         self.ui.status_label.setText("STATUS: Starting")

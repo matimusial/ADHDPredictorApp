@@ -55,7 +55,7 @@ def read_eeg_raw(path_or_folder):
                         raw = mne.io.read_raw_edf(csv_or_edf_file, preload=True)
                         data = raw.get_data()
                         key_name = os.path.splitext(file)[0]
-                        savemat(os.path.join(current_folder, mat_file_name), {key_name: data})
+                        savemat(os.path.join(current_folder, mat_file_name), {key_name: data.transpose()})
 
         # Importing .mat files
         for subfolder in subfolders:

@@ -51,6 +51,8 @@ class AdminMriCnn:
 
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
+        self.delModel()
+
     def updateInfoDump(self):
         self.ui.info_dump_2.setText(
             f'{self.loaded_adhd_files + self.loaded_control_files} files in dir (ADHD: {self.loaded_adhd_files}; CONTROL: {self.loaded_control_files})\n'
@@ -58,6 +60,7 @@ class AdminMriCnn:
         )
 
     def train_mri(self):
+        self.delModel()
         self.current_size = self.ui.size()
         self.ui.setFixedSize(self.current_size)
         self.ui.status_label_2.setText("STATUS: Starting")
@@ -184,7 +187,6 @@ class AdminMriCnn:
                     try:
                         os.remove(file_path)
                         self.ui.status_label.setText("STATUS: Await")
-                        self.delete_done_msgbox()
                         print(f"Plik {file_name} został usunięty.")
                     except Exception as e:
                         print(f"Nie można usunąć pliku {file_name}: {e}")
