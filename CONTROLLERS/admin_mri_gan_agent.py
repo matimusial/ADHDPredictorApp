@@ -24,6 +24,7 @@ class AdminMriGan:
         self.ui = uic.loadUi(os.path.join(ui_path, 'aUI_projekt_GAN.ui'), mainWindow)
         self.MODEL_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'GAN', 'temp_model_path')
         self.TRAIN_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'REAL_MRI')
+        self.IMAGES_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'Img_to_pkl')
         self.PREDICT_PATH = os.path.join(self.MAIN_PATH, 'MRI', 'GAN', 'MODELS')
         adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
 
@@ -49,7 +50,9 @@ class AdminMriGan:
         self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
         self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
-        self.ui.folder_explore.clicked.connect(self.showDialog)
+        self.ui.folder_explore.clicked.connect(self.showDialog_1)
+        self.ui.folder_explore_2.clicked.connect(self.showDialog_2)
+        self.ui.folder_explore_3.clicked.connect(self.showDialog_3)
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
         self.ui.stopButton.clicked.connect(self.stopModel)
@@ -62,13 +65,8 @@ class AdminMriGan:
 
         self.delModel()
 
-    def showDialog(self):
+    def showDialog_1(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        self.TRAIN_PATH = folder
-        metrics = QFontMetrics(self.ui.path_label.font())
-        elided_text = metrics.elidedText(folder, Qt.ElideMiddle, self.ui.path_label.width())
-        #self.ui.path_label.setText(elided_text)
 
         new_size = (128, 120)
 
@@ -76,10 +74,10 @@ class AdminMriGan:
         resized_images = []
 
         # Loop through all files in the directory
-        for filename in os.listdir(folder):
+        for filename in os.listdir(self.IMAGES_PATH):
             if filename.endswith('.png'):
                 # Load the image
-                image_path = os.path.join(folder, filename)
+                image_path = os.path.join(self.IMAGES_PATH, filename)
                 image = Image.open(image_path)
 
                 # Resize the image
@@ -94,9 +92,44 @@ class AdminMriGan:
                 # Remove the original image file
                 os.remove(image_path)
 
-        pickle_filename = 'resized_images.pkl'
+        pickle_filename = os.path.join(folder, 'ADHD_REAL.pkl')
         with open(pickle_filename, 'wb') as f:
             pickle.dump(resized_images, f)
+
+    def showDialog_2(self):
+        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+
+        new_size = (128, 120)
+
+        # List to store resized images
+        resized_images = []
+
+        # Loop through all files in the directory
+        for filename in os.listdir(self.IMAGES_PATH):
+            if filename.endswith('.png'):
+                # Load the image
+                image_path = os.path.join(self.IMAGES_PATH, filename)
+                image = Image.open(image_path)
+
+                # Resize the image
+                resized_image = image.resize(new_size)
+
+                # Convert the image to a numpy array
+                image_array = np.array(resized_image)
+
+                # Append the numpy array to the list
+                resized_images.append(image_array)
+
+                # Remove the original image file
+                os.remove(image_path)
+
+        pickle_filename = os.path.join(folder, 'CONTROL_REAL.pkl')
+        with open(pickle_filename, 'wb') as f:
+            pickle.dump(resized_images, f)
+
+    def showDialog_3(self):
+        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+        self.TRAIN_PATH = folder
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(

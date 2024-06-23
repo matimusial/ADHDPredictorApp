@@ -194,13 +194,6 @@ QPushButton{
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="folder_explore_4">
-               <property name="text">
-                <string>chuj 4</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QLabel" name="info_dump_2">
                <property name="text">
                 <string/>
