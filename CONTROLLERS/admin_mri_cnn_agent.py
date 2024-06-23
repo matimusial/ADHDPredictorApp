@@ -126,6 +126,7 @@ class AdminMriCnn:
     def showDialog_3(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
         self.TRAIN_PATH = folder
+        self.pathTrain = self.TRAIN_PATH
 
 
     def updateInfoDump(self):
