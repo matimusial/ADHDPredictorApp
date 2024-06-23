@@ -174,9 +174,9 @@ QPushButton{
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
-                <widget class="QLabel" name="label">
+                <widget class="QPushButton" name="pushButton">
                  <property name="text">
-                  <string>Training files are built in.</string>
+                  <string>Chose data</string>
                  </property>
                 </widget>
                </item>
