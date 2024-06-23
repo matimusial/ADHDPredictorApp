@@ -79,6 +79,13 @@
                 <li><strong>"USER VIEW"</strong> - (Button) Returns to the main window</li>
             </ul>
             <p>All MRI models are trained on built-in brain images in the Axial plane with a size of 120x120.</p>
+            <p><strong>How to use your own generated images for training:</strong></p>
+            <ul>
+                <li>Generate images of one type in program</li>
+                <li>Go to Admin view and click button to generate pickle with type you generated your images (ADHD or CONTROL)</li>
+                <li>Choose location of pickle file and repeat above step with second type</li>
+                <li>Click choose data folder in Admin view (MRI or GAN view) and pick folder with pickle files of both types (ADHD and CONTROL)</li>
+            </ul>
             <h3>CNN for EEG</h3>
             <ul>
                 <li><strong>"Choose folder with data"</strong> - (button) text type</li>
@@ -109,6 +116,7 @@
                 <li><strong>"Batch size"</strong> - numeric type</li>
                 <li><strong>"Learning rate"</strong> - floating-point type</li>
                 <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
+                <li><strong>""</strong> - (button) Starts the model training process</li>
                 <li><strong>"Start"</strong> - (button) Starts the model training process</li>
                 <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
                 <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
