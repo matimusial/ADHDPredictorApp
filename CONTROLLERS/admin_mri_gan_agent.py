@@ -11,6 +11,10 @@ from CONTROLLERS.DBConnector import DBConnector
 import os
 import shutil
 
+import pickle
+from PIL import Image
+import numpy as np
+
 from CONTROLLERS.metrics import RealTimeMetrics_GEN
 
 class AdminMriGan:
@@ -65,6 +69,34 @@ class AdminMriGan:
         metrics = QFontMetrics(self.ui.path_label.font())
         elided_text = metrics.elidedText(folder, Qt.ElideMiddle, self.ui.path_label.width())
         #self.ui.path_label.setText(elided_text)
+
+        new_size = (128, 120)
+
+        # List to store resized images
+        resized_images = []
+
+        # Loop through all files in the directory
+        for filename in os.listdir(folder):
+            if filename.endswith('.png'):
+                # Load the image
+                image_path = os.path.join(folder, filename)
+                image = Image.open(image_path)
+
+                # Resize the image
+                resized_image = image.resize(new_size)
+
+                # Convert the image to a numpy array
+                image_array = np.array(resized_image)
+
+                # Append the numpy array to the list
+                resized_images.append(image_array)
+
+                # Remove the original image file
+                os.remove(image_path)
+
+        pickle_filename = 'resized_images.pkl'
+        with open(pickle_filename, 'wb') as f:
+            pickle.dump(resized_images, f)
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(
