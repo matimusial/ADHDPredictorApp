@@ -1,8 +1,8 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize, Qt
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton, QFontMetrics
 
 import MRI.config
 from MRI.CNN.train import train_cnn, readPickleForUI
@@ -41,6 +41,7 @@ class AdminMriCnn:
         self.ui.textEdit_learning_rate_2.setValue(MRI.config.CNN_LEARNING_RATE_MRI)
         self.ui.textEdit_test_size.setValue(MRI.config.TEST_SIZE_MRI_CNN)
 
+        self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
@@ -51,6 +52,15 @@ class AdminMriCnn:
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
         self.delModel()
+
+    def showDialog(self):
+        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+
+        self.TRAIN_PATH = folder
+        metrics = QFontMetrics(self.ui.path_label.font())
+        elided_text = metrics.elidedText(folder, Qt.ElideMiddle, self.ui.path_label.width())
+        #self.ui.path_label.setText(elided_text)
+
 
     def updateInfoDump(self):
         self.ui.info_dump_2.setText(

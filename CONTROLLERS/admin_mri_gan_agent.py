@@ -1,7 +1,8 @@
 import sys
 from PyQt5 import uic
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize, Qt
 from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QSpinBox, QProgressBar
+from PyQt5.QtGui import QFontMetrics
 
 import MRI.config
 from MRI.GAN.train import train_gan
@@ -44,6 +45,7 @@ class AdminMriGan:
         self.ui.textEdit_print_interval.setValue(MRI.config.TRAIN_GAN_PRINT_INTERVAL)
         self.ui.textEdit_disp_interval.setValue(MRI.config.TRAIN_GAN_DISP_INTERVAL)
 
+        self.ui.folder_explore.clicked.connect(self.showDialog)
         self.ui.startButton.clicked.connect(self.train_gan)
         self.ui.exitButton_2.clicked.connect(self.on_exit)
         self.ui.stopButton.clicked.connect(self.stopModel)
@@ -55,6 +57,14 @@ class AdminMriGan:
         self.gan_generation_warning_msgbox()
 
         self.delModel()
+
+    def showDialog(self):
+        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+
+        self.TRAIN_PATH = folder
+        metrics = QFontMetrics(self.ui.path_label.font())
+        elided_text = metrics.elidedText(folder, Qt.ElideMiddle, self.ui.path_label.width())
+        #self.ui.path_label.setText(elided_text)
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(
