@@ -159,16 +159,6 @@ QPushButton{
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
-            <widget class="QLabel" name="window_name_2">
-             <property name="text">
-              <string>CNN for MRI</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="0">
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
@@ -176,7 +166,14 @@ QPushButton{
                <item>
                 <widget class="QPushButton" name="folder_explore">
                  <property name="text">
-                  <string>Chose folder with data</string>
+                  <string>chuj 1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="folder_explore_2">
+                 <property name="text">
+                  <string>chuj 2</string>
                  </property>
                 </widget>
                </item>
@@ -188,6 +185,20 @@ QPushButton{
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore_3">
+               <property name="text">
+                <string>chuj 3</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore_4">
+               <property name="text">
+                <string>chuj 4</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="info_dump_2">
@@ -438,6 +449,16 @@ QPushButton{
               </layout>
              </item>
             </layout>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="window_name_2">
+             <property name="text">
+              <string>CNN for MRI</string>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

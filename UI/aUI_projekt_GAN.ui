@@ -173,7 +173,28 @@ QPushButton{
              <item>
               <widget class="QPushButton" name="folder_explore">
                <property name="text">
-                <string>load data folder</string>
+                <string>chuj 1</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore_2">
+               <property name="text">
+                <string>chuj 2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore_3">
+               <property name="text">
+                <string>chuj 3</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore_4">
+               <property name="text">
+                <string>chuj 4</string>
                </property>
               </widget>
              </item>
