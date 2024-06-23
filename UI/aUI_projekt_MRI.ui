@@ -166,14 +166,14 @@ QPushButton{
                <item>
                 <widget class="QPushButton" name="folder_explore">
                  <property name="text">
-                  <string>chuj 1</string>
+                  <string>Create ADHD Pickle</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QPushButton" name="folder_explore_2">
                  <property name="text">
-                  <string>chuj 2</string>
+                  <string>Create CONTROL Pickle</string>
                  </property>
                 </widget>
                </item>
@@ -189,7 +189,7 @@ QPushButton{
              <item>
               <widget class="QPushButton" name="folder_explore_3">
                <property name="text">
-                <string>chuj 3</string>
+                <string>Choose data folder</string>
                </property>
               </widget>
              </item>
