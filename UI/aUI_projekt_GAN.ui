@@ -166,45 +166,50 @@ QPushButton{
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_9">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_10"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="folder_explore">
-               <property name="text">
-                <string>Create ADHD Pickle</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="folder_explore_2">
-               <property name="text">
-                <string>Create CONTROL Pickle</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="folder_explore_3">
-               <property name="text">
-                <string>chuj 3</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="info_dump">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
               <widget class="QWidget" name="widget_2" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                    <item>
+                     <widget class="QPushButton" name="folder_explore_3">
+                      <property name="text">
+                       <string>Choose data folder</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout">
+                    <item>
+                     <widget class="QPushButton" name="folder_explore">
+                      <property name="text">
+                       <string>Create ADHD Pickle</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="folder_explore_2">
+                      <property name="text">
+                       <string>Create CONTROL Pickle</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="info_dump">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <spacer name="verticalSpacer_4">
                   <property name="orientation">

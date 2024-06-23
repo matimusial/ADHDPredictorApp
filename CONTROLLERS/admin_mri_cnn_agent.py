@@ -33,8 +33,6 @@ class AdminMriCnn:
         self.loaded_control_files = len(control_data)
         self.currChannels = len(adhd_data[0])
 
-        self.updateInfoDump()
-
         self.pathTrain = self.TRAIN_PATH
         self.db_conn = None
 
@@ -54,6 +52,8 @@ class AdminMriCnn:
         self.ui.stopButton_2.clicked.connect(self.stopModel)
         self.ui.exitButton.clicked.connect(self.on_exit)
         self.ui.save_db_2.clicked.connect(self.sendToDb)
+
+        self.updateInfoDump()
 
         self.run_stop_controller = False
 
@@ -93,39 +93,52 @@ class AdminMriCnn:
             pickle.dump(resized_images, f)
 
     def showDialog_2(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+        try:
+            folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
 
-        new_size = (128, 120)
+            new_size = (128, 120)
 
-        # List to store resized images
-        resized_images = []
+            # List to store resized images
+            resized_images = []
 
-        # Loop through all files in the directory
-        for filename in os.listdir(self.IMAGES_PATH):
-            if filename.endswith('.png'):
-                # Load the image
-                image_path = os.path.join(self.IMAGES_PATH, filename)
-                image = Image.open(image_path)
+            # Loop through all files in the directory
+            for filename in os.listdir(self.IMAGES_PATH):
+                if filename.endswith('.png'):
+                    # Load the image
+                    image_path = os.path.join(self.IMAGES_PATH, filename)
+                    image = Image.open(image_path)
 
-                # Resize the image
-                resized_image = image.resize(new_size)
+                    # Resize the image
+                    resized_image = image.resize(new_size)
 
-                # Convert the image to a numpy array
-                image_array = np.array(resized_image)
+                    # Convert the image to a numpy array
+                    image_array = np.array(resized_image)
 
-                # Append the numpy array to the list
-                resized_images.append(image_array)
+                    # Append the numpy array to the list
+                    resized_images.append(image_array)
 
-                # Remove the original image file
-                os.remove(image_path)
+                    # Remove the original image file
+                    os.remove(image_path)
 
-        pickle_filename = os.path.join(folder, 'CONTROL_REAL.pkl')
-        with open(pickle_filename, 'wb') as f:
-            pickle.dump(resized_images, f)
+            pickle_filename = os.path.join(folder, 'CONTROL_REAL.pkl')
+            with open(pickle_filename, 'wb') as f:
+                pickle.dump(resized_images, f)
+        except Exception as e:
+            print(f'Failed {self.MODEL_PATH}. Reason: {e}')
 
     def showDialog_3(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-        self.TRAIN_PATH = folder
+        try:
+            self.TRAIN_PATH = folder
+            adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
+            print(adhd_data)
+            print(control_data)
+            self.loaded_adhd_files = len(adhd_data)
+            self.loaded_control_files = len(control_data)
+            self.currChannels = len(adhd_data[0])
+            self.updateInfoDump()
+        except Exception as e:
+            print(f'Failed {self.MODEL_PATH}. Reason: {e}')
         self.pathTrain = self.TRAIN_PATH
 
 

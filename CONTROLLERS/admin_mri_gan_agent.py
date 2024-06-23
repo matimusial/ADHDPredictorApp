@@ -129,8 +129,20 @@ class AdminMriGan:
 
     def showDialog_3(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-        self.TRAIN_PATH = folder
+        try:
+            self.TRAIN_PATH = folder
+            adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
+            print(adhd_data)
+            print(control_data)
+            self.loaded_adhd_files = len(adhd_data)
+            self.loaded_control_files = len(control_data)
+            self.currChannels = len(adhd_data[0])
+            self.updateInfoDump()
+        except Exception as e:
+            print(f'Failed {self.MODEL_PATH}. Reason: {e}')
         self.pathTrain = self.TRAIN_PATH
+
+
 
     def updateInfoDump(self):
         self.ui.info_dump.setText(
