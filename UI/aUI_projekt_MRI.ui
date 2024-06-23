@@ -174,9 +174,9 @@ QPushButton{
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="folder_explore">
                  <property name="text">
-                  <string>Chose data</string>
+                  <string>Chose folder with data</string>
                  </property>
                 </widget>
                </item>

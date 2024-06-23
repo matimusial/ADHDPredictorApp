@@ -168,15 +168,14 @@ QPushButton{
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_9">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_10">
-               <item>
-                <widget class="QLabel" name="path_label">
-                 <property name="text">
-                  <string>Training data is built in.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <layout class="QHBoxLayout" name="horizontalLayout_10"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="folder_explore">
+               <property name="text">
+                <string>load data folder</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="info_dump">
