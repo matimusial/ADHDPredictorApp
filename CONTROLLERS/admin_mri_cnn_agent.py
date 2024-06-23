@@ -2,7 +2,8 @@ import sys
 
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QSize, Qt
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton, QFontMetrics
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox, QProgressBar, QPushButton
+from PyQt5.QtGui import QFontMetrics
 
 import MRI.config
 from MRI.CNN.train import train_cnn, readPickleForUI
