@@ -321,34 +321,42 @@ class GenerateNew:
         if not folder:
             return
 
-        new_size = (120, 120)
-        resized_images = []
+        new_size = (128, 120)  # 128 width, 120 height zgodnie z twoimi wymaganiami
+        processed_images = []
 
         try:
             for img_array in self.generated:
-                # Ensure the input array is 2D by squeezing the last dimension if necessary
-                if img_array.ndim == 3 and img_array.shape[2] == 1:
-                    img_array = img_array.squeeze(axis=2)
+                processed_image_array = self.process_image(img_array, new_size)
+                processed_images.append(processed_image_array)
 
-                # Convert the numpy array to a PIL Image
-                image = Image.fromarray((img_array * 255).astype(np.uint8), 'L')
-
-                # Resize the image
-                resized_image = image.resize(new_size)
-
-                # Convert the image back to a numpy array and normalize to [0, 1]
-                resized_image_array = np.array(resized_image, dtype=np.float16) / 255.0
-
-                # Reshape to (height, width, 1) to add the channel dimension
-                reshaped_image_array = resized_image_array[:, :, np.newaxis]
-
-                # Append the reshaped numpy array to the list
-                resized_images.append(reshaped_image_array)
-
-            pickle_filename = os.path.join(folder, 'generated_images.pkl')
-            with open(pickle_filename, 'wb') as f:
-                pickle.dump(resized_images, f)
+            self.save_images_to_pickle(processed_images, folder)
             self.show_alert("Pickle file created successfully!")
         except Exception as e:
             self.show_alert(f"Failed to create pickle file: {e}")
 
+    def process_image(self, img_array, new_size):
+        """Process a single image array: convert to PIL, resize, and normalize."""
+        # Ensure the input array is 2D by squeezing the last dimension if necessary
+        if img_array.ndim == 3 and img_array.shape[2] == 1:
+            img_array = img_array.squeeze(axis=2)
+
+        # Convert the numpy array to a PIL Image
+        image = Image.fromarray((img_array * 255).astype(np.uint8), 'L')
+
+        # Resize the image
+        resized_image = image.resize(new_size)
+
+        # Convert the image back to a numpy array, normalize to [0, 1] and cast to float16
+        resized_image_array = np.array(resized_image, dtype=np.float32) / 255.0
+        reshaped_image_array = resized_image_array[:, :, np.newaxis]
+
+        # Cast to float16
+        reshaped_image_array = reshaped_image_array.astype(np.float16)
+
+        return reshaped_image_array
+
+    def save_images_to_pickle(self, images, folder):
+        """Save the list of images to a pickle file in the specified folder."""
+        pickle_filename = os.path.join(folder, 'generated_images.pkl')
+        with open(pickle_filename, 'wb') as f:
+            pickle.dump(images, f)

@@ -64,8 +64,23 @@ class AdminMriCnn:
         try:
             self.TRAIN_PATH = folder
             adhd_data, control_data = readPickleForUI(self.TRAIN_PATH)
-            print(adhd_data)
-            print(control_data)
+
+            print("adhd_data")
+            print(len(adhd_data[0]))
+            print(len(adhd_data[0][0]))
+            print(type(adhd_data))
+            print(type(adhd_data[0]))
+            print(type(adhd_data[0][0]))
+            print(type(adhd_data[0][0][0]))
+
+            print("control_data")
+            print(len(control_data[0]))
+            print(len(control_data[0][0]))
+            print(type(control_data))
+            print(type(control_data[0]))
+            print(type(control_data[0][0]))
+            print(type(control_data[0][0][0]))
+
             self.loaded_adhd_files = len(adhd_data)
             self.loaded_control_files = len(control_data)
             self.currChannels = len(adhd_data[0])

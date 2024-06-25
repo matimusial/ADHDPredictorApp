@@ -75,8 +75,11 @@ def train_cnn(save, real_mri_path, predict_path, model_path):
 
         try:
             ADHD_TRIMMED = trim_rows(ADHD_DATA)
+            print("chuj 1")
             check_dimensions(ADHD_TRIMMED)
+            print("chuj 2")
             ADHD_NORMALIZED = normalize(ADHD_TRIMMED)
+            print("chuj 3")
 
             CONTROL_TRIMMED = trim_rows(CONTROL_DATA)
             check_dimensions(CONTROL_TRIMMED)
