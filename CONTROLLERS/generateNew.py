@@ -321,7 +321,7 @@ class GenerateNew:
         if not folder:
             return
 
-        new_size = (128, 120)  # 128 width, 120 height zgodnie z twoimi wymaganiami
+        new_size = (120, 128)
         processed_images = []
 
         try:
@@ -346,17 +346,14 @@ class GenerateNew:
         # Resize the image
         resized_image = image.resize(new_size)
 
-        # Convert the image back to a numpy array, normalize to [0, 1] and cast to float16
+        # Convert the image back to a numpy array, normalize to [0, 1] and cast to float32
         resized_image_array = np.array(resized_image, dtype=np.float32) / 255.0
-        reshaped_image_array = resized_image_array[:, :, np.newaxis]
 
-        # Cast to float16
-        reshaped_image_array = reshaped_image_array.astype(np.float16)
-
-        return reshaped_image_array
+        return resized_image_array
 
     def save_images_to_pickle(self, images, folder):
         """Save the list of images to a pickle file in the specified folder."""
+        # Save the processed images to a pickle file
         pickle_filename = os.path.join(folder, 'generated_images.pkl')
         with open(pickle_filename, 'wb') as f:
             pickle.dump(images, f)
