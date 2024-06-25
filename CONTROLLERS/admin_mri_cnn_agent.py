@@ -45,8 +45,6 @@ class AdminMriCnn:
         self.ui.textEdit_learning_rate_2.setValue(MRI.config.CNN_LEARNING_RATE_MRI)
         self.ui.textEdit_test_size.setValue(MRI.config.TEST_SIZE_MRI_CNN)
 
-        self.ui.folder_explore.clicked.connect(self.showDialog_1)
-        self.ui.folder_explore_2.clicked.connect(self.showDialog_2)
         self.ui.folder_explore_3.clicked.connect(self.showDialog_3)
         self.ui.startButton_2.clicked.connect(self.train_mri)
         self.ui.stopButton_2.clicked.connect(self.stopModel)
@@ -60,71 +58,6 @@ class AdminMriCnn:
         self.progressBar = self.ui.findChild(QProgressBar, "progressBar_2")
 
         self.delModel()
-
-    def showDialog_1(self):
-        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-        new_size = (128, 120)
-
-        # List to store resized images
-        resized_images = []
-
-        # Loop through all files in the directory
-        for filename in os.listdir(self.IMAGES_PATH):
-            if filename.endswith('.png'):
-                # Load the image
-                image_path = os.path.join(self.IMAGES_PATH, filename)
-                image = Image.open(image_path)
-
-                # Resize the image
-                resized_image = image.resize(new_size)
-
-                # Convert the image to a numpy array
-                image_array = np.array(resized_image)
-
-                # Append the numpy array to the list
-                resized_images.append(image_array)
-
-                # Remove the original image file
-                os.remove(image_path)
-
-        pickle_filename = os.path.join(folder, 'ADHD_REAL.pkl')
-        with open(pickle_filename, 'wb') as f:
-            pickle.dump(resized_images, f)
-
-    def showDialog_2(self):
-        try:
-            folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
-
-            new_size = (128, 120)
-
-            # List to store resized images
-            resized_images = []
-
-            # Loop through all files in the directory
-            for filename in os.listdir(self.IMAGES_PATH):
-                if filename.endswith('.png'):
-                    # Load the image
-                    image_path = os.path.join(self.IMAGES_PATH, filename)
-                    image = Image.open(image_path)
-
-                    # Resize the image
-                    resized_image = image.resize(new_size)
-
-                    # Convert the image to a numpy array
-                    image_array = np.array(resized_image)
-
-                    # Append the numpy array to the list
-                    resized_images.append(image_array)
-
-                    # Remove the original image file
-                    os.remove(image_path)
-
-            pickle_filename = os.path.join(folder, 'CONTROL_REAL.pkl')
-            with open(pickle_filename, 'wb') as f:
-                pickle.dump(resized_images, f)
-        except Exception as e:
-            print(f'Failed {self.MODEL_PATH}. Reason: {e}')
 
     def showDialog_3(self):
         folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')

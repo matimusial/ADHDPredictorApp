@@ -184,31 +184,16 @@ QPushButton{
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout">
-                    <item>
-                     <widget class="QPushButton" name="folder_explore">
-                      <property name="text">
-                       <string>Create ADHD Pickle</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="folder_explore_2">
-                      <property name="text">
-                       <string>Create CONTROL Pickle</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                   <widget class="QLabel" name="info_dump">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout"/>
                   </item>
                  </layout>
-                </item>
-                <item>
-                 <widget class="QLabel" name="info_dump">
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
                 </item>
                 <item>
                  <spacer name="verticalSpacer_4">

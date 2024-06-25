@@ -2,6 +2,7 @@ import io
 import os
 import sys
 import numpy as np
+import pickle
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QModelIndex, QSize
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QPixmap, QMovie
@@ -309,3 +310,20 @@ class GenerateNew:
         if file_path:
             extent = self.ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
             self.fig.savefig(file_path, bbox_inches=extent)
+
+    def create_pickle_from_generated(self):
+        if not self.generated:
+            self.show_alert("No generated images to save!")
+            return
+
+        folder = QFileDialog.getExistingDirectory(self.ui, 'Wybierz folder')
+        if not folder:
+            return
+
+        pickle_filename = os.path.join(folder, 'generated_images.pkl')
+        try:
+            with open(pickle_filename, 'wb') as f:
+                pickle.dump(self.generated, f)
+            self.show_alert("Pickle file created successfully!")
+        except Exception as e:
+            self.show_alert(f"Failed to create pickle file: {e}")

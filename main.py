@@ -48,18 +48,22 @@ class MainWindow(QMainWindow):
         ui.exitBtn.clicked.connect(self.av.on_exit)
 
     def load_gen_view(self):
-        ui_path = os.path.join(current_dir, "UI", "genView.ui")
-        ui = uic.loadUi(ui_path, self)
-        self.gn = GenerateNew(ui)
-
-        ui.backBtn.clicked.connect(self.load_doctor_ui)
-        ui.adhdGenInfo.clicked.connect(lambda: self.gn.show_info("adhd"))
-        ui.controlGenInfo.clicked.connect(lambda: self.gn.show_info("control"))
-        ui.genBtn.clicked.connect(self.gn.generate)
-        ui.btnPrevPlot.clicked.connect(self.gn.show_prev_plot_mri)
-        ui.btnNextPlot.clicked.connect(self.gn.show_next_plot_mri)
-        ui.saveBtn.clicked.connect(self.gn.save_image)
-        ui.exitBtn.clicked.connect(self.gn.on_exit)
+        try:
+            ui_path = os.path.join(current_dir, "UI", "genView.ui")
+            ui = uic.loadUi(ui_path, self)
+            self.gn = GenerateNew(ui)
+            ui.backBtn.clicked.connect(self.load_doctor_ui)
+            ui.adhdGenInfo.clicked.connect(lambda: self.gn.show_info("adhd"))
+            ui.controlGenInfo.clicked.connect(lambda: self.gn.show_info("control"))
+            ui.genBtn.clicked.connect(self.gn.generate)
+            ui.btnPrevPlot.clicked.connect(self.gn.show_prev_plot_mri)
+            ui.btnNextPlot.clicked.connect(self.gn.show_next_plot_mri)
+            ui.btnCreatePickle.clicked.connect(self.gn.create_pickle_from_generated)
+            ui.saveBtn.clicked.connect(self.gn.save_image)
+            ui.exitBtn.clicked.connect(self.gn.on_exit)
+        except Exception as e:
+            print(f"An error occurred while loading Generator: {e}")
+            traceback.print_exc()
 
 
     def load_doctor_ui(self):
