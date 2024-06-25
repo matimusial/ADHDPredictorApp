@@ -116,7 +116,6 @@
                 <li><strong>"Batch size"</strong> - numeric type</li>
                 <li><strong>"Learning rate"</strong> - floating-point type</li>
                 <li><strong>"Description"</strong> - (text type) Description for the model saved in the database</li>
-                <li><strong>""</strong> - (button) Starts the model training process</li>
                 <li><strong>"Start"</strong> - (button) Starts the model training process</li>
                 <li><strong>"Stop"</strong> - (button) Stops the model training process at the last epoch</li>
                 <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
@@ -137,8 +136,6 @@
                 <li><strong>"Save model to db"</strong> - (button) When the model is ready, saves it to the database (NOTE: requires VPN connection to the ZUT network)</li>
                 <li><strong>"Delete model"</strong> - (button) When the model is ready, deletes it without saving to the database</li>
             </ul>
-
-            <p><strong>Note:</strong> It is possible to train CNN or GAN on custom MRI images. The developer should process the images into a list (Python) containing numpy arrays (images) of size 128x120. Save the lists in pickle format as: ADHD_REAL.pkl and CONTROL_REAL.pkl and replace the files in: _internal\MRI\REAL_MRI.</p>
 
             <footer>
                 <p>&copy; Mateusz Musiał, Jacek Lal, Radosław Nelza, Artur Panasiuk</p>
