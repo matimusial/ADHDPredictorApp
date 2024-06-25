@@ -20,7 +20,6 @@ def check_dimensions(data):
     Checks list of images if the dimensions of the data are square.
     """
     for i, item in enumerate(data):
-        print(item.shape)
         rows, columns = item.shape
         if rows != columns:
             print(f"Data {i} has non-square dimensions: {rows, columns}")
