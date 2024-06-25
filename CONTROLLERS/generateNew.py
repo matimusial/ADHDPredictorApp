@@ -321,7 +321,7 @@ class GenerateNew:
         if not folder:
             return
 
-        new_size = (120, 128)
+        new_size = (120, 120)
         resized_images = []
 
         try:
